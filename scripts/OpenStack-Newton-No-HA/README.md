@@ -164,6 +164,7 @@
 	```
 
   - Kết quả như sau là đã hoàn tất việc cài nova trên controller
+	
 		```sh
 		+----+------------------+------+----------+---------+-------+----------------------------+
 		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
@@ -251,8 +252,8 @@
 	```
 
 	- Kết quả nhu dưới
+	
 		```sh
-
 		+--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
 		| ID                                   | Agent Type         | Host | Availability Zone | Alive | State | Binary                    |
 		+--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
@@ -271,6 +272,7 @@
 	```
 
 	- Kết quả là: 
+	
 		```
 		+----+------------------+------+----------+---------+-------+----------------------------+
 		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
@@ -375,6 +377,7 @@ openstack server list
 	```
 	
 	- Kết quả là các service của cinder sẽ hiển thị, việc `cinder-volume` tại controller node bị down là do ta không dùng `cinder-volume` không kích hoạt trên máy chủ cinder.
+	
 		```sh
 		+------------------+-------------+------+---------+-------+----------------------------+
 		| Binary           | Host        | Zone | Status  | State | Updated At                 |
@@ -450,17 +453,19 @@ openstack server list
 	```sh
 	swift stat
 	```
-		- Kết quả của lệnh như sau
-			```sh
-							Account: AUTH_e55055376e334a5abd37e0d4ba53e172
-					 Containers: 0
-							Objects: 0
-								Bytes: 0
-			X-Put-Timestamp: 1501206933.80630
-					X-Timestamp: 1501206933.80630
-					 X-Trans-Id: tx44caecab4db246bda200e-00597a9995
-				 Content-Type: text/plain; charset=utf-8
-			````
+	
+	- Kết quả của lệnh như sau
+	
+		```sh
+						Account: AUTH_e55055376e334a5abd37e0d4ba53e172
+				 Containers: 0
+						Objects: 0
+							Bytes: 0
+		X-Put-Timestamp: 1501206933.80630
+				X-Timestamp: 1501206933.80630
+				 X-Trans-Id: tx44caecab4db246bda200e-00597a9995
+			 Content-Type: text/plain; charset=utf-8
+		```
 
 - Tạo `container` cho swift
 	```sh

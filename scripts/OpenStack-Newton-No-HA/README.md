@@ -206,10 +206,12 @@
 - Nếu chọn lựa chọn 2 thì cần cài đặt thêm các bước ở node cinder bên dưới, mục số 5.
 
 #### 2.9. Thực thi script `noha_ctl_ceilometer.sh` để cài đặt `Ceilometer, Gnocchi, AODH`.
+- Thực thi script cài đặt Ceilometer, Gnocchi, AODH
 	```sh
 	bash noha_ctl_ceilometer.sh
 	```
 	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh. Có thể các lệnh sẽ không có output ra.
+		
 		```sh
 		gnocchi resource list HOẶC openstack metric metric list 
 		gnocchi metric list HOẶC openstack metric resource list 

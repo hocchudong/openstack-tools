@@ -461,7 +461,7 @@ openstack server list
 					X-Timestamp: 1501206933.80630
 					 X-Trans-Id: tx44caecab4db246bda200e-00597a9995
 				 Content-Type: text/plain; charset=utf-8
-			````
+			```
 
 - Tạo `container` cho swift
 	```sh

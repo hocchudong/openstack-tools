@@ -434,9 +434,9 @@ openstack server list
 - Đứng trên máy chủ swift, thực hiện script dưới để cài đặt các gói và cấu hình Swift.
 - Lưu ý: Thực hiện bước này ở cả máy chủ `SWIFT1` và `SWIFT2`
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/noha_swift_install.sh
-
-	bash noha_swift_install.sh
+	su - 
+	
+	bash /root/noha_swift_install.sh
 	```
 - Sau khi cài thực thi xong script trên tại các máy chủ `SWIFT1` và `SWIFT2`, chuyển qua máy chủ controller để thực thi script tiếp.
 

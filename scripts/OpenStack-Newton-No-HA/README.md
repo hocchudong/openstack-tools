@@ -450,6 +450,7 @@ openstack server list
 	```sh
 	swift stat
 	```
+	
 		- Kết quả của lệnh như sau
 			```sh
 							Account: AUTH_e55055376e334a5abd37e0d4ba53e172

@@ -423,6 +423,13 @@ openstack server list
 
 - Trong qúa trình chạy, màn hình sẽ yêu cầu nhập mật khẩu root của máy SWIFT1, SWIFT2. Sau khi thực thi xong, script sẽ cài các gói bổ trợ cho máy chủ SWIFT1, SWIFT2.
 
+- Copy script dùng để cài đặt swift trên máy chủ SWIFT1 và SWIFT2  từ máy chủ Controller sang máy chủ Swift
+	```sh
+	scp noha_swift_install.sh root@192.168.20.37:/root/
+
+	scp noha_swift_install.sh root@192.168.20.38:/root/
+	```
+
 ##### 6.2.2. Cài đặt các thành phần của Swift trên các máy chủ swift
 - Đứng trên máy chủ swift, thực hiện script dưới để cài đặt các gói và cấu hình Swift.
 - Lưu ý: Thực hiện bước này ở cả máy chủ `SWIFT1` và `SWIFT2`

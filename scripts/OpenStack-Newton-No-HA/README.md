@@ -90,7 +90,7 @@
 
 #### 2.2. Thực thi script `noha_ctl_prepare.sh`
 
-- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/noha/` của node CTL1
+- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Newton-No-HA/` của node CTL1
 
 - Thực thi script  `noha_ctl_prepare.sh`
 
@@ -105,7 +105,7 @@
 - Sau khi node CTL khởi động lại, đăng nhập bằng quyền root và thực thi các lệnh dưới.
 
 	```sh
-	cd /root/noha/
+	cd /root/OpenStack-Newton-No-HA/
 
 	bash noha_ctl_install_db_rabbitmq.sh
 	```

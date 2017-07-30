@@ -42,7 +42,7 @@ function copykey {
 function setup_config {
         for IP_ADD in $CTL1_IP_NIC1 $COM1_IP_NIC1 $COM2_IP_NIC1
         do
-                scp /root/OpenStack-Newton-No-HA/config.cfg root@$IP_ADD:/root/
+                scp /root/OpenStack-Ocata-No-HA/config.cfg root@$IP_ADD:/root/
                 chmod +x config.cfg
 
         done

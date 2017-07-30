@@ -13,7 +13,7 @@ function echocolor {
 }
 
 function ops_edit {
-    crudini --set $1 $2 $3 $4
+    crudini --set "$1" "$2" "$3" "$4"
 }
 
 # Cach dung
@@ -23,9 +23,10 @@ function ops_edit {
 ###			filekeystone=/etc/keystone/keystone.conf
 ###			ops_edit_file $filekeystone DEFAULT rpc_backend rabbit
 
+
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 function nova_create_db {

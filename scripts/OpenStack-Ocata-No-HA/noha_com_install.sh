@@ -34,60 +34,60 @@ function com_nova_install {
 }
 
 function com_nova_config {
-        com_nova_conf=/etc/nova/nova.conf
-        cp $com_nova_conf $com_nova_conf.orig
+	com_nova_conf=/etc/nova/nova.conf
+	cp $com_nova_conf $com_nova_conf.orig
 
-        ops_edit $com_nova_conf DEFAULT enabled_apis osapi_compute,metadata
-				ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev ens160 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
-        ops_edit $com_nova_conf DEFAULT use_neutron true
-        ops_edit $com_nova_conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
-				ops_edit $ctl_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
-        
-        ops_edit $com_nova_conf DEFAULT instance_usage_audit True
-        ops_edit $com_nova_conf DEFAULT instance_usage_audit_period hour
-        ops_edit $com_nova_conf DEFAULT notify_on_state_change vm_and_task_state
-				
-				ops_edit $com_nova_conf api auth_strategy  keystone
+	ops_edit $com_nova_conf DEFAULT enabled_apis osapi_compute,metadata
+	ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev ens160 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+	ops_edit $com_nova_conf DEFAULT use_neutron true
+	ops_edit $com_nova_conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+	ops_edit $com_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 
-        ops_edit $com_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
-        ops_edit $com_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
-        ops_edit $com_nova_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
-        ops_edit $com_nova_conf keystone_authtoken auth_type password
-        ops_edit $com_nova_conf keystone_authtoken project_domain_name Default
-        ops_edit $com_nova_conf keystone_authtoken user_domain_name Default
-        ops_edit $com_nova_conf keystone_authtoken project_name service
-        ops_edit $com_nova_conf keystone_authtoken username nova
-        ops_edit $com_nova_conf keystone_authtoken password $NOVA_PASS
+	ops_edit $com_nova_conf DEFAULT instance_usage_audit True
+	ops_edit $com_nova_conf DEFAULT instance_usage_audit_period hour
+	ops_edit $com_nova_conf DEFAULT notify_on_state_change vm_and_task_state
 
-        ops_edit $com_nova_conf vnc enabled True
-        ops_edit $com_nova_conf vnc vncserver_listen 0.0.0.0
-        ops_edit $com_nova_conf vnc vncserver_proxyclient_address \$my_ip
-        ops_edit $com_nova_conf vnc novncproxy_base_url http://$CTL1_IP_NIC1:6080/vnc_auto.html
-        
-        ops_edit $com_nova_conf glance api_servers http://$CTL1_IP_NIC1:9292
-        
-        ops_edit $com_nova_conf oslo_concurrency lock_path /var/lib/nova/tmp
-				
-				ops_edit $com_nova_conf placement os_region_name RegionOne
-        ops_edit $com_nova_conf placement project_domain_name Default
-        ops_edit $com_nova_conf placement project_name service
-        ops_edit $com_nova_conf placement auth_type password
-        ops_edit $com_nova_conf placement user_domain_name Default
-        ops_edit $com_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
-        ops_edit $com_nova_conf placement username placement
-        ops_edit $com_nova_conf placement password $PLACEMENT_PASS
-        
-        ops_edit $com_nova_conf neutron url http://$CTL1_IP_NIC1:9696
-        ops_edit $com_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357
-        ops_edit $com_nova_conf neutron auth_type password
-        ops_edit $com_nova_conf neutron project_domain_name Default
-        ops_edit $com_nova_conf neutron user_domain_name Default
-        ops_edit $com_nova_conf neutron project_name service
-        ops_edit $com_nova_conf neutron username neutron
-        ops_edit $com_nova_conf neutron password $NEUTRON_PASS
-        
-        ops_edit $com_nova_conf libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
-        ops_edit $com_nova_conf oslo_messaging_notifications driver messagingv2
+	ops_edit $com_nova_conf api auth_strategy  keystone
+
+	ops_edit $com_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
+	ops_edit $com_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
+	ops_edit $com_nova_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
+	ops_edit $com_nova_conf keystone_authtoken auth_type password
+	ops_edit $com_nova_conf keystone_authtoken project_domain_name Default
+	ops_edit $com_nova_conf keystone_authtoken user_domain_name Default
+	ops_edit $com_nova_conf keystone_authtoken project_name service
+	ops_edit $com_nova_conf keystone_authtoken username nova
+	ops_edit $com_nova_conf keystone_authtoken password $NOVA_PASS
+
+	ops_edit $com_nova_conf vnc enabled True
+	ops_edit $com_nova_conf vnc vncserver_listen 0.0.0.0
+	ops_edit $com_nova_conf vnc vncserver_proxyclient_address \$my_ip
+	ops_edit $com_nova_conf vnc novncproxy_base_url http://$CTL1_IP_NIC1:6080/vnc_auto.html
+
+	ops_edit $com_nova_conf glance api_servers http://$CTL1_IP_NIC1:9292
+
+	ops_edit $com_nova_conf oslo_concurrency lock_path /var/lib/nova/tmp
+
+	ops_edit $com_nova_conf placement os_region_name RegionOne
+	ops_edit $com_nova_conf placement project_domain_name Default
+	ops_edit $com_nova_conf placement project_name service
+	ops_edit $com_nova_conf placement auth_type password
+	ops_edit $com_nova_conf placement user_domain_name Default
+	ops_edit $com_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
+	ops_edit $com_nova_conf placement username placement
+	ops_edit $com_nova_conf placement password $PLACEMENT_PASS
+
+	ops_edit $com_nova_conf neutron url http://$CTL1_IP_NIC1:9696
+	ops_edit $com_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357
+	ops_edit $com_nova_conf neutron auth_type password
+	ops_edit $com_nova_conf neutron project_domain_name Default
+	ops_edit $com_nova_conf neutron user_domain_name Default
+	ops_edit $com_nova_conf neutron project_name service
+	ops_edit $com_nova_conf neutron username neutron
+	ops_edit $com_nova_conf neutron password $NEUTRON_PASS
+
+	ops_edit $com_nova_conf libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
+	ops_edit $com_nova_conf oslo_messaging_notifications driver messagingv2
  
 }
 

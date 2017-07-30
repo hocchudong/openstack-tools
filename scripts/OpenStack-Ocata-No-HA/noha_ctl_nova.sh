@@ -75,7 +75,6 @@ function nova_config {
         cp $ctl_nova_conf $ctl_nova_conf.orig
 
         ops_edit $ctl_nova_conf DEFAULT enabled_apis osapi_compute,metadata
-        ops_edit $ctl_nova_conf DEFAULT auth_strategy keystone
         ops_edit $ctl_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 				
         ops_edit $ctl_nova_conf DEFAULT my_ip $CTL1_IP_NIC1

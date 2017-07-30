@@ -12,7 +12,7 @@ function echocolor {
 }
 
 function ops_edit {
-    crudini --set $1 $2 $3 $4
+    crudini --set "$1" "$2" "$3" "$4"
 }
 
 # Cach dung
@@ -25,7 +25,7 @@ function ops_edit {
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 function com_nova_install {
@@ -38,20 +38,16 @@ function com_nova_config {
         cp $com_nova_conf $com_nova_conf.orig
 
         ops_edit $com_nova_conf DEFAULT enabled_apis osapi_compute,metadata
-        ops_edit $com_nova_conf DEFAULT rpc_backend rabbit
-        ops_edit $com_nova_conf DEFAULT auth_strategy keystone
-        ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev ens160 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+				ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev ens160 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
         ops_edit $com_nova_conf DEFAULT use_neutron true
         ops_edit $com_nova_conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+				ops_edit $ctl_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
         
         ops_edit $com_nova_conf DEFAULT instance_usage_audit True
         ops_edit $com_nova_conf DEFAULT instance_usage_audit_period hour
         ops_edit $com_nova_conf DEFAULT notify_on_state_change vm_and_task_state
-
-        ops_edit $com_nova_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-        ops_edit $com_nova_conf oslo_messaging_rabbit rabbit_port 5672
-        ops_edit $com_nova_conf oslo_messaging_rabbit rabbit_userid openstack
-        ops_edit $com_nova_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
+				
+				ops_edit $ctl_nova_conf api auth_strategy  keystone
 
         ops_edit $com_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
         ops_edit $com_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
@@ -71,6 +67,15 @@ function com_nova_config {
         ops_edit $com_nova_conf glance api_servers http://$CTL1_IP_NIC1:9292
         
         ops_edit $com_nova_conf oslo_concurrency lock_path /var/lib/nova/tmp
+				
+				ops_edit $ctl_nova_conf placement os_region_name RegionOne
+        ops_edit $ctl_nova_conf placement project_domain_name Default
+        ops_edit $ctl_nova_conf placement project_name service
+        ops_edit $ctl_nova_conf placement auth_type password
+        ops_edit $ctl_nova_conf placement user_domain_name Default
+        ops_edit $ctl_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
+        ops_edit $ctl_nova_conf placement username placement
+        ops_edit $ctl_nova_conf placement password $PLACEMENT_PASS
         
         ops_edit $com_nova_conf neutron url http://$CTL1_IP_NIC1:9696
         ops_edit $com_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357

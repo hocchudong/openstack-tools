@@ -139,7 +139,7 @@ function nova_config {
 
 
 function nova_syncdb {
-				cat ./file/00-nova-placement-api.conf > /etc/httpd/conf.d/00-nova-placement-api.conf
+				cat ./files/00-nova-placement-api.conf > /etc/httpd/conf.d/00-nova-placement-api.conf
 				systemctl restart httpd
 				
         su -s /bin/sh -c "nova-manage api_db sync" nova

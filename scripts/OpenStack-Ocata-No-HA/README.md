@@ -293,8 +293,8 @@
 
 	```sh
 	openstack network create  --share --external \
-		--provider-physical-network provider \
-		--provider-network-type flat provider
+	--provider-physical-network provider \
+	--provider-network-type flat provider
 	```
 	
 	- Giả sửa ID của network là `9681d9dd-aae2-42fe-9b84-dd7cb04c1aca`
@@ -302,10 +302,10 @@
 - Tạo subnet thuộc provider network. Lưu ý nhập đúng gateway, IP cấp cho máy ảo từ 200 tới 220.
 
 	```sh
-	openstack subnet create provider --network provider \
-		--allocation-pool start=192.168.40.200,end=192.168.40.220 \
-		--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
-		--subnet-range 192.168.40.0/24 
+	openstack subnet create subnet1_provider --network provider \
+	--allocation-pool start=192.168.40.200,end=192.168.40.220 \
+	--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
+	--subnet-range 192.168.40.0/24 
 	```
 
 #### 4.2. Tạo flavor

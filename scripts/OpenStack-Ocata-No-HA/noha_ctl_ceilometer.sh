@@ -109,9 +109,9 @@ function aodh_syncdb {
 }
 
 function aodh_wsgi_config {
-		wget -O /etc/httpd/conf.d/wsgi-aodh.conf https://raw.githubusercontent.com/tigerlinux/openstack-newton-installer-centos7/master/libs/aodh/wsgi-aodh.conf
-		mkdir -p /var/www/cgi-bin/aodh				
-		wget -O /var/www/cgi-bin/aodh/app.wsgi https://raw.githubusercontent.com/tigerlinux/openstack-newton-installer-centos7/master/libs/aodh/app.wsgi
+		cp -v ./files/wsgi-aodh.conf /etc/httpd/conf.d/wsgi-aodh.conf
+		mkdir -p /var/www/cgi-bin/aodh
+		cp -v ./files/aodh-app.wsgi /var/www/cgi-bin/aodh/app.wsgi
 		systemctl enable httpd
 		systemctl stop memcached
 		systemctl start memcached
@@ -232,6 +232,8 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf collector workers 2
 		ops_edit  $ctl_ceilometer_conf notification workers 2
 		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
+		ops_edit  $ctl_ceilometer_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+
 		 
 		ops_edit  $ctl_ceilometer_conf DEFAULT nova_control_exchange nova
 		ops_edit  $ctl_ceilometer_conf DEFAULT glance_control_exchange glance
@@ -262,12 +264,6 @@ function gnocchi_ceilometer_install_config {
 
 		ops_edit  $ctl_ceilometer_conf DEFAULT notification_topics notifications
 
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_port 5672
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_userid openstack
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
-
-		# ops_edit  $ctl_ceilometer_conf notification messaging_urls 'rabbit://openstack:Ec0net#!2017@$CTL1_IP_NIC1:5672/openstack'
 
 		ops_edit  $ctl_ceilometer_conf alarm evaluation_service ceilometer.alarm.service.SingletonAlarmService
 		ops_edit  $ctl_ceilometer_conf alarm partition_rpc_topic alarm_partition_coordination
@@ -473,8 +469,6 @@ gnocchi_ceilometer_install_config
 echocolor "Cau hinh WSGI cho Ceilometer & Gnocchi"
 sleep 3
 gnocchi_wsgi_config
-
-
 
 echocolor "Restart dich vu Ceilometer & Gnocchi"
 sleep 3

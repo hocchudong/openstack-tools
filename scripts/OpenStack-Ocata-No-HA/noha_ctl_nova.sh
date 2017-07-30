@@ -130,6 +130,9 @@ function nova_config {
         ops_edit $ctl_nova_conf neutron password $NEUTRON_PASS
         ops_edit $ctl_nova_conf neutron service_metadata_proxy True
         ops_edit $ctl_nova_conf neutron metadata_proxy_shared_secret $METADATA_SECRET
+				
+        ops_edit $ctl_nova_conf scheduler discover_hosts_in_cells_interval 300
+
         
         ops_edit $ctl_nova_conf oslo_messaging_notifications driver messagingv2
 }

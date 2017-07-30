@@ -19,27 +19,27 @@
 ### 1.1. Đặt IP theo IP Planning cho từng node.
 - Trên Controller thực hiện
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 	bash setup_ip.sh controller1 192.168.20.33 10.10.0.33 172.16.20.33 192.168.40.33
 	```
 
 - Trên Compute1 thực hiện
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 	bash setup_ip.sh compute1 192.168.20.34 10.10.0.34 172.16.20.34 192.168.40.34
 	```
 
 - Trên Compute2 thực hiện
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 	bash setup_ip.sh compute2 192.168.20.35 10.10.0.35 172.16.20.35 192.168.40.35
 	```
 
 - Thực hiện trên máy Cinder
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
 	```
@@ -59,9 +59,9 @@
 	yum -y install git
 	git clone https://github.com/congto/openstack-tools.git
 
-	mv openstack-tools/scripts/OpenStack-Newton-No-HA /root/
+	mv openstack-tools/scripts/OpenStack-Ocata-No-HA /root/
 
-	cd OpenStack-Newton-No-HA
+	cd OpenStack-Ocata-No-HA
 	chmod +x *.sh
 	```
 
@@ -90,7 +90,7 @@
 
 #### 2.2. Thực thi script `noha_ctl_prepare.sh`
 
-- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Newton-No-HA/` của node CTL1
+- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Ocata-No-HA/` của node CTL1
 
 - Thực thi script  `noha_ctl_prepare.sh`
 
@@ -105,7 +105,7 @@
 - Sau khi node CTL khởi động lại, đăng nhập bằng quyền root và thực thi các lệnh dưới.
 
 	```sh
-	cd /root/OpenStack-Newton-No-HA/
+	cd /root/OpenStack-Ocata-No-HA/
 
 	bash noha_ctl_install_db_rabbitmq.sh
 	```
@@ -350,7 +350,7 @@ openstack server list
 
 - Login vào máy chủ cinder và thực thi script dưới và khai báo các tham số về hostname và IP của các NICs.
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
 	```
@@ -366,7 +366,7 @@ openstack server list
 
 - Login vào máy chủ cinder và thực hiện script dưới tại thư mục root. Lưu ý, ở script trên đã copy file `config.cfg` từ máy chủ controller sang máy chủ cinder. 
 	```sh
-	curl -O https://github.com/congto/openstack-tools/blob/master/scripts/OpenStack-Newton-No-HA/noha_cinder_install.sh
+	curl -O https://github.com/congto/openstack-tools/blob/master/scripts/OpenStack-Ocata-No-HA/noha_cinder_install.sh
 
 	bash noha_cinder_install.sh
 	```
@@ -398,7 +398,7 @@ openstack server list
 #### Thực hiện trên máy chủ SWIFT1
 - Login vào máy chủ SWIFT1 với quyền root và thực hiện script dưới.
 	```sh 
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh swift1  192.168.20.37 10.10.0.37 172.16.20.37 192.168.40.37
 	```
@@ -406,7 +406,7 @@ openstack server list
 #### Thực hiện trên máy chủ SWIFT2
 - Login vào máy chủ SWIFT1 với quyền root và thực hiện script dưới.
 	```sh 
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh swift2  192.168.20.38 10.10.0.38 172.16.20.38 192.168.40.38
 	```
@@ -443,7 +443,7 @@ openstack server list
 ##### 6.2.3. Cài đặt các thành phần của Swift trên máy chủ controller
 - Login vào máy chủ controller với quyền `root` và di duyển vào thư mục chưa script
 	```sh
-	cd /root/OpenStack-Newton-No-HA
+	cd /root/OpenStack-Ocata-No-HA
 	bash noha_ctl_swift.sh
 	```
 

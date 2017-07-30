@@ -137,7 +137,7 @@ function nova_config {
 
 
 function nova_syncdb {
-				wget -O /etc/httpd/conf.d/00-nova-placement-api.conf 
+				wget -O /etc/httpd/conf.d/00-nova-placement-api.conf  https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/files/00-nova-placement-api.conf
 				systemctl restart httpd
 				
         su -s /bin/sh -c "nova-manage api_db sync" nova

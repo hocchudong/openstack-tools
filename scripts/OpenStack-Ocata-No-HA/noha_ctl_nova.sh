@@ -48,20 +48,20 @@ function nova_create_db {
 }
 
 function nova_user_endpoint {
-        openstack user create  nova --domain default --password $NOVA_PASS
-        openstack role add --project service --user nova admin
-        openstack service create --name nova --description "OpenStack Compute" compute
-				openstack endpoint create --region RegionOne compute public http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
-        openstack endpoint create --region RegionOne compute internal http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
-        openstack endpoint create --region RegionOne compute admin http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
-				
-				openstack user create placement --domain default --password $PLACEMENT_PASS
-				openstack role add --project service --user placement admin
-				openstack service create --name placement --description "Placement API" placement
-				 openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC1:8778
-				 openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC1:8778
-				 openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC1:8778
-				
+	openstack user create nova --domain default --password $NOVA_PASS
+	openstack role add --project service --user nova admin
+	openstack service create --name nova --description "OpenStack Compute" compute
+	openstack endpoint create --region RegionOne compute public http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
+	openstack endpoint create --region RegionOne compute internal http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
+	openstack endpoint create --region RegionOne compute admin http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
+
+	openstack user create placement --domain default --password $PLACEMENT_PASS
+	openstack role add --project service --user placement admin
+	openstack service create --name placement --description "Placement API" placement
+	openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC1:8778
+	openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC1:8778
+	openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC1:8778
+
 }
 
 function nova_install {
@@ -139,7 +139,7 @@ function nova_config {
 
 
 function nova_syncdb {
-				wget -O /etc/httpd/conf.d/00-nova-placement-api.conf  https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/files/00-nova-placement-api.conf
+				cat ./file/00-nova-placement-api.conf > /etc/httpd/conf.d/00-nova-placement-api.conf
 				systemctl restart httpd
 				
         su -s /bin/sh -c "nova-manage api_db sync" nova

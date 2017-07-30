@@ -39,6 +39,11 @@ function nova_create_db {
       GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '$PASS_DATABASE_NOVA';
       GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '$PASS_DATABASE_NOVA';
       GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'$CTL1_IP_NIC1' IDENTIFIED BY '$PASS_DATABASE_NOVA';
+			
+			CREATE DATABASE nova_cell0;
+      GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '$PASS_DATABASE_NOVA_CELL';
+      GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '$PASS_DATABASE_NOVA_CELL';
+      GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'$CTL1_IP_NIC1' IDENTIFIED BY '$PASS_DATABASE_NOVA_CELL';
       FLUSH PRIVILEGES;"
 }
 
@@ -46,15 +51,23 @@ function nova_user_endpoint {
         openstack user create  nova --domain default --password $NOVA_PASS
         openstack role add --project service --user nova admin
         openstack service create --name nova --description "OpenStack Compute" compute
-        openstack endpoint create --region RegionOne compute public http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
+				openstack endpoint create --region RegionOne compute public http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
         openstack endpoint create --region RegionOne compute internal http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
         openstack endpoint create --region RegionOne compute admin http://$CTL1_IP_NIC1:8774/v2.1/%\(tenant_id\)s
+				
+				openstack user create placement --domain default --password $PLACEMENT_PASS
+				openstack role add --project service --user placement admin
+				openstack service create --name placement --description "Placement API" placement
+				 openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC1:8778
+				 openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC1:8778
+				 openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC1:8778
+				
 }
 
 function nova_install {
-          yum -y install openstack-nova-api openstack-nova-conductor \
-                              openstack-nova-console openstack-nova-novncproxy \
-                              openstack-nova-scheduler
+				yum -y install openstack-nova-api openstack-nova-conductor \
+				openstack-nova-console openstack-nova-novncproxy \
+				openstack-nova-scheduler openstack-nova-placement-api
 }
 
 function nova_config {
@@ -62,8 +75,9 @@ function nova_config {
         cp $ctl_nova_conf $ctl_nova_conf.orig
 
         ops_edit $ctl_nova_conf DEFAULT enabled_apis osapi_compute,metadata
-        ops_edit $ctl_nova_conf DEFAULT rpc_backend rabbit
         ops_edit $ctl_nova_conf DEFAULT auth_strategy keystone
+        ops_edit $ctl_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+				
         ops_edit $ctl_nova_conf DEFAULT my_ip $CTL1_IP_NIC1
         ops_edit $ctl_nova_conf DEFAULT use_neutron true
         ops_edit $ctl_nova_conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
@@ -77,11 +91,8 @@ function nova_config {
         
         ops_edit $ctl_nova_conf api_database connection  mysql+pymysql://nova:$PASS_DATABASE_NOVA_API@$CTL1_IP_NIC1/nova_api
         ops_edit $ctl_nova_conf database connection  mysql+pymysql://nova:$PASS_DATABASE_NOVA@$CTL1_IP_NIC1/nova
-        
-        ops_edit $ctl_nova_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-        ops_edit $ctl_nova_conf oslo_messaging_rabbit rabbit_port 5672
-        ops_edit $ctl_nova_conf oslo_messaging_rabbit rabbit_userid openstack
-        ops_edit $ctl_nova_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
+				
+        ops_edit $ctl_nova_conf api auth_strategy  keystone
 
         ops_edit $ctl_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
         ops_edit $ctl_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
@@ -100,6 +111,15 @@ function nova_config {
         ops_edit $ctl_nova_conf glance api_servers http://$CTL1_IP_NIC1:9292
         
         ops_edit $ctl_nova_conf oslo_concurrency lock_path /var/lib/nova/tmp
+				
+        ops_edit $ctl_nova_conf placement os_region_name RegionOne
+        ops_edit $ctl_nova_conf placement project_domain_name Default
+        ops_edit $ctl_nova_conf placement project_name service
+        ops_edit $ctl_nova_conf placement auth_type password
+        ops_edit $ctl_nova_conf placement user_domain_name Default
+        ops_edit $ctl_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
+        ops_edit $ctl_nova_conf placement username placement
+        ops_edit $ctl_nova_conf placement password $PLACEMENT_PASS
         
         ops_edit $ctl_nova_conf neutron url http://$CTL1_IP_NIC1:9696
         ops_edit $ctl_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357
@@ -115,25 +135,32 @@ function nova_config {
         ops_edit $ctl_nova_conf oslo_messaging_notifications driver messagingv2
 }
 
+
 function nova_syncdb {
+				wget -O /etc/httpd/conf.d/00-nova-placement-api.conf 
+				systemctl restart httpd
+				
         su -s /bin/sh -c "nova-manage api_db sync" nova
-        su -s /bin/sh -c "nova-manage db sync" nova
+        su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+				su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+				su -s /bin/sh -c "nova-manage db sync" nova
 
 }
 
 function nova_enable_restart {
+						echocolor "Kiem chung lai xem nova cell da ok hay chua"
+						sleep 3					
+						nova-manage cell_v2 list_cells
+ 
             echocolor "Restart dich vu nova"
-            systemctl enable openstack-nova-api.service
-            systemctl enable openstack-nova-consoleauth.service
-            systemctl enable openstack-nova-scheduler.service
-            systemctl enable openstack-nova-conductor.service
-            systemctl enable openstack-nova-novncproxy.service
-            
-            systemctl start openstack-nova-api.service
-            systemctl start openstack-nova-consoleauth.service
-            systemctl start openstack-nova-scheduler.service
-            systemctl start openstack-nova-conductor.service
-            systemctl start openstack-nova-novncproxy.service
+						sleep 3
+						systemctl enable openstack-nova-api.service \
+						openstack-nova-consoleauth.service openstack-nova-scheduler.service \
+						openstack-nova-conductor.service openstack-nova-novncproxy.service
+											
+						systemctl start openstack-nova-api.service \
+						openstack-nova-consoleauth.service openstack-nova-scheduler.service \
+						openstack-nova-conductor.service openstack-nova-novncproxy.service
         
 }
 

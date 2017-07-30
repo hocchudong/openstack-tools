@@ -47,7 +47,7 @@ function com_nova_config {
         ops_edit $com_nova_conf DEFAULT instance_usage_audit_period hour
         ops_edit $com_nova_conf DEFAULT notify_on_state_change vm_and_task_state
 				
-				ops_edit $ctl_nova_conf api auth_strategy  keystone
+				ops_edit $com_nova_conf api auth_strategy  keystone
 
         ops_edit $com_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
         ops_edit $com_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
@@ -68,14 +68,14 @@ function com_nova_config {
         
         ops_edit $com_nova_conf oslo_concurrency lock_path /var/lib/nova/tmp
 				
-				ops_edit $ctl_nova_conf placement os_region_name RegionOne
-        ops_edit $ctl_nova_conf placement project_domain_name Default
-        ops_edit $ctl_nova_conf placement project_name service
-        ops_edit $ctl_nova_conf placement auth_type password
-        ops_edit $ctl_nova_conf placement user_domain_name Default
-        ops_edit $ctl_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
-        ops_edit $ctl_nova_conf placement username placement
-        ops_edit $ctl_nova_conf placement password $PLACEMENT_PASS
+				ops_edit $com_nova_conf placement os_region_name RegionOne
+        ops_edit $com_nova_conf placement project_domain_name Default
+        ops_edit $com_nova_conf placement project_name service
+        ops_edit $com_nova_conf placement auth_type password
+        ops_edit $com_nova_conf placement user_domain_name Default
+        ops_edit $com_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
+        ops_edit $com_nova_conf placement username placement
+        ops_edit $com_nova_conf placement password $PLACEMENT_PASS
         
         ops_edit $com_nova_conf neutron url http://$CTL1_IP_NIC1:9696
         ops_edit $com_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357

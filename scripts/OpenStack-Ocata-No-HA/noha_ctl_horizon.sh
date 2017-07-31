@@ -14,7 +14,7 @@ function echocolor {
 }
 
 function ops_edit {
-    crudini --set $1 $2 $3 $4
+    crudini --set "$1" "$2" "$3" "$4"
 }
 
 # Cach dung
@@ -26,7 +26,7 @@ function ops_edit {
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 

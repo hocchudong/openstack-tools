@@ -62,10 +62,10 @@ function aodh_install_config {
 		ctl_aodh_conf=/etc/aodh/aodh.conf
 		cp $ctl_aodh_conf $ctl_aodh_conf.orig
 
-		ops_edit $ctl_aodh_conf DEFAULT rpc_backend rabbit
 		ops_edit $ctl_aodh_conf DEFAULT auth_strategy keystone
 		ops_edit $ctl_aodh_conf DEFAULT my_ip $CTL1_IP_NIC1
 		ops_edit $ctl_aodh_conf DEFAULT host `hostname`
+		ops_edit $ctl_aodh_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 		
 		
 		ops_edit $ctl_aodh_conf database connection  mysql+pymysql://aodh:$PASS_DATABASE_AODH@$CTL1_IP_NIC1/aodh
@@ -74,16 +74,11 @@ function aodh_install_config {
 		ops_edit $ctl_aodh_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
 		ops_edit $ctl_aodh_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
 		ops_edit $ctl_aodh_conf keystone_authtoken auth_type password
-		ops_edit $ctl_aodh_conf keystone_authtoken project_domain_name Default
-		ops_edit $ctl_aodh_conf keystone_authtoken user_domain_name Default
+		ops_edit $ctl_aodh_conf keystone_authtoken project_domain_name default
+		ops_edit $ctl_aodh_conf keystone_authtoken user_domain_name default
 		ops_edit $ctl_aodh_conf keystone_authtoken project_name service
 		ops_edit $ctl_aodh_conf keystone_authtoken username aodh
 		ops_edit $ctl_aodh_conf keystone_authtoken password $AODH_PASS
-		
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_port 5672
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_userid openstack
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
 		
 		ops_edit $ctl_aodh_conf service_credentials auth_type password
 		ops_edit $ctl_aodh_conf service_credentials auth_url http://$CTL1_IP_NIC1:5000/v3
@@ -189,6 +184,44 @@ function gnocchi_ceilometer_install_config {
 		ctl_ceilometer_conf=/etc/ceilometer/ceilometer.conf
 		cp $ctl_ceilometer_conf $ctl_ceilometer_conf.orig
 		
+		ops_edit  $ctl_ceilometer_conf DEFAULT metering_api_port 8777
+		ops_edit  $ctl_ceilometer_conf DEFAULT auth_strategy keystone
+		ops_edit  $ctl_ceilometer_conf DEFAULT log_dir /var/log/ceilometer
+		ops_edit  $ctl_ceilometer_conf DEFAULT host `hostname`
+		ops_edit  $ctl_ceilometer_conf DEFAULT pipeline_cfg_file pipeline.yaml
+		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
+		ops_edit  $ctl_ceilometer_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+		
+		ops_edit  $ctl_ceilometer_conf DEFAULT dispatcher gnocchi
+		ops_edit  $ctl_ceilometer_conf DEFAULT meter_dispatchers gnocchi
+		ops_edit  $ctl_ceilometer_conf DEFAULT event_dispatchers gnocchi
+
+		ops_edit  $ctl_ceilometer_conf DEFAULT nova_control_exchange nova
+		ops_edit  $ctl_ceilometer_conf DEFAULT glance_control_exchange glance
+		ops_edit  $ctl_ceilometer_conf DEFAULT neutron_control_exchange neutron
+		ops_edit  $ctl_ceilometer_conf DEFAULT cinder_control_exchange cinder
+		
+		kvm_possible=`grep -E 'svm|vmx' /proc/cpuinfo|uniq|wc -l`
+		forceqemu="no"
+		if [ $forceqemu == "yes" ]
+		then
+			kvm_possible="0"
+		fi
+
+		if [ $kvm_possible == "0" ]
+		then
+			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type qemu
+		else
+			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type kvm
+		fi
+
+		ops_edit  $ctl_ceilometer_conf DEFAULT debug false
+		ops_edit  $ctl_ceilometer_conf DEFAULT notification_topics notifications
+		
+		ops_edit  $ctl_ceilometer_conf DEFAULT heat_control_exchange heat
+		ops_edit  $ctl_ceilometer_conf DEFAULT control_exchange ceilometer
+		ops_edit  $ctl_ceilometer_conf DEFAULT http_control_exchanges nova
+		
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_tenant_name service
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_user ceilometer
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_password $CEILOMETER_PASS
@@ -218,62 +251,23 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf service_credentials username ceilometer
 		ops_edit  $ctl_ceilometer_conf service_credentials password $CEILOMETER_PASS
 		ops_edit  $ctl_ceilometer_conf service_credentials auth_url http://$CTL1_IP_NIC1:5000/v3
-		ops_edit  $ctl_ceilometer_conf service_credentials project_domain_name Default
-		ops_edit  $ctl_ceilometer_conf service_credentials user_domain_name Default
+		ops_edit  $ctl_ceilometer_conf service_credentials project_domain_name default
+		ops_edit  $ctl_ceilometer_conf service_credentials user_domain_name default
 		ops_edit  $ctl_ceilometer_conf service_credentials project_name service
 
 		# End of Keystone Section
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT metering_api_port 8777
-		ops_edit  $ctl_ceilometer_conf DEFAULT auth_strategy keystone
-		ops_edit  $ctl_ceilometer_conf DEFAULT log_dir /var/log/ceilometer
-		ops_edit  $ctl_ceilometer_conf DEFAULT host `hostname`
-		ops_edit  $ctl_ceilometer_conf DEFAULT pipeline_cfg_file pipeline.yaml
+		
 		ops_edit  $ctl_ceilometer_conf collector workers 2
 		ops_edit  $ctl_ceilometer_conf notification workers 2
-		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
-		ops_edit  $ctl_ceilometer_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 
-		 
-		ops_edit  $ctl_ceilometer_conf DEFAULT nova_control_exchange nova
-		ops_edit  $ctl_ceilometer_conf DEFAULT glance_control_exchange glance
-		ops_edit  $ctl_ceilometer_conf DEFAULT neutron_control_exchange neutron
-		ops_edit  $ctl_ceilometer_conf DEFAULT cinder_control_exchange cinder
-		 
 		ops_edit  $ctl_ceilometer_conf publisher telemetry_secret fe01a6ed3e04c4be1cd8
-
-		kvm_possible=`grep -E 'svm|vmx' /proc/cpuinfo|uniq|wc -l`
-		forceqemu="no"
-		if [ $forceqemu == "yes" ]
-		then
-			kvm_possible="0"
-		fi
-
-		if [ $kvm_possible == "0" ]
-		then
-			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type qemu
-		else
-			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type kvm
-		fi
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT debug false
-
-		# ops_edit  $ctl_ceilometer_conf database metering_time_to_live 604800
-		# ops_edit  $ctl_ceilometer_conf database time_to_live 604800
-		# ops_edit  $ctl_ceilometer_conf database event_time_to_live 604800
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT notification_topics notifications
-
 
 		ops_edit  $ctl_ceilometer_conf alarm evaluation_service ceilometer.alarm.service.SingletonAlarmService
 		ops_edit  $ctl_ceilometer_conf alarm partition_rpc_topic alarm_partition_coordination
 
 		ops_edit  $ctl_ceilometer_conf api port 8777
 		ops_edit  $ctl_ceilometer_conf api host 0.0.0.0
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT heat_control_exchange heat
-		ops_edit  $ctl_ceilometer_conf DEFAULT control_exchange ceilometer
-		ops_edit  $ctl_ceilometer_conf DEFAULT http_control_exchanges nova
+		ops_edit  $ctl_ceilometer_conf api auth_mode keystone
 
 		sed -r -i 's/http_control_exchanges\ =\ nova/http_control_exchanges\ =\ nova\nhttp_control_exchanges\ =\ glance\nhttp_control_exchanges\ =\ cinder\nhttp_control_exchanges\ =\ neutron\n/'  $ctl_ceilometer_conf
 
@@ -301,9 +295,6 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf publisher_notifier event_topic event
 		
 		# Khai bao cau hinh cho ceilometer khi su dung gnocchi
-		ops_edit  $ctl_ceilometer_conf DEFAULT dispatcher gnocchi
-		ops_edit  $ctl_ceilometer_conf DEFAULT meter_dispatchers gnocchi
-		ops_edit  $ctl_ceilometer_conf DEFAULT event_dispatchers gnocchi
 		ops_edit  $ctl_ceilometer_conf dispatcher_gnocchi url http://$CTL1_IP_NIC1:8041
 		ops_edit  $ctl_ceilometer_conf dispatcher_gnocchi filter_service_activity False
 		ops_edit  $ctl_ceilometer_conf dispatcher_gnocchi archive_policy low
@@ -387,7 +378,7 @@ function gnocchi_wsgi_config {
 }
 
 function gnocchi_ceilometer_enable_restart {
-		gnocchi-upgrade --create-legacy-resource-types
+		ceilometer-upgrade --skip-metering-database
 
 		systemctl start openstack-ceilometer-compute
 		systemctl enable openstack-ceilometer-compute

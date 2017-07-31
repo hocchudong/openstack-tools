@@ -380,9 +380,6 @@ function gnocchi_wsgi_config {
 function gnocchi_ceilometer_enable_restart {
 		ceilometer-upgrade --skip-metering-database
 
-		systemctl start openstack-ceilometer-compute
-		systemctl enable openstack-ceilometer-compute
-
 		systemctl start openstack-gnocchi-metricd
 		systemctl enable openstack-gnocchi-metricd
 

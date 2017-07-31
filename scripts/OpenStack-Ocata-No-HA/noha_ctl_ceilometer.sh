@@ -66,8 +66,7 @@ function aodh_install_config {
 		ops_edit $ctl_aodh_conf DEFAULT my_ip $CTL1_IP_NIC1
 		ops_edit $ctl_aodh_conf DEFAULT host `hostname`
 		ops_edit $ctl_aodh_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
-		
-		
+				
 		ops_edit $ctl_aodh_conf database connection  mysql+pymysql://aodh:$PASS_DATABASE_AODH@$CTL1_IP_NIC1/aodh
 
 		ops_edit $ctl_aodh_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
@@ -192,7 +191,7 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf DEFAULT host `hostname`
 		ops_edit  $ctl_ceilometer_conf DEFAULT pipeline_cfg_file pipeline.yaml
 		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
-		#ops_edit  $ctl_ceilometer_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+		ops_edit  $ctl_ceilometer_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 		
 		ops_edit  $ctl_ceilometer_conf DEFAULT dispatcher gnocchi
 		ops_edit  $ctl_ceilometer_conf DEFAULT meter_dispatchers gnocchi
@@ -224,10 +223,10 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf DEFAULT control_exchange ceilometer
 		ops_edit  $ctl_ceilometer_conf DEFAULT http_control_exchanges nova
 		
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_port 5672
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_userid openstack
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_port 5672
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_userid openstack
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
 		
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_tenant_name service
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_user ceilometer

@@ -182,7 +182,9 @@ function gnocchi_ceilometer_install_config {
 		python2-gnocchiclient
 				
 		ctl_ceilometer_conf=/etc/ceilometer/ceilometer.conf
+		ctl_ceilometer_gnocchi_resources=/etc/ceilometer/gnocchi_resources.yaml
 		cp $ctl_ceilometer_conf $ctl_ceilometer_conf.orig
+		cp $ctl_ceilometer_gnocchi_resources $ctl_ceilometer_gnocchi_resources.orig
 		
 		ops_edit  $ctl_ceilometer_conf DEFAULT metering_api_port 8777
 		ops_edit  $ctl_ceilometer_conf DEFAULT auth_strategy keystone
@@ -190,7 +192,7 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf DEFAULT host `hostname`
 		ops_edit  $ctl_ceilometer_conf DEFAULT pipeline_cfg_file pipeline.yaml
 		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
-		ops_edit  $ctl_ceilometer_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+		#ops_edit  $ctl_ceilometer_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 		
 		ops_edit  $ctl_ceilometer_conf DEFAULT dispatcher gnocchi
 		ops_edit  $ctl_ceilometer_conf DEFAULT meter_dispatchers gnocchi
@@ -221,6 +223,11 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf DEFAULT heat_control_exchange heat
 		ops_edit  $ctl_ceilometer_conf DEFAULT control_exchange ceilometer
 		ops_edit  $ctl_ceilometer_conf DEFAULT http_control_exchanges nova
+		
+		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
+		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_port 5672
+		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_userid openstack
+		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
 		
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_tenant_name service
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_user ceilometer
@@ -305,14 +312,11 @@ function gnocchi_ceilometer_install_config {
 		chmod 700 /var/lib/ceilometer/tmp-signing
 
 		############### Cau hinh cho Gnocchi 
-		ctl_gnocchi_api_paste=/etc/gnocchi/api-paste.ini
 		ctl_gnocchi_json=/etc/gnocchi/policy.json
 		ctl_gnocchi_conf=/etc/gnocchi/gnocchi.conf
-		ctl_gnocchi_resources=/etc/ceilometer/gnocchi_resources.yaml
-		cp $ctl_gnocchi_api_paste $ctl_gnocchi_api_paste.orig 
 		cp $ctl_gnocchi_json $ctl_gnocchi_json.orig
-		cp $ctl_gnocchi_conf $ctl_gnocchi_conf.orig 
-		cp $ctl_gnocchi_resources $ctl_gnocchi_resources.orig 
+		cp $ctl_gnocchi_conf $ctl_gnocchi_conf.orig
+		cp ./files/gnocchi-api-paste.ini /etc/gnocchi/api-paste.ini		
 		
 		ops_edit $ctl_gnocchi_conf DEFAULT debug false
 		ops_edit $ctl_gnocchi_conf DEFAULT log_file /var/log/gnocchi/gnocchi.log
@@ -357,6 +361,7 @@ function gnocchi_ceilometer_install_config {
 		ops_edit $ctl_gnocchi_conf archive_policy default_aggregation_methods 'mean,min,max,sum,std,median,count,last,95pct'
 		
 		chown -R gnocchi.gnocchi /var/log/gnocchi/
+		chown -R gnocchi.gnocchi /etc/gnocchi/
 		su gnocchi -s /bin/sh -c 'gnocchi-upgrade --config-file /etc/gnocchi/gnocchi.conf --create-legacy-resource-types'
 
 		systemctl stop openstack-gnocchi-api

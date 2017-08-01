@@ -65,7 +65,7 @@ function aodh_install_config {
 		ops_edit $ctl_aodh_conf DEFAULT auth_strategy keystone
 		ops_edit $ctl_aodh_conf DEFAULT my_ip $CTL1_IP_NIC1
 		ops_edit $ctl_aodh_conf DEFAULT host `hostname`
-		ops_edit $ctl_aodh_conf DEFAULT transport_url = rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+		ops_edit $ctl_aodh_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 				
 		ops_edit $ctl_aodh_conf database connection  mysql+pymysql://aodh:$PASS_DATABASE_AODH@$CTL1_IP_NIC1/aodh
 
@@ -106,6 +106,9 @@ function aodh_wsgi_config {
 		cp -v ./files/wsgi-aodh.conf /etc/httpd/conf.d/wsgi-aodh.conf
 		mkdir -p /var/www/cgi-bin/aodh
 		cp -v ./files/aodh-app.wsgi /var/www/cgi-bin/aodh/app.wsgi
+		cp -v ./files/aodh-api_paste.ini /etc/aodh/api_paste.ini
+		chown -R aodh.aodh /etc/aodh/
+		
 		systemctl enable httpd
 		systemctl stop memcached
 		systemctl start memcached
@@ -369,12 +372,16 @@ function gnocchi_ceilometer_install_config {
 
 
 function gnocchi_wsgi_config {
+
+
 		wget -O /etc/httpd/conf.d/wsgi-gnocchi.conf https://raw.githubusercontent.com/tigerlinux/openstack-ocata-installer-centos7/master/libs/gnocchi/wsgi-gnocchi.conf 
 
 		mkdir -p /var/www/cgi-bin/gnocchi
 
 		wget -O /var/www/cgi-bin/gnocchi/app.wsgi https://raw.githubusercontent.com/tigerlinux/openstack-ocata-installer-centos7/master/libs/gnocchi/app.wsgi 
-
+		
+		chown -R gnocchi.gnocchi /var/log/gnocchi/
+		chown -R gnocchi.gnocchi /etc/gnocchi/
 		systemctl enable httpd
 		systemctl stop httpd
 		sleep 5

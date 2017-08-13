@@ -4,7 +4,7 @@
 
 ### Các script cài đặt OpenStack
 
-- [Hướng dẫn sử dụng script OpenStack Newton không có HA](https://github.com/congto/openstack-tools/tree/master/scripts/OpenStack-Newton-No-HA)
+- [Hướng dẫn sử dụng script OpenStack Newton không có HA](./scripts/OpenStack-Newton-No-HA)
 
 - [Hướng dẫn sử dụng script OpenStack Ocata không có HA](./scripts/OpenStack-Ocata-No-HA)
 

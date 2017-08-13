@@ -235,7 +235,7 @@
 - Tải script cài đặt nova và neutron cho Compute1
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-HA/master/scripts/noha/noha_com_install.sh
+	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/noha_com_install.sh
 	
 	bash noha_com_install.sh
 	```
@@ -373,7 +373,7 @@ openstack server list
 
 - Sau khi cài đặt xong trên máy chủ cinder, quay lại máy chủ controller kiểm tra xem cinder đã hoạt động hay chưa bằng lệnh.
 	```sh
-	openstack volume serivce list
+	openstack volume service list
 	```
 	
 	- Kết quả là các service của cinder sẽ hiển thị, việc `cinder-volume` tại controller node bị down là do ta không dùng `cinder-volume` không kích hoạt trên máy chủ cinder.
@@ -486,6 +486,8 @@ openstack server list
 
 - Upload file `file_test.txt` lên container vừa tạo.
 	```sh
+	cd /root/ 
+	
 	openstack object create container1 file_test.txt
 	```
 

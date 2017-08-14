@@ -186,17 +186,15 @@
 	
 - Sau khi cài neutron trên node Controller xong, thực hiện các lệnh dưới để kiểm tra
 	
-	- Kiểm tra các agent của neutron sau khi cài, trong script này trên controller chỉ cài neutron server, các agent của neutron được cài trên các node Compute 
-			```sh
-			openstack network agent list
-			```
+	- Kiểm tra các agent của neutron sau khi cài, trong script này trên controller chỉ cài neutron server, các agent của neutron được cài trên các node Compute. Kết quả của lệnh dưới sẽ là rỗng.
+		```sh
+		openstack network agent list
+		```
 	
-		- Kết quả của lệnh trên sẽ là rỗng.
-		
 	- Kiểm tra các extention của neutron
 		```sh
 		neutron ext-list
-		``
+		```
 	
 		- Kết quả lệnh trên như dưới
 			```sh

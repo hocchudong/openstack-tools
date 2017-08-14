@@ -301,9 +301,8 @@
 	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
 	[
 	```
-		
-- Do gnocchi client được thay thế bởi tập lệnh openstack client nên kết quả các lệnh là giống nhau. Có thể trong các phiên bản OpenStack khác OpenStack Newton thì câu lệnh sẽ khác nhau.
 
+- Do gnocchi client được thay thế bởi tập lệnh openstack client nên kết quả các lệnh là giống nhau. Có thể trong các phiên bản OpenStack khác OpenStack Newton thì câu lệnh sẽ khác nhau.
 
 #### 2.10. Thực thi script `noha_ctl_horizon.sh` để cài đặt Dashboad.
 - Cài đặt dashboad để cung cấp giao diện cho OpenStack.

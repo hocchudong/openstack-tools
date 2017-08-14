@@ -64,17 +64,23 @@ function heat_user_endpoint {
 function heat_install_config {
 	echocolor "Cai dat heat"
 	sleep 3
-	yum install openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
+	yum install -y openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
 	ctl_heat_conf=/etc/heat/heat.conf
 	cp $ctl_heat_conf $ctl_heat_conf.orig
 
 
 	ops_edit $ctl_heat_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 	ops_edit $ctl_heat_conf DEFAULT heat_metadata_server_url http://$CTL1_IP_NIC1:8000
-	ops_edit $ctl_heat_conf DEFAULT heat_waitcondition_server_url http://controller:8000/v1/waitcondition
+	ops_edit $ctl_heat_conf DEFAULT heat_waitcondition_server_url http://$CTL1_IP_NIC1:8000/v1/waitcondition
 	ops_edit $ctl_heat_conf DEFAULT stack_domain_admin heat_domain_admin
 	ops_edit $ctl_heat_conf DEFAULT stack_domain_admin_password $HEAT_DOMAIN_PASS
 	ops_edit $ctl_heat_conf DEFAULT stack_user_domain_name heat
+	ops_edit $ctl_heat_conf DEFAULT rpc_backend rabbit
+	
+	ops_edit $ctl_heat_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
+	ops_edit $ctl_heat_conf oslo_messaging_rabbit rabbit_port 5672
+	ops_edit $ctl_heat_conf oslo_messaging_rabbit rabbit_userid openstack
+	ops_edit $ctl_heat_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
 	
 	ops_edit $ctl_heat_conf database connection  mysql+pymysql://heat:$PASS_DATABASE_HEAT@$CTL1_IP_NIC1/heat
 

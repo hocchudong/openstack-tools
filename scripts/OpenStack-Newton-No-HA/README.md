@@ -153,16 +153,19 @@
 #### 2.6. Thực thi script `noha_ctl_nova.sh.sh` để cài đặt `Nova`.
 
 - Thực thi script dưới để cài đặt Nova.
-		```sh
-		bash noha_ctl_nova.sh
-		```
+
+	```sh
+	bash noha_ctl_nova.sh
+	```
 	
 - Sau khi script thực thi xong, kiểm tra xem nova đã cài đặt thành công trên Controller bằng lệnh dưới.
-		```sh
-		openstack compute service list
-		```
+
+	```sh
+	openstack compute service list
+	```
 
   - Kết quả như sau là đã hoàn tất việc cài nova trên controller	
+	
 		```sh
 		+----+------------------+------+----------+---------+-------+----------------------------+
 		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |

@@ -78,12 +78,14 @@ function rabbitmq_install {
         curl -O http://localhost:15672/cli/rabbitmqadmin
         chmod a+x rabbitmqadmin
         mv rabbitmqadmin /usr/sbin/
-        rabbitmqadmin list users
+        
+}
 
-        rabbitmqctl add_user openstack $RABBIT_PASS
-        rabbitmqctl set_permissions openstack ".*" ".*" ".*"
-        rabbitmqctl set_user_tags openstack administrator
-
+function rabbitmq_create_user {
+	rabbitmqctl add_user openstack $RABBIT_PASS
+	rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+	rabbitmqctl set_user_tags openstack administrator
+	rabbitmqadmin list users
 }
 
 ### Thuc hien ham
@@ -93,3 +95,4 @@ set_pass_db
 restart_db
 
 rabbitmq_install
+rabbitmq_create_user

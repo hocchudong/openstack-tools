@@ -212,7 +212,6 @@
 	bash noha_ctl_ceilometer.sh
 	```
 	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh.
-		
 		```sh
 		openstack metric metric list 
 		openstack metric resource list 

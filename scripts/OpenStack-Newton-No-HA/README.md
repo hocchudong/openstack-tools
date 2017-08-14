@@ -273,12 +273,39 @@
 	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh. Có thể các lệnh sẽ không có output ra.
 		
 		```sh
-		gnocchi resource list HOẶC openstack metric metric list 
-		gnocchi metric list HOẶC openstack metric resource list 
+		gnocchi resource list HOẶC openstack metric resource list 
+		gnocchi metric list HOẶC openstack metric metric list 
 		
 		aodh alarm list
 		```
-		
+
+- Khi chạy các lệnh `gnocchi metric list` HOẶC `openstack metric metric list ` thì output như dưới:
+	```sh
+	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
+	| id                                   | archive_policy/name | name           | unit | resource_id                          |
+	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
+	| ac177241-405b-4028-a72d-6084c43552e6 | low                 | image.size     | B    | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	| db267fbe-bbb7-4c3f-952f-aa5869c57127 | low                 | image.download | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	| e9df3db9-87bb-472b-8ac4-f7fa4b3782f6 | low                 | image.serve    | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	| f37af4ec-8f20-4558-89ce-aeaa3402c931 | low                 | image          | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
+	```
+
+- Khi chạy các lệnh `gnocchi resource list` HOẶC `openstack metric resource list ` thì output như dưới:
+
+```sh
++---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
+| id                        | type  | project_id                | user_id | original_resource_id      | started_at                | ended_at | revision_start               | revision_end |
++---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
+| 7cef7f8a-24ef-48a0-95de-  | image | 428c840991bb426baa82e4e45 | None    | 7cef7f8a-24ef-48a0-95de-  | 2017-08-14T08:37:47.35056 | None     | 2017-08-14T08:37:47.350581+0 | None         |
+| 0a6908b0c8c9              |       | 728809d                   |         | 0a6908b0c8c9              | 0+00:00                   |          | 0:00                         |              |
++---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
+[
+```
+	
+- Do gnocchi client được thay thế bởi tập lệnh openstack client nên kết quả các lệnh là giống nhau. Có thể trong các phiên bản OpenStack khác OpenStack Newton thì câu lệnh sẽ khác nhau.
+
+
 #### 2.10. Thực thi script `noha_ctl_horizon.sh` để cài đặt Dashboad.
 - Cài đặt dashboad để cung cấp giao diện cho OpenStack.
 	```sh

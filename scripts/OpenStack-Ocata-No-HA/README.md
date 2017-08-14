@@ -211,14 +211,16 @@
 	```sh
 	bash noha_ctl_ceilometer.sh
 	```
-	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh. Có thể các lệnh sẽ không có output ra.
+	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh.
 		
 		```sh
-		gnocchi resource list HOẶC openstack metric metric list 
-		gnocchi metric list HOẶC openstack metric resource list 
+		openstack metric metric list 
+		openstack metric resource list 
 		
 		aodh alarm list
 		```
+		
+		- Lưu ý: Trong OpenStack Ocata, lệnh `openstack metric` sẽ thay thế lệnh `gnocchi`
 		
 #### 2.10. Thực thi script `noha_ctl_horizon.sh` để cài đặt Dashboad.
 - Cài đặt dashboad để cung cấp giao diện cho OpenStack.

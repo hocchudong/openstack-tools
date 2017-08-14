@@ -164,17 +164,16 @@
 	openstack compute service list
 	```
 
-  - Kết quả như sau là đã hoàn tất việc cài nova trên controller	
-		
-			```sh
-			+----+------------------+------+----------+---------+-------+----------------------------+
-			| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-			+----+------------------+------+----------+---------+-------+----------------------------+
-			|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
-			|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
-			|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
-			+----+------------------+------+----------+---------+-------+----------------------------+
-			```
+  - Kết quả như sau là đã hoàn tất việc cài nova trên controller			
+	  ```sh
+		+----+------------------+------+----------+---------+-------+----------------------------+
+		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
+		+----+------------------+------+----------+---------+-------+----------------------------+
+		|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
+		|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
+		|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
+		+----+------------------+------+----------+---------+-------+----------------------------+
+		```
 
 #### 2.7. Thực thi script `noha_ctl_neutron.sh` để cài đặt `Neutron`.
 

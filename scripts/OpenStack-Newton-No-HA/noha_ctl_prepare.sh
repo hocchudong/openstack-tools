@@ -184,12 +184,11 @@ install_memcached
 echocolor "Dat hostname cho cac may"
 sleep 5
 hostnamectl set-hostname $CTL1_HOSTNAME
-ssh root@$COM1_IP_NIC1  'hostnamectl set-hostname $COM1_HOSTNAME'
-ssh root@$COM2_IP_NIC1  'hostnamectl set-hostname $COM2_HOSTNAME'
+ssh root@$COM1_IP_NIC1  "hostnamectl set-hostname $COM1_HOSTNAME"
+ssh root@$COM2_IP_NIC1  "hostnamectl set-hostname $COM2_HOSTNAME"
 
 echocolor "XONG & KHOI DONG LAI MAY CHU"
 sleep 5
-ssh root@$COM1_IP_NIC1 'init 6'
 ssh root@$COM1_IP_NIC1 'init 6'
 ssh root@$COM2_IP_NIC1 'init 6'
 init 6

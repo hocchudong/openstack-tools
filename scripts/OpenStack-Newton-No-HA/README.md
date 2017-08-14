@@ -164,16 +164,17 @@
 	openstack compute service list
 	```
 
-  - Kết quả như sau là đã hoàn tất việc cài nova trên controller			
-	  ```sh
-		+----+------------------+------+----------+---------+-------+----------------------------+
-		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-		+----+------------------+------+----------+---------+-------+----------------------------+
-		|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
-		|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
-		|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
-		+----+------------------+------+----------+---------+-------+----------------------------+
-		```
+- Kết quả như sau là đã hoàn tất việc cài nova trên controller			
+
+	```sh
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
+	|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
+	|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	```
 
 #### 2.7. Thực thi script `noha_ctl_neutron.sh` để cài đặt `Neutron`.
 
@@ -183,6 +184,66 @@
 	bash noha_ctl_neutron.sh
 	```
 	
+- Sau khi cài neutron trên node Controller xong, thực hiện các lệnh dưới để kiểm tra
+	
+	- Kiểm tra các agent của neutron sau khi cài, trong script này trên controller chỉ cài neutron server, các agent của neutron được cài trên các node Compute 
+			```sh
+			openstack network agent list
+			```
+	
+		- Kết quả của lệnh trên sẽ là rỗng.
+		
+	- Kiểm tra các extention của neutron
+		```sh
+		neutron ext-list
+		``
+	
+		- Kết quả lệnh trên như dưới
+			```sh
+			+---------------------------+-----------------------------------------------+
+			| alias                     | name                                          |
+			+---------------------------+-----------------------------------------------+
+			| default-subnetpools       | Default Subnetpools                           |
+			| network-ip-availability   | Network IP Availability                       |
+			| network_availability_zone | Network Availability Zone                     |
+			| auto-allocated-topology   | Auto Allocated Topology Services              |
+			| ext-gw-mode               | Neutron L3 Configurable external gateway mode |
+			| binding                   | Port Binding                                  |
+			| agent                     | agent                                         |
+			| subnet_allocation         | Subnet Allocation                             |
+			| l3_agent_scheduler        | L3 Agent Scheduler                            |
+			| tag                       | Tag support                                   |
+			| external-net              | Neutron external network                      |
+			| flavors                   | Neutron Service Flavors                       |
+			| net-mtu                   | Network MTU                                   |
+			| availability_zone         | Availability Zone                             |
+			| quotas                    | Quota management support                      |
+			| l3-ha                     | HA Router extension                           |
+			| provider                  | Provider Network                              |
+			| multi-provider            | Multi Provider Network                        |
+			| address-scope             | Address scope                                 |
+			| extraroute                | Neutron Extra Route                           |
+			| subnet-service-types      | Subnet service types                          |
+			| standard-attr-timestamp   | Resource timestamps                           |
+			| service-type              | Neutron Service Type Management               |
+			| l3-flavors                | Router Flavor Extension                       |
+			| port-security             | Port Security                                 |
+			| extra_dhcp_opt            | Neutron Extra DHCP opts                       |
+			| standard-attr-revisions   | Resource revision numbers                     |
+			| pagination                | Pagination support                            |
+			| sorting                   | Sorting support                               |
+			| security-group            | security-group                                |
+			| dhcp_agent_scheduler      | DHCP Agent Scheduler                          |
+			| router_availability_zone  | Router Availability Zone                      |
+			| rbac-policies             | RBAC Policies                                 |
+			| standard-attr-description | standard-attr-description                     |
+			| router                    | Neutron L3 Router                             |
+			| allowed-address-pairs     | Allowed Address Pairs                         |
+			| project-id                | project_id field enabled                      |
+			| dvr                       | Distributed Virtual Router                    |
+			+---------------------------+-----------------------------------------------+
+			```
+
 #### 2.8. Thực thi script `noha_ctl_cinder.sh` để cài đặt `Cinder`.
 
 - Thực thi script dưới để cài đặt Cinder trên node controller. Tới đây có 2 lựa chọn.

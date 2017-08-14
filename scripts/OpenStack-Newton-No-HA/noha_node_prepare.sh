@@ -20,15 +20,14 @@ function ops_edit {
 
 # Cach dung
 ## Cu phap:
-##			ops_edit_file $bien_duong_dan_file [SECTION] [PARAMETER] [VALUAE]
+##			ops_edit $bien_duong_dan_file [SECTION] [PARAMETER] [VALUAE]
 ## Vi du:
 ###			filekeystone=/etc/keystone/keystone.conf
-###			ops_edit_file $filekeystone DEFAULT rpc_backend rabbit
-
+###			ops_edit $filekeystone DEFAULT rpc_backend rabbit
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 function copykey {

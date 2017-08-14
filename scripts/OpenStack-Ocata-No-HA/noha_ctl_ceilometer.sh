@@ -14,19 +14,19 @@ function echocolor {
 }
 
 function ops_edit {
-    crudini --set $1 $2 $3 $4
+    crudini --set "$1" "$2" "$3" "$4"
 }
 
 # Cach dung
 ## Cu phap:
-##			ops_edit_file $bien_duong_dan_file [SECTION] [PARAMETER] [VALUAE]
+##			ops_edit $bien_duong_dan_file [SECTION] [PARAMETER] [VALUAE]
 ## Vi du:
 ###			filekeystone=/etc/keystone/keystone.conf
-###			ops_edit_file $filekeystone DEFAULT rpc_backend rabbit
+###			ops_edit $filekeystone DEFAULT rpc_backend rabbit
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 function aodh_create_db {
@@ -62,28 +62,22 @@ function aodh_install_config {
 		ctl_aodh_conf=/etc/aodh/aodh.conf
 		cp $ctl_aodh_conf $ctl_aodh_conf.orig
 
-		ops_edit $ctl_aodh_conf DEFAULT rpc_backend rabbit
 		ops_edit $ctl_aodh_conf DEFAULT auth_strategy keystone
 		ops_edit $ctl_aodh_conf DEFAULT my_ip $CTL1_IP_NIC1
 		ops_edit $ctl_aodh_conf DEFAULT host `hostname`
-		
-		
+		ops_edit $ctl_aodh_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+				
 		ops_edit $ctl_aodh_conf database connection  mysql+pymysql://aodh:$PASS_DATABASE_AODH@$CTL1_IP_NIC1/aodh
 
 		ops_edit $ctl_aodh_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
 		ops_edit $ctl_aodh_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
 		ops_edit $ctl_aodh_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
 		ops_edit $ctl_aodh_conf keystone_authtoken auth_type password
-		ops_edit $ctl_aodh_conf keystone_authtoken project_domain_name Default
-		ops_edit $ctl_aodh_conf keystone_authtoken user_domain_name Default
+		ops_edit $ctl_aodh_conf keystone_authtoken project_domain_name default
+		ops_edit $ctl_aodh_conf keystone_authtoken user_domain_name default
 		ops_edit $ctl_aodh_conf keystone_authtoken project_name service
 		ops_edit $ctl_aodh_conf keystone_authtoken username aodh
 		ops_edit $ctl_aodh_conf keystone_authtoken password $AODH_PASS
-		
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_port 5672
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_userid openstack
-		ops_edit $ctl_aodh_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
 		
 		ops_edit $ctl_aodh_conf service_credentials auth_type password
 		ops_edit $ctl_aodh_conf service_credentials auth_url http://$CTL1_IP_NIC1:5000/v3
@@ -109,9 +103,12 @@ function aodh_syncdb {
 }
 
 function aodh_wsgi_config {
-		wget -O /etc/httpd/conf.d/wsgi-aodh.conf https://raw.githubusercontent.com/tigerlinux/openstack-newton-installer-centos7/master/libs/aodh/wsgi-aodh.conf
-		mkdir -p /var/www/cgi-bin/aodh				
-		wget -O /var/www/cgi-bin/aodh/app.wsgi https://raw.githubusercontent.com/tigerlinux/openstack-newton-installer-centos7/master/libs/aodh/app.wsgi
+		cp -v ./files/wsgi-aodh.conf /etc/httpd/conf.d/wsgi-aodh.conf
+		mkdir -p /var/www/cgi-bin/aodh
+		cp -v ./files/aodh-app.wsgi /var/www/cgi-bin/aodh/app.wsgi
+		cp -v ./files/aodh-api_paste.ini /etc/aodh/api_paste.ini
+		chown -R aodh.aodh /etc/aodh/
+		
 		systemctl enable httpd
 		systemctl stop memcached
 		systemctl start memcached
@@ -187,7 +184,52 @@ function gnocchi_ceilometer_install_config {
 		python2-gnocchiclient
 				
 		ctl_ceilometer_conf=/etc/ceilometer/ceilometer.conf
+		ctl_ceilometer_gnocchi_resources=/etc/ceilometer/gnocchi_resources.yaml
 		cp $ctl_ceilometer_conf $ctl_ceilometer_conf.orig
+		cp $ctl_ceilometer_gnocchi_resources $ctl_ceilometer_gnocchi_resources.orig
+		
+		ops_edit  $ctl_ceilometer_conf DEFAULT metering_api_port 8777
+		ops_edit  $ctl_ceilometer_conf DEFAULT auth_strategy keystone
+		ops_edit  $ctl_ceilometer_conf DEFAULT log_dir /var/log/ceilometer
+		ops_edit  $ctl_ceilometer_conf DEFAULT host `hostname`
+		ops_edit  $ctl_ceilometer_conf DEFAULT pipeline_cfg_file pipeline.yaml
+		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
+		ops_edit  $ctl_ceilometer_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+		
+		ops_edit  $ctl_ceilometer_conf DEFAULT dispatcher gnocchi
+		ops_edit  $ctl_ceilometer_conf DEFAULT meter_dispatchers gnocchi
+		ops_edit  $ctl_ceilometer_conf DEFAULT event_dispatchers gnocchi
+
+		ops_edit  $ctl_ceilometer_conf DEFAULT nova_control_exchange nova
+		ops_edit  $ctl_ceilometer_conf DEFAULT glance_control_exchange glance
+		ops_edit  $ctl_ceilometer_conf DEFAULT neutron_control_exchange neutron
+		ops_edit  $ctl_ceilometer_conf DEFAULT cinder_control_exchange cinder
+		
+		kvm_possible=`grep -E 'svm|vmx' /proc/cpuinfo|uniq|wc -l`
+		forceqemu="no"
+		if [ $forceqemu == "yes" ]
+		then
+			kvm_possible="0"
+		fi
+
+		if [ $kvm_possible == "0" ]
+		then
+			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type qemu
+		else
+			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type kvm
+		fi
+
+		ops_edit  $ctl_ceilometer_conf DEFAULT debug false
+		ops_edit  $ctl_ceilometer_conf DEFAULT notification_topics notifications
+		
+		ops_edit  $ctl_ceilometer_conf DEFAULT heat_control_exchange heat
+		ops_edit  $ctl_ceilometer_conf DEFAULT control_exchange ceilometer
+		ops_edit  $ctl_ceilometer_conf DEFAULT http_control_exchanges nova
+		
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_port 5672
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_userid openstack
+		# ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
 		
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_tenant_name service
 		ops_edit  $ctl_ceilometer_conf keystone_authtoken admin_user ceilometer
@@ -218,66 +260,23 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf service_credentials username ceilometer
 		ops_edit  $ctl_ceilometer_conf service_credentials password $CEILOMETER_PASS
 		ops_edit  $ctl_ceilometer_conf service_credentials auth_url http://$CTL1_IP_NIC1:5000/v3
-		ops_edit  $ctl_ceilometer_conf service_credentials project_domain_name Default
-		ops_edit  $ctl_ceilometer_conf service_credentials user_domain_name Default
+		ops_edit  $ctl_ceilometer_conf service_credentials project_domain_name default
+		ops_edit  $ctl_ceilometer_conf service_credentials user_domain_name default
 		ops_edit  $ctl_ceilometer_conf service_credentials project_name service
 
 		# End of Keystone Section
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT metering_api_port 8777
-		ops_edit  $ctl_ceilometer_conf DEFAULT auth_strategy keystone
-		ops_edit  $ctl_ceilometer_conf DEFAULT log_dir /var/log/ceilometer
-		ops_edit  $ctl_ceilometer_conf DEFAULT host `hostname`
-		ops_edit  $ctl_ceilometer_conf DEFAULT pipeline_cfg_file pipeline.yaml
+		
 		ops_edit  $ctl_ceilometer_conf collector workers 2
 		ops_edit  $ctl_ceilometer_conf notification workers 2
-		ops_edit  $ctl_ceilometer_conf DEFAULT hypervisor_inspector libvirt
-		 
-		ops_edit  $ctl_ceilometer_conf DEFAULT nova_control_exchange nova
-		ops_edit  $ctl_ceilometer_conf DEFAULT glance_control_exchange glance
-		ops_edit  $ctl_ceilometer_conf DEFAULT neutron_control_exchange neutron
-		ops_edit  $ctl_ceilometer_conf DEFAULT cinder_control_exchange cinder
-		 
+
 		ops_edit  $ctl_ceilometer_conf publisher telemetry_secret fe01a6ed3e04c4be1cd8
-
-		kvm_possible=`grep -E 'svm|vmx' /proc/cpuinfo|uniq|wc -l`
-		forceqemu="no"
-		if [ $forceqemu == "yes" ]
-		then
-			kvm_possible="0"
-		fi
-
-		if [ $kvm_possible == "0" ]
-		then
-			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type qemu
-		else
-			ops_edit  $ctl_ceilometer_conf DEFAULT libvirt_type kvm
-		fi
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT debug false
-
-		# ops_edit  $ctl_ceilometer_conf database metering_time_to_live 604800
-		# ops_edit  $ctl_ceilometer_conf database time_to_live 604800
-		# ops_edit  $ctl_ceilometer_conf database event_time_to_live 604800
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT notification_topics notifications
-
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_port 5672
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_userid openstack
-		ops_edit  $ctl_ceilometer_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
-
-		# ops_edit  $ctl_ceilometer_conf notification messaging_urls 'rabbit://openstack:Ec0net#!2017@$CTL1_IP_NIC1:5672/openstack'
 
 		ops_edit  $ctl_ceilometer_conf alarm evaluation_service ceilometer.alarm.service.SingletonAlarmService
 		ops_edit  $ctl_ceilometer_conf alarm partition_rpc_topic alarm_partition_coordination
 
 		ops_edit  $ctl_ceilometer_conf api port 8777
 		ops_edit  $ctl_ceilometer_conf api host 0.0.0.0
-
-		ops_edit  $ctl_ceilometer_conf DEFAULT heat_control_exchange heat
-		ops_edit  $ctl_ceilometer_conf DEFAULT control_exchange ceilometer
-		ops_edit  $ctl_ceilometer_conf DEFAULT http_control_exchanges nova
+		ops_edit  $ctl_ceilometer_conf api auth_mode keystone
 
 		sed -r -i 's/http_control_exchanges\ =\ nova/http_control_exchanges\ =\ nova\nhttp_control_exchanges\ =\ glance\nhttp_control_exchanges\ =\ cinder\nhttp_control_exchanges\ =\ neutron\n/'  $ctl_ceilometer_conf
 
@@ -305,9 +304,6 @@ function gnocchi_ceilometer_install_config {
 		ops_edit  $ctl_ceilometer_conf publisher_notifier event_topic event
 		
 		# Khai bao cau hinh cho ceilometer khi su dung gnocchi
-		ops_edit  $ctl_ceilometer_conf DEFAULT dispatcher gnocchi
-		ops_edit  $ctl_ceilometer_conf DEFAULT meter_dispatchers gnocchi
-		ops_edit  $ctl_ceilometer_conf DEFAULT event_dispatchers gnocchi
 		ops_edit  $ctl_ceilometer_conf dispatcher_gnocchi url http://$CTL1_IP_NIC1:8041
 		ops_edit  $ctl_ceilometer_conf dispatcher_gnocchi filter_service_activity False
 		ops_edit  $ctl_ceilometer_conf dispatcher_gnocchi archive_policy low
@@ -318,14 +314,11 @@ function gnocchi_ceilometer_install_config {
 		chmod 700 /var/lib/ceilometer/tmp-signing
 
 		############### Cau hinh cho Gnocchi 
-		ctl_gnocchi_api_paste=/etc/gnocchi/api-paste.ini
 		ctl_gnocchi_json=/etc/gnocchi/policy.json
 		ctl_gnocchi_conf=/etc/gnocchi/gnocchi.conf
-		ctl_gnocchi_resources=/etc/ceilometer/gnocchi_resources.yaml
-		cp $ctl_gnocchi_api_paste $ctl_gnocchi_api_paste.orig 
 		cp $ctl_gnocchi_json $ctl_gnocchi_json.orig
-		cp $ctl_gnocchi_conf $ctl_gnocchi_conf.orig 
-		cp $ctl_gnocchi_resources $ctl_gnocchi_resources.orig 
+		cp $ctl_gnocchi_conf $ctl_gnocchi_conf.orig
+		cp ./files/gnocchi-api-paste.ini /etc/gnocchi/api-paste.ini		
 		
 		ops_edit $ctl_gnocchi_conf DEFAULT debug false
 		ops_edit $ctl_gnocchi_conf DEFAULT log_file /var/log/gnocchi/gnocchi.log
@@ -370,6 +363,7 @@ function gnocchi_ceilometer_install_config {
 		ops_edit $ctl_gnocchi_conf archive_policy default_aggregation_methods 'mean,min,max,sum,std,median,count,last,95pct'
 		
 		chown -R gnocchi.gnocchi /var/log/gnocchi/
+		chown -R gnocchi.gnocchi /etc/gnocchi/
 		su gnocchi -s /bin/sh -c 'gnocchi-upgrade --config-file /etc/gnocchi/gnocchi.conf --create-legacy-resource-types'
 
 		systemctl stop openstack-gnocchi-api
@@ -378,12 +372,16 @@ function gnocchi_ceilometer_install_config {
 
 
 function gnocchi_wsgi_config {
+
+
 		wget -O /etc/httpd/conf.d/wsgi-gnocchi.conf https://raw.githubusercontent.com/tigerlinux/openstack-ocata-installer-centos7/master/libs/gnocchi/wsgi-gnocchi.conf 
 
 		mkdir -p /var/www/cgi-bin/gnocchi
 
 		wget -O /var/www/cgi-bin/gnocchi/app.wsgi https://raw.githubusercontent.com/tigerlinux/openstack-ocata-installer-centos7/master/libs/gnocchi/app.wsgi 
-
+		
+		chown -R gnocchi.gnocchi /var/log/gnocchi/
+		chown -R gnocchi.gnocchi /etc/gnocchi/
 		systemctl enable httpd
 		systemctl stop httpd
 		sleep 5
@@ -391,10 +389,7 @@ function gnocchi_wsgi_config {
 }
 
 function gnocchi_ceilometer_enable_restart {
-		gnocchi-upgrade --create-legacy-resource-types
-
-		systemctl start openstack-ceilometer-compute
-		systemctl enable openstack-ceilometer-compute
+		ceilometer-upgrade --skip-metering-database
 
 		systemctl start openstack-gnocchi-metricd
 		systemctl enable openstack-gnocchi-metricd
@@ -473,8 +468,6 @@ gnocchi_ceilometer_install_config
 echocolor "Cau hinh WSGI cho Ceilometer & Gnocchi"
 sleep 3
 gnocchi_wsgi_config
-
-
 
 echocolor "Restart dich vu Ceilometer & Gnocchi"
 sleep 3

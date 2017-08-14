@@ -235,7 +235,7 @@
 - Tải script cài đặt nova và neutron cho Compute1
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-HA/master/scripts/noha/noha_com_install.sh
+	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/noha_com_install.sh
 	
 	bash noha_com_install.sh
 	```
@@ -293,8 +293,8 @@
 
 	```sh
 	openstack network create  --share --external \
-		--provider-physical-network provider \
-		--provider-network-type flat provider
+	--provider-physical-network provider \
+	--provider-network-type flat provider
 	```
 	
 	- Giả sửa ID của network là `9681d9dd-aae2-42fe-9b84-dd7cb04c1aca`
@@ -302,10 +302,10 @@
 - Tạo subnet thuộc provider network. Lưu ý nhập đúng gateway, IP cấp cho máy ảo từ 200 tới 220.
 
 	```sh
-	openstack subnet create provider --network provider \
-		--allocation-pool start=192.168.40.200,end=192.168.40.220 \
-		--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
-		--subnet-range 192.168.40.0/24 
+	openstack subnet create subnet1_provider --network provider \
+	--allocation-pool start=192.168.40.200,end=192.168.40.220 \
+	--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
+	--subnet-range 192.168.40.0/24 
 	```
 
 #### 4.2. Tạo flavor
@@ -373,7 +373,7 @@ openstack server list
 
 - Sau khi cài đặt xong trên máy chủ cinder, quay lại máy chủ controller kiểm tra xem cinder đã hoạt động hay chưa bằng lệnh.
 	```sh
-	openstack volume serivce list
+	openstack volume service list
 	```
 	
 	- Kết quả là các service của cinder sẽ hiển thị, việc `cinder-volume` tại controller node bị down là do ta không dùng `cinder-volume` không kích hoạt trên máy chủ cinder.
@@ -486,6 +486,8 @@ openstack server list
 
 - Upload file `file_test.txt` lên container vừa tạo.
 	```sh
+	cd /root/ 
+	
 	openstack object create container1 file_test.txt
 	```
 

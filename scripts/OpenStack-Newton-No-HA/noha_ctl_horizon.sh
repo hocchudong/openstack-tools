@@ -14,7 +14,7 @@ function echocolor {
 }
 
 function ops_edit {
-    crudini --set $1 $2 $3 $4
+    crudini --set "$1" "$2" "$3" "$4"
 }
 
 # Cach dung
@@ -26,7 +26,7 @@ function ops_edit {
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 
@@ -62,7 +62,7 @@ sed -i -e "s/_member_/user/g" $filehorizon
 sed -i -e "s/127.0.0.1/$CTL1_IP_NIC1/g" $filehorizon
 sed -i -e "s/http:\/\/\%s:5000\/v2.0/http:\/\/\%s:5000\/v3/g" $filehorizon
 sed -i -e "s#^CACHES#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'\nCACHES#g#" $filehorizon
-sed -i -e "s#locmem.LocMemCache'#memcached.MemcachedCache',\n        'LOCATION' : [ '192.168.20.33:11211', ]#g" $filehorizon
+sed -i -e "s#locmem.LocMemCache'#memcached.MemcachedCache',\n        'LOCATION' : [ '$CTL1_IP_NIC1:11211', ]#g" $filehorizon
 sed -i -e 's/^#OPENSTACK_API_VERSIONS.*/OPENSTACK_API_VERSIONS = {\n    "identity": 3,\n    "image": 2,\n    "volume": 2,\n}\n#OPENSTACK_API_VERSIONS = {/g'  $filehorizon
 sed -i -e "s/^#OPENSTACK_KEYSTONE_DEFAULT_DOMAIN.*/OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'default'/g"   $filehorizon
 

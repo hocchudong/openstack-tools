@@ -28,7 +28,7 @@ function ops_edit {
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 function copykey {
@@ -36,7 +36,7 @@ function copykey {
 }
 
 function setup_config {
-				scp /root/OpenStack-Newton-No-HA/config.cfg root@$1:/root/
+				scp /root/OpenStack-Ocata-No-HA/config.cfg root@$1:/root/
 				chmod +x config.cfg
 }
 
@@ -64,7 +64,7 @@ function install_repo {
             echocolor "Cai dat install_repo tren $1"
             sleep 3
 ssh root@$1 << EOF 
-yum -y install centos-release-openstack-newton
+yum -y install centos-release-openstack-ocata
 yum -y upgrade
 yum -y install crudini wget vim
 yum -y install python-openstackclient openstack-selinux python2-PyMySQL

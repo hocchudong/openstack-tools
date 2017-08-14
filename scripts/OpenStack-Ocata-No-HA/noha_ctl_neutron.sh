@@ -72,19 +72,14 @@ function neutron_config {
         ops_edit $ctl_neutron_conf DEFAULT core_plugin ml2
         ops_edit $ctl_neutron_conf DEFAULT service_plugins router
         ops_edit $ctl_neutron_conf DEFAULT auth_strategy keystone    
+				ops_edit $ctl_neutron_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
         ops_edit $ctl_neutron_conf DEFAULT notify_nova_on_port_status_changes True
         ops_edit $ctl_neutron_conf DEFAULT notify_nova_on_port_data_changes True  
         ops_edit $ctl_neutron_conf DEFAULT allow_overlapping_ips True 
-        ops_edit $ctl_neutron_conf DEFAULT rpc_backend rabbit
         ops_edit $ctl_neutron_conf DEFAULT dhcp_agents_per_network 2
                 
         ops_edit $ctl_neutron_conf database connection  mysql+pymysql://neutron:$PASS_DATABASE_NEUTRON@$CTL1_IP_NIC1/neutron
         
-        ops_edit $ctl_neutron_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-        ops_edit $ctl_neutron_conf oslo_messaging_rabbit rabbit_port 5672
-        ops_edit $ctl_neutron_conf oslo_messaging_rabbit rabbit_userid openstack
-        ops_edit $ctl_neutron_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
-
         ops_edit $ctl_neutron_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
         ops_edit $ctl_neutron_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
         ops_edit $ctl_neutron_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
@@ -103,12 +98,7 @@ function neutron_config {
         ops_edit $ctl_neutron_conf vxlan enable_vxlan False
         ops_edit $ctl_neutron_conf securitygroup enable_security_group True
         ops_edit $ctl_neutron_conf securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
-				
-				# ops_edit $ctl_linuxbridge_agent linux_bridge physical_interface_mappings provider:ens256
-        # ops_edit $ctl_linuxbridge_agent vxlan enable_vxlan False
-        # ops_edit $ctl_linuxbridge_agent securitygroup enable_security_group True
-        # ops_edit $ctl_linuxbridge_agent securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
-        
+				      
         ops_edit $ctl_neutron_conf DEFAULT nova_metadata_ip $CTL1_IP_NIC1
         ops_edit $ctl_neutron_conf DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
                 

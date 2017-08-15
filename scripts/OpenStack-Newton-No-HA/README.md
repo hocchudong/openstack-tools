@@ -606,11 +606,29 @@ openstack server list
 	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
 	```
 	
-- 
+- Tải template mẫu dành cho heat
 
+	```sh
+	wget https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/conf/ctl/heat/demo-template.yml
+	```
 
+- Chuyển sang project demo để tạo stack ở project demo 
 
+	```sh
+	source /root/demo-openrc
+	```
 
+- Tạo biến `NET_ID` để sử dụng cho heat ở dưới. Lấy ID của provider network. 
+
+	```sh
+	export NET_ID=$(openstack network list | awk '/ provider / { print $2 }')
+	```
+
+- Thực hiện tạo stack 
+
+	```sh
+	openstack stack create -t demo-template.yml --parameter "NetID=$NET_ID" stack
+	```
 
 
 

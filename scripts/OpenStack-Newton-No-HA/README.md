@@ -586,3 +586,51 @@ openstack server list
 	```
 
 - Bạn cũng có thể login vào tài khoản demo để quan sát Object Storage ở tab http://prntscr.com/g18ik9
+
+
+### 7. Cài đặt Heat
+- Thực hiện script `noha_ctl_heat.sh` để cài đặt heat
+	```sh
+	bash noha_ctl_heat.sh
+	````
+
+- Sau khi thực hiện xong script, thực hiện lệnh `openstack orchestration service list` để kiểm tra heat đã hoạt động hay chưa. Kết quả như sau: 
+	```sh
+	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
+	| hostname    | binary      | engine_id                            | host        | topic  | updated_at                 | status |
+	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
+	| controller1 | heat-engine | ddcab7f5-04f8-4c78-83e9-976f763db61b | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	| controller1 | heat-engine | fc010868-416d-4728-9b0c-fb532d12e5dd | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	| controller1 | heat-engine | 4383b86b-0316-4e62-902a-721979e1bc50 | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	| controller1 | heat-engine | 6a8e6e4c-4c49-49fc-a698-e906137607fd | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
+	```
+	
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

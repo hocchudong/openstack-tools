@@ -106,8 +106,8 @@ sudo yum update -y
 curl -o /etc/yum.repos.d/rdo-reqs-pre-7.3.repo https://trunk.rdoproject.org/rdo-reqs-pre-7.3/rdo-reqs-pre-7.3.repo
 
 yum -y install yum-plugin-priorities
-cur -o /etc/yum.repos.d/delorean-deps.repo https://trunk.rdoproject.org/centos7/delorean-deps.repo
-cur -o /etc/yum.repos.d/delorean.repo https://trunk.rdoproject.org/centos7/current-passed-ci/delorean.repo
+curl -o /etc/yum.repos.d/delorean-deps.repo https://trunk.rdoproject.org/centos7/delorean-deps.repo
+curl -o /etc/yum.repos.d/delorean.repo https://trunk.rdoproject.org/centos7/current-passed-ci/delorean.repo
 sudo yum update -y
 EOF
         done

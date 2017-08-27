@@ -103,13 +103,12 @@ yum -y install yum-utils
 sudo yum-config-manager --enable cr
 sudo yum update -y
 
-wget -O  /etc/yum.repos.d/rdo-reqs-pre-7.3.repo https://trunk.rdoproject.org/rdo-reqs-pre-7.3/rdo-reqs-pre-7.3.repo
+curl -o /etc/yum.repos.d/rdo-reqs-pre-7.3.repo https://trunk.rdoproject.org/rdo-reqs-pre-7.3/rdo-reqs-pre-7.3.repo
 
 yum -y install yum-plugin-priorities
-wget -O  /etc/yum.repos.d/delorean-deps.repo https://trunk.rdoproject.org/centos7/delorean-deps.repo
-wget -O  /etc/yum.repos.d/delorean.repo https://trunk.rdoproject.org/centos7/current-passed-ci/delorean.repo
+cur -o /etc/yum.repos.d/delorean-deps.repo https://trunk.rdoproject.org/centos7/delorean-deps.repo
+cur -o /etc/yum.repos.d/delorean.repo https://trunk.rdoproject.org/centos7/current-passed-ci/delorean.repo
 sudo yum update -y
-
 EOF
         done
 }

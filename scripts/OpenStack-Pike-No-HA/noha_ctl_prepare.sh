@@ -101,6 +101,8 @@ function install_repo_test {
         ssh root@$IP_ADD << EOF 
 yum -y install yum-utils
 yum -y install crudini wget vim
+yum -y install python-openstackclient openstack-selinux python2-PyMySQL
+
 sudo yum-config-manager --enable cr
 sudo yum update -y
 

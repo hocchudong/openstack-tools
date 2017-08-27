@@ -163,17 +163,16 @@
 	openstack compute service list
 	```
 
-  - Kết quả như sau là đã hoàn tất việc cài nova trên controller
-	
-			```sh
-			+----+------------------+------+----------+---------+-------+----------------------------+
-			| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-			+----+------------------+------+----------+---------+-------+----------------------------+
-			|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
-			|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
-			|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
-			+----+------------------+------+----------+---------+-------+----------------------------+
-			```
+- Kết quả như sau là đã hoàn tất việc cài nova trên controller
+	```sh
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
+	|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
+	|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	```
 
 #### 2.7. Thực thi script `noha_ctl_neutron.sh` để cài đặt `Neutron`.
 
@@ -189,7 +188,7 @@
 
 ##### 2.8.1. Lựa chọn 1: 
 - Cài tất cả các thành phần cinder trên node controller
-- Lưu ý: Máy CTL có 02 ổ cứng, ổ thứ nhất để cài OS, ổ thứ 2 (sdb hoặc vdb) dùng để tạo các LVM để Cinder sử dụng sau này.
+- Lưu ý: Đối với lựa chọn này, máy Controller cần có 02 ổ cứng, ổ thứ nhất để cài OS, ổ thứ 2 (sdb hoặc vdb) dùng để tạo các LVM để Cinder sử dụng sau này.
 
 	```sh
 	bash noha_ctl_cinder.sh aio
@@ -236,7 +235,7 @@
 - Tải script cài đặt nova và neutron cho Compute1
 
 	```sh
-	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/noha_com_install.sh
+	curl https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/noha_com_install.sh
 	
 	bash noha_com_install.sh
 	```

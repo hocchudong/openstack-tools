@@ -164,6 +164,7 @@
 	```
 
   - Kết quả như sau là đã hoàn tất việc cài nova trên controller
+	
 			```sh
 			+----+------------------+------+----------+---------+-------+----------------------------+
 			| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |

@@ -1,6 +1,6 @@
 heat_template_version: 2015-10-15
 description: Launch a basic instance with CirrOS image using the
-             ``m1.nano` flavor, ``mykey`` key,  and one network.
+             ``m1.nano`` flavor, ``mykey`` key,  and one network.
 
 parameters:
   NetID:

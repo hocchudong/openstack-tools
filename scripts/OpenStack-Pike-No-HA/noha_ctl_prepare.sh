@@ -100,6 +100,7 @@ function install_repo_test {
             sleep 3
         ssh root@$IP_ADD << EOF 
 yum -y install yum-utils
+yum -y install crudini wget vim
 sudo yum-config-manager --enable cr
 sudo yum update -y
 
@@ -188,7 +189,7 @@ install_proxy
 
 echocolor "Cai dat repo tren cac node"
 sleep 3
-install_repo_galera
+#install_repo_galera
 install_repo_test
 
 echocolor "Cau hinh hostname"

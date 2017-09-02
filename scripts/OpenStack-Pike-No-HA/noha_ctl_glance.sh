@@ -30,7 +30,7 @@ function ops_del {
     crudini --del "$1" "$2" "$3"
 }
 
-function glance_create_db {
+function glance_create_db() {
 mysql -uroot -p$PASS_DATABASE_ROOT -e "CREATE DATABASE glance;
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '$PASS_DATABASE_GLANCE';
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '$PASS_DATABASE_GLANCE';
@@ -40,7 +40,7 @@ FLUSH PRIVILEGES;"
 }
 
 #Tao endpoint,user cho glance
-function glance_user_endpoint {
+function glance_user_endpoint() {
         openstack user create  glance --domain default --password $GLANCE_PASS
         openstack role add --project service --user glance admin
         openstack service create --name glance --description "OpenStack Image" image
@@ -50,7 +50,7 @@ function glance_user_endpoint {
 }
 
 #Cau hinh va cai dat glance
-function glance_install_config {
+function glance_install_config() {
 
         yum -y install openstack-glance
         glance_api_conf=/etc/glance/glance-api.conf
@@ -101,19 +101,19 @@ function glance_install_config {
 }
 
 #Dong bo DB cho lance
-function glance_syncdb {
+function glance_syncdb() {
         su -s /bin/sh -c "glance-manage db_sync" glance
 }
 
 
-function glance_enable_restart {
+function glance_enable_restart() {
         systemctl enable openstack-glance-api.service
         systemctl enable openstack-glance-registry.service
         systemctl start openstack-glance-api.service
         systemctl start openstack-glance-registry.service
 }
 
-function glance_create_image {
+function glance_create_image() {
         wget http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img
         openstack image create "cirros" --file cirros-0.3.5-x86_64-disk.img \
         --disk-format qcow2 --container-format bare \

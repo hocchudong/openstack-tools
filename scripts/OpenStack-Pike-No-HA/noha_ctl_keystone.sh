@@ -59,14 +59,14 @@ function keystone_bootstrap {
           --bootstrap-region-id RegionOne
 }
 
-function keystone_config_http {
+function keystone_config_http() {
           echo "ServerName `hostname`" >> /etc/httpd/conf/httpd.conf
           ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/
           systemctl enable httpd.service
           systemctl start httpd.service 
 }
 
-function keystone_endpoint {
+function keystone_endpoint() {
         openstack project create service --domain default --description "Service Project" 
         openstack project create demo --domain default --description "Demo Project" 
         openstack user create demo --domain default --password $DEMO_PASS

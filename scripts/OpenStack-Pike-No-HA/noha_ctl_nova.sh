@@ -135,6 +135,7 @@ function nova_config {
 
         
         ops_edit $ctl_nova_conf oslo_messaging_notifications driver messagingv2
+        ops_edit $ctl_nova_conf cinder os_region_name RegionOne
 }
 
 

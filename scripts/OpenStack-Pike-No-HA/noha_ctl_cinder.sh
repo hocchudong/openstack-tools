@@ -41,16 +41,18 @@ function cinder_create_db {
 function cinder_user_endpoint {
 	openstack user create  cinder --domain default --password $CINDER_PASS
 	openstack role add --project service --user cinder admin
-	openstack service create --name cinder --description "OpenStack Block Storage" volume
-	openstack service create --name cinderv2 --description "OpenStack Block Storage" volumev2
 
-	openstack endpoint create --region RegionOne volume public http://$CTL1_IP_NIC1:8776/v1/%\(tenant_id\)s
-	openstack endpoint create --region RegionOne volume internal http://$CTL1_IP_NIC1:8776/v1/%\(tenant_id\)s
-	openstack endpoint create --region RegionOne volume admin http://$CTL1_IP_NIC1:8776/v1/%\(tenant_id\)s
+	openstack service create --name cinderv2 --description "OpenStack Block Storage" volumev2
+	openstack service create --name cinderv3 --description "OpenStack Block Storage" volumev3
 
 	openstack endpoint create --region RegionOne volumev2 public http://$CTL1_IP_NIC1:8776/v2/%\(tenant_id\)s
 	openstack endpoint create --region RegionOne volumev2 internal http://$CTL1_IP_NIC1:8776/v2/%\(tenant_id\)s
 	openstack endpoint create --region RegionOne volumev2 admin http://$CTL1_IP_NIC1:8776/v2/%\(tenant_id\)s
+
+	openstack endpoint create --region RegionOne volumev3 public http://$CTL1_IP_NIC1:8776/v3/%\(tenant_id\)s
+	openstack endpoint create --region RegionOne volumev3 internal http://$CTL1_IP_NIC1:8776/v3/%\(tenant_id\)s
+	openstack endpoint create --region RegionOne volumev3 admin http://$CTL1_IP_NIC1:8776/v3/%\(tenant_id\)s
+
 
 }
 
@@ -69,7 +71,6 @@ function cinder_install_config {
 		ops_edit $ctl_cinder_conf DEFAULT osapi_volume_listen  \$my_ip
 		ops_edit $ctl_cinder_conf DEFAULT control_exchange cinder
 		ops_edit $ctl_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC1:9292
-		ops_edit $ctl_cinder_conf DEFAULT glance_api_version 2
 		ops_edit $ctl_cinder_conf DEFAULT enabled_backends lvm
 
 		ops_edit $ctl_cinder_conf database connection  mysql+pymysql://cinder:$PASS_DATABASE_CINDER@$CTL1_IP_NIC1/cinder
@@ -106,7 +107,7 @@ function cinder_install_config {
 		ops_edit $ctl_cinder_conf DEFAULT osapi_volume_listen  \$my_ip
 		ops_edit $ctl_cinder_conf DEFAULT control_exchange cinder
 		ops_edit $ctl_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC1:9292
-		ops_edit $ctl_cinder_conf DEFAULT glance_api_version 2
+
 
 		ops_edit $ctl_cinder_conf database connection  mysql+pymysql://cinder:$PASS_DATABASE_CINDER@$CTL1_IP_NIC1/cinder
 
@@ -140,10 +141,17 @@ function cinder_enable_restart {
 	echocolor "Restart dich vu cinder"
 	sleep 3
 	if [ "$1" == "aio" ]; then
-		systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-backup.service
-		systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-backup.service
-		systemctl enable openstack-cinder-volume.service target.service
-		systemctl start openstack-cinder-volume.service target.service
+		systemctl enable openstack-cinder-api.service 
+		systemctl enable openstack-cinder-scheduler.service 
+		systemctl enable openstack-cinder-backup.service
+		systemctl enable openstack-cinder-volume.service 
+		systemctl enable target.service
+
+		systemctl start openstack-cinder-api.service 
+		systemctl start openstack-cinder-scheduler.service 
+		systemctl start openstack-cinder-backup.service
+		systemctl start openstack-cinder-volume.service 
+		systemctl start  target.service 
 	else
 		systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-backup.service
 		systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-backup.service

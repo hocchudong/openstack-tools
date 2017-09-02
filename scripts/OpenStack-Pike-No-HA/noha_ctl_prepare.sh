@@ -78,7 +78,7 @@ EOF
 
 }
 
-function install_repo {
+function install_repo_openstack {
         for IP_ADD in $CTL1_IP_NIC1 $COM1_IP_NIC1 $COM2_IP_NIC1
         do
             echocolor "Cai dat install_repo tren $IP_ADD"
@@ -192,6 +192,7 @@ install_proxy
 echocolor "Cai dat repo tren cac node"
 sleep 3
 install_repo_galera
+install_repo_openstack
 # install_repo_test
 
 echocolor "Cau hinh hostname"

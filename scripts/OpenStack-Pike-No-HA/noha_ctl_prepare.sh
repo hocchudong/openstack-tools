@@ -93,29 +93,6 @@ EOF
         done
 }
 
-function install_repo_test {
-        for IP_ADD in $CTL1_IP_NIC1 $COM1_IP_NIC1 $COM2_IP_NIC1
-        do
-            echocolor "Cai dat install_repo tren $IP_ADD"
-            sleep 3
-        ssh root@$IP_ADD << EOF 
-yum -y install yum-utils
-yum -y install crudini wget vim
-yum -y install python-openstackclient openstack-selinux python2-PyMySQL
-
-sudo yum-config-manager --enable cr
-sudo yum update -y
-
-curl -o /etc/yum.repos.d/rdo-reqs-pre-7.3.repo https://trunk.rdoproject.org/rdo-reqs-pre-7.3/rdo-reqs-pre-7.3.repo
-
-yum -y install yum-plugin-priorities
-curl -o /etc/yum.repos.d/delorean-deps.repo https://trunk.rdoproject.org/centos7/delorean-deps.repo
-curl -o /etc/yum.repos.d/delorean.repo https://trunk.rdoproject.org/centos7/current-passed-ci/delorean.repo
-sudo yum update -y
-EOF
-        done
-}
-
 function khai_bao_host {
         echo "$CTL1_IP_NIC1 controller1" >> /etc/hosts
         echo "$COM1_IP_NIC1 compute1" >> /etc/hosts
@@ -193,7 +170,6 @@ echocolor "Cai dat repo tren cac node"
 sleep 3
 install_repo_galera
 install_repo_openstack
-# install_repo_test
 
 echocolor "Cau hinh hostname"
 sleep 3

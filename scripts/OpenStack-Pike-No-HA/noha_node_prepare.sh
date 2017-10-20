@@ -36,7 +36,7 @@ function copykey {
 }
 
 function setup_config {
-				scp /root/OpenStack-Ocata-No-HA/config.cfg root@$1:/root/
+				scp /root/OpenStack-Pike-No-HA/config.cfg root@$1:/root/
 				chmod +x config.cfg
 }
 

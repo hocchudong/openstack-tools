@@ -81,7 +81,7 @@ function rabbitmq_install {
         
 }
 
-function rabbitmq_create_user {
+function rabbitmq_create_user() {
 	rabbitmqctl add_user openstack $RABBIT_PASS
 	rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 	rabbitmqctl set_user_tags openstack administrator

@@ -29,7 +29,7 @@ function ops_del {
 	crudini --del $1 $2 $3
 }
 
-function cinder_create_db {
+function cinder_create_db() {
 	mysql -uroot -p$PASS_DATABASE_ROOT  -e "CREATE DATABASE cinder;
 	GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY '$PASS_DATABASE_CINDER';
 	GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY '$PASS_DATABASE_CINDER';
@@ -38,7 +38,7 @@ function cinder_create_db {
 	FLUSH PRIVILEGES;"
 }
 
-function cinder_user_endpoint {
+function cinder_user_endpoint() {
 	openstack user create  cinder --domain default --password $CINDER_PASS
 	openstack role add --project service --user cinder admin
 
@@ -56,7 +56,7 @@ function cinder_user_endpoint {
 
 }
 
-function cinder_install_config {
+function cinder_install_config() {
 	echocolor "Cai dat cinder"
 	sleep 3
 	yum -y install openstack-cinder targetcli
@@ -132,12 +132,12 @@ function cinder_install_config {
 	fi
 }
 
-function cinder_syncdb {
+function cinder_syncdb() {
 	su -s /bin/sh -c "cinder-manage db sync" cinder
 
 }
 
-function cinder_enable_restart {
+function cinder_enable_restart() {
 	echocolor "Restart dich vu cinder"
 	sleep 3
 	if [ "$1" == "aio" ]; then
@@ -158,7 +158,7 @@ function cinder_enable_restart {
 	fi
 }
 
-function create_lvm {
+function create_lvm() {
 	if [ "$1" == "aio" ]; then
 		echocolor "Cai dat LVM"
 		sleep 3

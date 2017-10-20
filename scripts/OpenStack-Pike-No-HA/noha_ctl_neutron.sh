@@ -29,7 +29,7 @@ function ops_del {
     crudini --del $1 $2 $3
 }
 
-function neutron_create_db {
+function neutron_create_db() {
       mysql -uroot -p$PASS_DATABASE_ROOT -e "CREATE DATABASE neutron;
       GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY '$PASS_DATABASE_NEUTRON';
       GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY '$PASS_DATABASE_NEUTRON';
@@ -38,7 +38,7 @@ function neutron_create_db {
       FLUSH PRIVILEGES;"
 }
 
-function neutron_user_endpoint {
+function neutron_user_endpoint() {
         openstack user create  neutron --domain default --password $NEUTRON_PASS
         openstack role add --project service --user neutron admin
         openstack service create --name neutron --description "OpenStack Networking" network
@@ -48,13 +48,13 @@ function neutron_user_endpoint {
 
 }
 
-function neutron_install {
+function neutron_install() {
         yum -y update && yum -y install openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables
 
 
 }
 
-function neutron_config {		
+function neutron_config() {		
 				ctl_neutron_conf=/etc/neutron/neutron.conf
         ctl_ml2_conf=/etc/neutron/plugins/ml2/ml2_conf.ini
         ctl_linuxbridge_agent=/etc/neutron/plugins/ml2/linuxbridge_agent.ini
@@ -126,7 +126,7 @@ function neutron_config {
         ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 }
 
-function neutron_syncdb {
+function neutron_syncdb() {
         echocolor "Dong bo db cho neutron"
         sleep 3
         su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
@@ -134,7 +134,7 @@ function neutron_syncdb {
 
 }
 
-function neutron_enable_restart {
+function neutron_enable_restart() {
             echocolor "Khoi dong dich vu NEUTRON"
             sleep 3
             systemctl enable neutron-server.service

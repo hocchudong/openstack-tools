@@ -97,10 +97,11 @@ function aodh_install_config {
 		ops_edit $ctl_aodh_conf oslo_messaging_notifications topics notifications
 }
 
+
 function aodh_syncdb {
 		aodh-dbsync --config-dir /etc/aodh/
-
 }
+
 
 function aodh_wsgi_config {
 		cp -v ./files/wsgi-aodh.conf /etc/httpd/conf.d/wsgi-aodh.conf
@@ -364,7 +365,8 @@ function gnocchi_ceilometer_install_config {
 		
 		chown -R gnocchi.gnocchi /var/log/gnocchi/
 		chown -R gnocchi.gnocchi /etc/gnocchi/
-		su gnocchi -s /bin/sh -c 'gnocchi-upgrade --config-file /etc/gnocchi/gnocchi.conf --create-legacy-resource-types'
+		su gnocchi -s /bin/sh -c 'gnocchi-upgrade --config-file /etc/gnocchi/gnocchi.conf'
+		#su gnocchi -s /bin/sh -c 'gnocchi-upgrade --config-file /etc/gnocchi/gnocchi.conf --create-legacy-resource-types'
 
 		systemctl stop openstack-gnocchi-api
 		systemctl disable openstack-gnocchi-api

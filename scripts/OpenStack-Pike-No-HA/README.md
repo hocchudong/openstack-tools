@@ -366,7 +366,7 @@ openstack server list
 
 - Login vào máy chủ cinder và thực hiện script dưới tại thư mục root. Lưu ý, ở script trên đã copy file `config.cfg` từ máy chủ controller sang máy chủ cinder. 
 	```sh
-	curl -O https://github.com/congto/openstack-tools/blob/master/scripts/OpenStack-Pike-No-HA/noha_cinder_install.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/noha_cinder_install.sh
 
 	bash noha_cinder_install.sh
 	```

@@ -64,7 +64,7 @@ function install_repo {
             echocolor "Cai dat install_repo tren $1"
             sleep 3
 ssh root@$1 << EOF 
-yum -y install centos-release-openstack-ocata
+yum -y install centos-release-openstack-pike
 yum -y upgrade
 yum -y install crudini wget vim
 yum -y install python-openstackclient openstack-selinux python2-PyMySQL

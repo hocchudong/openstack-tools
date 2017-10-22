@@ -170,7 +170,8 @@ function create_lvm() {
 		vgcreate cinder-volumes /dev/sdb
 
 		cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
-		sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
+		#sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
+    sed -i '141i\        filter = [ "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
 	else 
 		echocolor "Khong cau hinh LVM vi ko cai cinder-volume"
 	fi

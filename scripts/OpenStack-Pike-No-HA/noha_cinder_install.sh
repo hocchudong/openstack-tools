@@ -96,7 +96,11 @@ function create_lvm {
 				vgcreate cinder-volumes /dev/sdb
 
 				cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
-				sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf        
+				#sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
+        
+        # fix filter cua lvm tren CentOS 7.4, chen vao dong 141
+        sed -i '141i\        filter = [ "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
+        
 }
 
 ##############################################################################

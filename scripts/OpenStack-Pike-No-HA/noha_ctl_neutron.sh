@@ -139,12 +139,12 @@ function neutron_enable_restart() {
             sleep 3
             systemctl enable neutron-server.service
             systemctl start neutron-server.service
-						#systemctl enable neutron-linuxbridge-agent.service
-						#systemctl start neutron-linuxbridge-agent.service
-						#systemctl enable neutron-metadata-agent.service
-						#systemctl start neutron-metadata-agent.service
-						systemctl enable neutron-l3-agent.service
-						systemctl start neutron-l3-agent.service
+			#systemctl enable neutron-linuxbridge-agent.service
+			#systemctl start neutron-linuxbridge-agent.service
+			#systemctl enable neutron-metadata-agent.service
+			#systemctl start neutron-metadata-agent.service
+			systemctl enable neutron-l3-agent.service
+			systemctl start neutron-l3-agent.service
 }
 
 ############################

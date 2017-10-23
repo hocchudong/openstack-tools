@@ -56,10 +56,10 @@ function neutron_install() {
 
 function neutron_config() {		
 		ctl_neutron_conf=/etc/neutron/neutron.conf
-        ctl_ml2_conf=/etc/neutron/plugins/ml2/ml2_conf.ini
-        ctl_linuxbridge_agent=/etc/neutron/plugins/ml2/linuxbridge_agent.ini
-        ctl_dhcp_agent=/etc/neutron/dhcp_agent.ini
-        ctl_metadata_agent=/etc/neutron/metadata_agent.ini
+    ctl_ml2_conf=/etc/neutron/plugins/ml2/ml2_conf.ini
+    ctl_linuxbridge_agent=/etc/neutron/plugins/ml2/linuxbridge_agent.ini
+    ctl_dhcp_agent=/etc/neutron/dhcp_agent.ini
+    ctl_metadata_agent=/etc/neutron/metadata_agent.ini
 		ctl_l3_agent_conf=/etc/neutron/l3_agent.ini
         
         
@@ -73,7 +73,7 @@ function neutron_config() {
         ops_edit $ctl_neutron_conf DEFAULT core_plugin ml2
         ops_edit $ctl_neutron_conf DEFAULT service_plugins router
         ops_edit $ctl_neutron_conf DEFAULT auth_strategy keystone    
-		ops_edit $ctl_neutron_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+        ops_edit $ctl_neutron_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
         ops_edit $ctl_neutron_conf DEFAULT notify_nova_on_port_status_changes True
         ops_edit $ctl_neutron_conf DEFAULT notify_nova_on_port_data_changes True  
         ops_edit $ctl_neutron_conf DEFAULT allow_overlapping_ips True 
@@ -119,11 +119,16 @@ function neutron_config() {
         ops_edit $ctl_ml2_conf ml2 mechanism_drivers linuxbridge
         ops_edit $ctl_ml2_conf ml2 extension_drivers port_security          
         ops_edit $ctl_ml2_conf ml2_type_flat flat_networks provider
-        ops_edit $ctl_ml2_conf ml2_type_vxlan vni_ranges 1:1000
-        
+        ops_edit $ctl_ml2_conf ml2_type_vxlan vni_ranges 1:1000        
         ops_edit $ctl_ml2_conf securitygroup enable_ipset True
 				
-        ops_edit $ctl_l3_agent_conf DEFAULT interface_driver linuxbridge
+        ops_edit $ctl_l3_agent_conf DEFAULT interface_driver linuxbridge   
+
+        ops_edit $ctl_linuxbridge_agent linux_bridge physical_interface_mappings provider:ens256
+        ops_edit $ctl_linuxbridge_agent vxlan enable_vxlan True
+        ops_edit $ctl_linuxbridge_agent vxlan local_ip $(ip addr show dev ens224 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+        ops_edit $ctl_linuxbridge_agent securitygroup enable_security_group True
+        ops_edit $ctl_linuxbridge_agent securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
        
         ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 }
@@ -133,14 +138,13 @@ function neutron_syncdb() {
         sleep 3
         su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
             --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
-
 }
 
 function neutron_enable_restart() {
-            echocolor "Khoi dong dich vu NEUTRON"
-            sleep 3
-            systemctl enable neutron-server.service
-            systemctl start neutron-server.service
+      echocolor "Khoi dong dich vu NEUTRON"
+      sleep 3
+      systemctl enable neutron-server.service
+      systemctl start neutron-server.service
 			systemctl enable neutron-linuxbridge-agent.service
 			systemctl start neutron-linuxbridge-agent.service
 			#systemctl enable neutron-metadata-agent.service

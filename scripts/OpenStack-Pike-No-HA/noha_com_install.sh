@@ -119,7 +119,7 @@ function com_neutron_config {
         
         ops_edit $com_neutron_conf DEFAULT auth_strategy keystone
         ops_edit $com_neutron_conf DEFAULT core_plugin ml2
-		ops_edit $com_neutron_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+        ops_edit $com_neutron_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
         ops_edit $com_neutron_conf DEFAULT notify_nova_on_port_status_changes true
         ops_edit $com_neutron_conf DEFAULT notify_nova_on_port_data_changes true
         

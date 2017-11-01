@@ -159,21 +159,22 @@
 	```
 	
 - Sau khi script thực thi xong, kiểm tra xem nova đã cài đặt thành công trên Controller bằng lệnh dưới.
+
 	```sh
 	openstack compute service list
 	```
 
-  - Kết quả như sau là đã hoàn tất việc cài nova trên controller
-	
-		```sh
-		+----+------------------+------+----------+---------+-------+----------------------------+
-		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-		+----+------------------+------+----------+---------+-------+----------------------------+
-		|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
-		|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
-		|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
-		+----+------------------+------+----------+---------+-------+----------------------------+
-		```
+- Kết quả như sau là đã hoàn tất việc cài nova trên controller			
+
+	```sh
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
+	|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
+	|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
+	+----+------------------+------+----------+---------+-------+----------------------------+
+	```
 
 #### 2.7. Thực thi script `noha_ctl_neutron.sh` để cài đặt `Neutron`.
 
@@ -183,6 +184,64 @@
 	bash noha_ctl_neutron.sh
 	```
 	
+- Sau khi cài neutron trên node Controller xong, thực hiện các lệnh dưới để kiểm tra
+	
+	- Kiểm tra các agent của neutron sau khi cài, trong script này trên controller chỉ cài neutron server, các agent của neutron được cài trên các node Compute. Kết quả của lệnh dưới sẽ là rỗng.
+		```sh
+		openstack network agent list
+		```
+	
+	- Kiểm tra các extention của neutron
+		```sh
+		neutron ext-list
+		```
+	
+		- Kết quả lệnh trên như dưới
+			```sh
+			+---------------------------+-----------------------------------------------+
+			| alias                     | name                                          |
+			+---------------------------+-----------------------------------------------+
+			| default-subnetpools       | Default Subnetpools                           |
+			| network-ip-availability   | Network IP Availability                       |
+			| network_availability_zone | Network Availability Zone                     |
+			| auto-allocated-topology   | Auto Allocated Topology Services              |
+			| ext-gw-mode               | Neutron L3 Configurable external gateway mode |
+			| binding                   | Port Binding                                  |
+			| agent                     | agent                                         |
+			| subnet_allocation         | Subnet Allocation                             |
+			| l3_agent_scheduler        | L3 Agent Scheduler                            |
+			| tag                       | Tag support                                   |
+			| external-net              | Neutron external network                      |
+			| flavors                   | Neutron Service Flavors                       |
+			| net-mtu                   | Network MTU                                   |
+			| availability_zone         | Availability Zone                             |
+			| quotas                    | Quota management support                      |
+			| l3-ha                     | HA Router extension                           |
+			| provider                  | Provider Network                              |
+			| multi-provider            | Multi Provider Network                        |
+			| address-scope             | Address scope                                 |
+			| extraroute                | Neutron Extra Route                           |
+			| subnet-service-types      | Subnet service types                          |
+			| standard-attr-timestamp   | Resource timestamps                           |
+			| service-type              | Neutron Service Type Management               |
+			| l3-flavors                | Router Flavor Extension                       |
+			| port-security             | Port Security                                 |
+			| extra_dhcp_opt            | Neutron Extra DHCP opts                       |
+			| standard-attr-revisions   | Resource revision numbers                     |
+			| pagination                | Pagination support                            |
+			| sorting                   | Sorting support                               |
+			| security-group            | security-group                                |
+			| dhcp_agent_scheduler      | DHCP Agent Scheduler                          |
+			| router_availability_zone  | Router Availability Zone                      |
+			| rbac-policies             | RBAC Policies                                 |
+			| standard-attr-description | standard-attr-description                     |
+			| router                    | Neutron L3 Router                             |
+			| allowed-address-pairs     | Allowed Address Pairs                         |
+			| project-id                | project_id field enabled                      |
+			| dvr                       | Distributed Virtual Router                    |
+			+---------------------------+-----------------------------------------------+
+			```
+
 #### 2.8. Thực thi script `noha_ctl_cinder.sh` để cài đặt `Cinder`.
 
 - Thực thi script dưới để cài đặt Cinder trên node controller. Tới đây có 2 lựa chọn.
@@ -214,12 +273,37 @@
 	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh. Có thể các lệnh sẽ không có output ra.
 		
 		```sh
-		gnocchi resource list HOẶC openstack metric metric list 
-		gnocchi metric list HOẶC openstack metric resource list 
+		gnocchi resource list HOẶC openstack metric resource list 
+		gnocchi metric list HOẶC openstack metric metric list 
 		
 		aodh alarm list
 		```
-		
+
+- Khi chạy các lệnh `gnocchi metric list` HOẶC `openstack metric metric list ` thì output như dưới:
+	```sh
+	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
+	| id                                   | archive_policy/name | name           | unit | resource_id                          |
+	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
+	| ac177241-405b-4028-a72d-6084c43552e6 | low                 | image.size     | B    | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	| db267fbe-bbb7-4c3f-952f-aa5869c57127 | low                 | image.download | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	| e9df3db9-87bb-472b-8ac4-f7fa4b3782f6 | low                 | image.serve    | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	| f37af4ec-8f20-4558-89ce-aeaa3402c931 | low                 | image          | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
+	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
+	```
+
+- Khi chạy các lệnh `gnocchi resource list` HOẶC `openstack metric resource list` thì output như dưới:
+	```sh
+	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
+	| id                        | type  | project_id                | user_id | original_resource_id      | started_at                | ended_at | revision_start               | revision_end |
+	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
+	| 7cef7f8a-24ef-48a0-95de-  | image | 428c840991bb426baa82e4e45 | None    | 7cef7f8a-24ef-48a0-95de-  | 2017-08-14T08:37:47.35056 | None     | 2017-08-14T08:37:47.350581+0 | None         |
+	| 0a6908b0c8c9              |       | 728809d                   |         | 0a6908b0c8c9              | 0+00:00                   |          | 0:00                         |              |
+	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
+	[
+	```
+
+- Do gnocchi client được thay thế bởi tập lệnh openstack client nên kết quả các lệnh là giống nhau. Có thể trong các phiên bản OpenStack khác OpenStack Newton thì câu lệnh sẽ khác nhau.
+
 #### 2.10. Thực thi script `noha_ctl_horizon.sh` để cài đặt Dashboad.
 - Cài đặt dashboad để cung cấp giao diện cho OpenStack.
 	```sh
@@ -502,3 +586,69 @@ openstack server list
 	```
 
 - Bạn cũng có thể login vào tài khoản demo để quan sát Object Storage ở tab http://prntscr.com/g18ik9
+
+
+### 7. Cài đặt Heat
+- Thực hiện script `noha_ctl_heat.sh` để cài đặt heat
+	```sh
+	bash noha_ctl_heat.sh
+	````
+
+- Sau khi thực hiện xong script, thực hiện lệnh `openstack orchestration service list` để kiểm tra heat đã hoạt động hay chưa. Kết quả như sau: 
+	```sh
+	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
+	| hostname    | binary      | engine_id                            | host        | topic  | updated_at                 | status |
+	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
+	| controller1 | heat-engine | ddcab7f5-04f8-4c78-83e9-976f763db61b | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	| controller1 | heat-engine | fc010868-416d-4728-9b0c-fb532d12e5dd | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	| controller1 | heat-engine | 4383b86b-0316-4e62-902a-721979e1bc50 | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	| controller1 | heat-engine | 6a8e6e4c-4c49-49fc-a698-e906137607fd | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
+	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
+	```
+	
+- Tải template mẫu dành cho heat
+
+	```sh
+	wget https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/conf/ctl/heat/demo-template.yml
+	```
+
+- Chuyển sang project demo để tạo stack ở project demo 
+
+	```sh
+	source /root/demo-openrc
+	```
+
+- Tạo biến `NET_ID` để sử dụng cho heat ở dưới. Lấy ID của provider network. 
+
+	```sh
+	export NET_ID=$(openstack network list | awk '/ provider / { print $2 }')
+	```
+
+- Thực hiện tạo stack 
+
+	```sh
+	openstack stack create -t demo-template.yml --parameter "NetID=$NET_ID" stack
+	```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

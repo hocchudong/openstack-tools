@@ -15,7 +15,7 @@ function echocolor {
 }
 
 function ops_edit {
-    crudini --set $1 $2 $3 $4
+    crudini --set "$1" "$2" "$3" "$4"
 }
 
 # Cach dung
@@ -28,7 +28,7 @@ function ops_edit {
 
 # Ham de del mot dong trong file cau hinh
 function ops_del {
-    crudini --del $1 $2 $3
+    crudini --del "$1" "$2" "$3"
 }
 
 function copykey {
@@ -42,7 +42,7 @@ function copykey {
 function setup_config {
         for IP_ADD in $CTL1_IP_NIC1 $COM1_IP_NIC1 $COM2_IP_NIC1
         do
-                scp /root/OpenStack-Newton-No-HA/config.cfg root@$IP_ADD:/root/
+                scp ./config.cfg root@$IP_ADD:/root/
                 chmod +x config.cfg
 
         done
@@ -78,13 +78,13 @@ EOF
 
 }
 
-function install_repo {
+function install_repo_openstack {
         for IP_ADD in $CTL1_IP_NIC1 $COM1_IP_NIC1 $COM2_IP_NIC1
         do
             echocolor "Cai dat install_repo tren $IP_ADD"
             sleep 3
         ssh root@$IP_ADD << EOF 
-yum -y install centos-release-openstack-newton
+yum -y install centos-release-openstack-pike
 yum -y upgrade
 yum -y install crudini wget vim
 yum -y install python-openstackclient openstack-selinux python2-PyMySQL
@@ -141,7 +141,7 @@ EOF
         done        
 }
 
-function install_memcached {
+function install_memcached() {
         yum -y install memcached python-memcached
         cp /etc/sysconfig/memcached /etc/sysconfig/memcached.orig
         IP_LOCAL=`ip -o -4 addr show dev ens160 | sed 's/.* inet \([^/]*\).*/\1/'`
@@ -169,7 +169,7 @@ install_proxy
 echocolor "Cai dat repo tren cac node"
 sleep 3
 install_repo_galera
-install_repo
+install_repo_openstack
 
 echocolor "Cau hinh hostname"
 sleep 3

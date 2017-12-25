@@ -110,7 +110,7 @@
 - Kiểm tra lại xem registry đã hoạt động hay chưa
 
   ```sh
-  curl http://192.168.0.159:4000/v2/lokolla/centos-source-memcached/tags/list
+  curl http://172.16.68.202:4000/v2/lokolla/centos-source-memcached/tags/list
   ```
  
  - Kết quả là: 
@@ -156,7 +156,24 @@
   
 - Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla 
 
-
+  ```sh
+  sed -i 's/#kolla_base_distro: "centos"/kolla_base_distro: "centos"/g' /etc/kolla/globals.yml
+  sed -i 's/#kolla_install_type: "binary"/kolla_install_type: "source"/g' /etc/kolla/globals.yml
+  sed -i 's/#openstack_release: ""/openstack_release: "5.0.1"/g' /etc/kolla/globals.yml
+  sed -i 's/kolla_internal_vip_address: "10.10.10.254"/kolla_internal_vip_address: "172.16.68.202"/g' /etc/kolla/globals.yml
+  sed -i 's/#docker_registry: "172.16.0.10:4000"/docker_registry: "172.16.68.202:4000"/g' /etc/kolla/globals.yml
+  sed -i 's/#docker_namespace: "companyname"/docker_namespace: "lokolla"/g' /etc/kolla/globals.yml
+  sed -i 's/#network_interface: "eth0"/network_interface: "eth1"/g' /etc/kolla/globals.yml
+  sed -i 's/#neutron_external_interface: "eth1"/neutron_external_interface: "eth2"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_aodh: "no"/enable_aodh: "yes"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_ceilometer: "no"/enable_ceilometer: "yes"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_gnocchi: "no"/enable_gnocchi: "yes"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_central_logging: "no"/enable_central_logging: "yes"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_grafana: "no"/enable_grafana: "yes"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_haproxy: "yes"/enable_haproxy: "no"/g' /etc/kolla/globals.yml
+  sed -i 's/#enable_redis: "no"/enable_redis: "yes"/g' /etc/kolla/globals.yml
+  sed -i 's/#nova_compute_virt_type: "kvm"/nova_compute_virt_type: "qemu"/g' /etc/kolla/globals.yml
+  ```
 
 ### Cài đặt openstack
 

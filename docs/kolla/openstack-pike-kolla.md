@@ -41,3 +41,29 @@ yum install -y epel-release
 yum install -y git wget ansible gcc python-devel python-pip yum-utils byobu
 ````
  
+- Cài đặt docker 
+
+
+```sh
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+yum install -y docker-ce
+```
+
+- Cấu hình docker 
+
+```sh
+mkdir /etc/systemd/system/docker.service.d
+
+tee /etc/systemd/system/docker.service.d/kolla.conf << 'EOF'
+[Service]
+MountFlags=shared
+EOF
+```
+
+- Khai báo đường dẫn registry cho docker 
+
+```sh
+sed -i 's/\/usr\/bin\/dockerd/\/usr\/bin/dockerd --insecure-registry 172.16.68.202:4000/g' /usr/lib/systemd/system/docker.service
+```
+ 

@@ -97,7 +97,13 @@
   mkdir /opt/registry
 
   tar xf centos-source-registry-pike.tar.gz -C /opt/registry
+  ```
+  
+- Tới đây nên tắt máy đi và snapshot lại nếu triển khai trên các máy ảo - mục tiêu là để cài lại nếu có nhu cầu thì việc tải các images và đặt vào registry đã sẵn sàng.
 
+- Tạo container chạy registry.
+
+  ```sh
   docker run -d -p 4000:5000 --restart=always --name registry -v /opt/registry:/var/lib/registry registry
   ```
 

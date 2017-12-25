@@ -68,7 +68,7 @@
 - Khai báo đường dẫn registry cho docker 
 
   ```sh
-  sed -i 's/\/usr\/bin\/dockerd/\/usr\/bin/dockerd --insecure-registry 172.16.68.202:4000/g' /usr/lib/systemd/system/docker.service
+  sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin/dockerd --insecure-registry 172.16.68.202:4000/g" /usr/lib/systemd/system/docker.service
   ```
 
 - Khởi động và kích hoạt docker 

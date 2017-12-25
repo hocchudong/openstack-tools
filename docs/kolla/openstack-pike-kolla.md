@@ -50,11 +50,15 @@
   yum install -y docker-ce
   ```
 
-- Cấu hình docker 
+- Tạo thư mục đưới 
 
   ```sh
   mkdir /etc/systemd/system/docker.service.d
+  ```
+  
+- Khai báo file cấu hình cho kolla 
 
+  ```sh
   tee /etc/systemd/system/docker.service.d/kolla.conf << 'EOF'
   [Service]
   MountFlags=shared

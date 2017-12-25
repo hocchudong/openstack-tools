@@ -68,7 +68,7 @@
 - Khai báo đường dẫn registry cho docker 
 
   ```sh
-  sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin/dockerd --insecure-registry 172.16.68.202:4000/g" /usr/lib/systemd/system/docker.service
+  sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.202:4000/g" /usr/lib/systemd/system/docker.service
   ```
 
 - Khởi động và kích hoạt docker 
@@ -84,7 +84,10 @@
 - Tải image pike dành cho docker, các image này có dung lượng ~ 4 GB, thời gian lâu hay chậm thì phụ thuộc vào tốc độ mạng. 
 
   ```sh
+  byobu
+  
   cd /root
+  
   wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.gz
   ```
 
@@ -109,3 +112,33 @@
    ```sh
    {"name":"lokolla/centos-source-memcached","tags":["5.0.1"]}
    ```
+   
+### Tải kolla-ansible
+
+- Tải kolla 
+
+  ```sh
+  cd /opt
+
+  git clone https://github.com/openstack/kolla-ansible.git -b stable/pike
+  
+  cd kolla-ansible
+  
+  pip install -r requirements.txt
+  
+  python setup.py install
+  
+  cp -r /usr/share/kolla-ansible/etc_examples/kolla /etc/kolla/
+  
+  cp /usr/share/kolla-ansible/ansible/inventory/* .
+  ```
+
+- Tạo file chứa mật khẩu
+
+  ```sh
+  kolla-genpwd
+  ```
+  
+- File chứa mật khẩu sẽ nằm tại `/etc/kolla/passwords.yml`
+
+- Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla 

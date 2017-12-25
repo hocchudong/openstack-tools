@@ -141,4 +141,35 @@
   
 - File chứa mật khẩu sẽ nằm tại `/etc/kolla/passwords.yml`
 
+- Cài đặt ansible 2.2 đối với openstack pike 
+
+  ```sh
+  pip uninstall ansible
+  pip install ansible==2.2
+  ```
+  
 - Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla 
+
+
+
+### Cài đặt openstack
+
+- Kiểm tra trước khi cài 
+
+```sh
+cd /opt/kolla-ansible/
+
+kolla-ansible prechecks -i all-in-one
+```
+
+- Cài đặt openstack bằng kolla 
+
+```sh
+kolla-ansible deploy -i all-in-one
+```
+
+- Kiểm tra lại sau khi cài đặt xong 
+
+```sh
+kolla-ansible post-deploy
+```

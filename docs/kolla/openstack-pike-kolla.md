@@ -310,6 +310,23 @@ kolla-ansible prechecks -i all-in-one
   EXT_NET_GATEWAY='192.168.20.1'
   ```
 
+- Tiếp tục sửa file `/usr/share/kolla-ansible/init-runonce`, bỏ tùy chọn `--no-dhcp` trong dòng dưới để có thể gắn máy ảo vào dải provider network, bởi vì khi gắn máy ảo vào dải provider network sẽ cần có dhcp-agent cấp metadata.
+
+```sh
+openstack subnet create --no-dhcp \
+    --allocation-pool ${EXT_NET_RANGE} --network public1 \
+    --subnet-range ${EXT_NET_CIDR} --gateway ${EXT_NET_GATEWAY} public1-subnet
+```
+
+ - Dòng mới sẽ trở thành 
+ 
+  ```sh
+   openstack subnet create \
+      --allocation-pool ${EXT_NET_RANGE} --network public1 \
+      --subnet-range ${EXT_NET_CIDR} --gateway ${EXT_NET_GATEWAY} public1-subnet
+  ```
+
+
 - Thực thi file dưới để thiết lập các khai báo về network, subnet, router, tải image cirros, tạo keypair, flavor cho hệ thống OpenStack. Trong quá trình thiết lập, màn hình nhắc lệnh để đồng ý tạo keypair, hãy ấn `Enter`
 
   ```sh

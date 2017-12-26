@@ -4,8 +4,15 @@
 
 ### Mô trường
 - OS: CentOS 7.4
-- NIC1 (API + MNGT Network): IP address 172.16.68.202, subnetmask: 255.255.255.0, gateway: 172.16.68.1
-- NIC2 (Public network): IP address 192.168.20.202 / 24, gateway: 192.168.20.1
+- NIC1 (API + MNGT Network): 
+  - IP address 172.16.68.202
+  - Subnet mask: 255.255.255.0
+  - Gateway: 172.16.68.1
+- NIC2 (Public network), dải này VM ra vào internet. Khi đặt IP cho máy cài Kolla thì không cần đặt gateway (gateway dùng cho các VM sau này).
+  - IP address 192.168.20.202 
+  - Subnet mask: 255.255.255.0
+  - Gateway: 192.168.20.1
+  
 - Mô hình:
 
 
@@ -65,7 +72,7 @@
   EOF
   ```
 
-- Khai báo đường dẫn registry cho docker 
+- Khai báo đường dẫn registry cho docker, lưu ý thay IP cho phù hợp với hệ thống của các bạn.
 
   ```sh
   sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.202:4000/g" /usr/lib/systemd/system/docker.service
@@ -107,7 +114,7 @@
   docker run -d -p 4000:5000 --restart=always --name registry -v /opt/registry:/var/lib/registry registry
   ```
 
-- Kiểm tra lại xem registry đã hoạt động hay chưa
+- Kiểm tra lại xem registry đã hoạt động hay chưa, IP sẽ hiển thị theo thực tế trong lab của bạn.
 
   ```sh
   curl http://172.16.68.202:4000/v2/lokolla/centos-source-memcached/tags/list
@@ -139,22 +146,20 @@
   cp /usr/share/kolla-ansible/ansible/inventory/* .
   ```
 
-- Tạo file chứa mật khẩu
+- Tạo file chứa mật khẩu bằng lệnh dưới, sau khi kết thúc lệnh thì file chứa mật khẩu sẽ nằm tại `/etc/kolla/passwords.yml`
 
   ```sh
   kolla-genpwd
   ```
   
-- File chứa mật khẩu sẽ nằm tại `/etc/kolla/passwords.yml`
-
 - Cài đặt ansible 2.2 đối với openstack pike 
 
   ```sh
-  pip uninstall ansible
+  pip uninstall -y ansible
   pip install ansible==2.2
   ```
   
-- Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla 
+- Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla. Lưu ý: IP `172.16.68.202` có thể được thay theo thực tế của môi trường lab mà bạn sử dụng.
 
   ```sh
   sed -i 's/#kolla_base_distro: "centos"/kolla_base_distro: "centos"/g' /etc/kolla/globals.yml

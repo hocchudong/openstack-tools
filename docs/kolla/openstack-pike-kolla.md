@@ -5,17 +5,16 @@
 ### Mô trường
 - OS: CentOS 7.4
 - NIC1 - eth0 (Dải dùng để dự phòng cho các mục đích khác - dải này không cần ra internet): 
-  - IP address 172.16.68.202
+  - IP address: 10.10.10.202
   - Subnet mask: 255.255.255.0
-  - Gateway: 172.16.68.1
 - NIC2 - eth1: dải mạng sử dụng cho API của OpenStack và MNGT Network
   - IP address 172.16.68.202
   - Subnet mask: 255.255.255.0
-  - Gateway: 172.16.68.1
+  - Gateway: 172.16.68.1 (khi cấu hình địa chỉ IP cho máy cài đặt kolla thì sử dụng gateway này)
 - NIC3 - eth2: Đây là dải để cấp public network, dải này VM ra vào internet. Khi đặt IP cho máy cài Kolla thì không cần đặt gateway (gateway dùng cho các VM sau này).
   - IP address 192.168.20.202 
   - Subnet mask: 255.255.255.0
-  - Gateway: 192.168.20.1
+  - Gateway: 192.168.20.1 (Không cần đặt gateway này khi cấu hình cho máy cài đặt kolla.
   
 - Mô hình:
 

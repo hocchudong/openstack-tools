@@ -282,8 +282,45 @@ kolla-ansible prechecks -i all-in-one
   EXT_NET_GATEWAY='192.168.20.1'
   ```
 
-- Thực thi file dưới để thiết lập các khai báo về network, tải image cirros cho hệ thống OpenStack. 
+- Thực thi file dưới để thiết lập các khai báo về network, subnet, router, tải image cirros, tạo keypair, flavor cho hệ thống OpenStack. Trong quá trình thiết lập, màn hình nhắc lệnh để đồng ý tạo keypair, hãy ấn `Enter`
 
   ```sh
   bash /usr/share/kolla-ansible/init-runonce
   ```
+  
+- Kết quả sẽ hiển thị thông báo tạo máy ảo.
+
+  ```sh
+  Done.
+
+  To deploy a demo instance, run:
+
+  openstack server create \
+      --image cirros \
+      --flavor m1.tiny \
+      --key-name mykey \
+      --nic net-id=864371f9-4080-47f3-a6fa-d6e339d4863d \
+      demo1
+  [root@srv1kolla ~]#
+  ```
+  
+- Thực thi đoạn lệnh dưới để tạo máy ảo.
+
+```sh
+openstack server create \
+    --image cirros \
+    --flavor m1.tiny \
+    --key-name mykey \
+    --nic net-id=864371f9-4080-47f3-a6fa-d6e339d4863d \
+    demo1
+```
+
+- Để xem mật khẩu của tài khoản admin trong openstack, xem nội dung file `cat /etc/kolla/admin-openrc.sh`. Sử dụng mật khẩu đó để đăng nhập vào horizon của OpenStack, trong hướng dẫn này là `172.16.68.202`.
+
+- Ngoài ra bạn còn có thể đăng nhập vào các hệ thống khác mà kolla đã cài đặt. Mật khẩu của các tài khoản này xem tại file `/etc/kolla/passwords.yml`
+ - Đăng nhập vào grafana: http://172.16.68.202:3000
+ - Đăn nhập vào kibana: http://172.16.68.202:5601
+ 
+- Có thể kiểm tra xem kolla đã tạo các container gì bằng lệnh `docker ps`, việc sử dụng các container này các bạn vọc ở các ghi chép về container khác nhé ;).
+
+

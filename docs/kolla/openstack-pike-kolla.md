@@ -8,11 +8,11 @@
   - IP address: 10.10.10.202
   - Subnet mask: 255.255.255.0
 - NIC2 - eth1: dải mạng sử dụng cho API của OpenStack và MNGT Network
-  - IP address 172.16.68.202
+  - IP address: 172.16.68.202
   - Subnet mask: 255.255.255.0
   - Gateway: 172.16.68.1 (khi cấu hình địa chỉ IP cho máy cài đặt kolla thì sử dụng gateway này)
-- NIC3 - eth2: Đây là dải để cấp public network, dải này VM ra vào internet. Khi đặt IP cho máy cài Kolla thì không cần đặt gateway (gateway dùng cho các VM sau này).
-  - IP address 192.168.20.202 
+- NIC3 - eth2: Đây là dải để cấp public network, dải này VM ra vào internet. Khi đặt IP cho máy cài Kolla thì không cần đặt gateway (gateway dùng cho các VM sau này). Trong hướng dẫn này tôi sẽ quy hoạch ip từ 192.168.20.150 tới 192.168.20.170 để cấp cho các máy ảo ở các bước dưới.
+  - IP address: 192.168.20.202 
   - Subnet mask: 255.255.255.0
   - Gateway: 192.168.20.1 (Không cần đặt gateway này khi cấu hình cho máy cài đặt kolla.
   
@@ -23,36 +23,59 @@
 
 - Đặt hostname
 
-```sh
-
-```
+  ```sh
+  hostnamectl set-hostname srv1kolla
+  ```
 
 
 - Đặt IP 
 
   ```sh
+  echo "Setup IP  eth0"
+  nmcli c modify eth0 ipv4.addresses 10.10.10.202/24
+  nmcli c modify eth0 ipv4.method manual
+  nmcli con mod eth0 connection.autoconnect yes
 
+  echo "Setup IP  eth1"
+  nmcli c modify eth1 ipv4.addresses 172.16.68.202/24
+  nmcli c modify eth1 ipv4.gateway 172.16.68.1
+  nmcli c modify eth1 ipv4.dns 8.8.8.8
+  nmcli c modify eth1 ipv4.method manual
+  nmcli con mod eth1 connection.autoconnect yes
+
+  echo "Setup IP  eth2"
+  nmcli c modify eth2 ipv4.addresses 192.168.20.202/24
+  nmcli c modify eth2 ipv4.method manual
+  nmcli con mod eth2 connection.autoconnect yes
   ```
 
 - Cấu hình cơ bản và và khởi động lại
 
   ```sh
-
+  sudo systemctl disable firewalld
+  sudo systemctl stop firewalld
+  sudo systemctl disable NetworkManager
+  sudo systemctl stop NetworkManager
+  sudo systemctl enable network
+  sudo systemctl start network
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+  
+  init 6
   ```
-
 
 ### Cài đặt các gói phụ trợ cho kolla
 
 - Cài đặt các gói phụ trợ
 
-  ```sh
+  ```sh  
   yum install -y epel-release
-
+  yum update -y
+  
   yum install -y git wget ansible gcc python-devel python-pip yum-utils byobu
   ````
  
 - Cài đặt docker 
-
 
   ```sh
   yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
@@ -326,7 +349,7 @@ openstack server create \
 
 - Ngoài ra bạn còn có thể đăng nhập vào các hệ thống khác mà kolla đã cài đặt. Mật khẩu của các tài khoản này xem tại file `/etc/kolla/passwords.yml`
  - Đăng nhập vào grafana: http://172.16.68.202:3000
- - Đăn nhập vào kibana: http://172.16.68.202:5601
+ - Đăng nhập vào kibana: http://172.16.68.202:5601
  
 - Có thể kiểm tra xem kolla đã tạo các container gì bằng lệnh `docker ps`, việc sử dụng các container này các bạn vọc ở các ghi chép về container khác nhé ;). Kết quả của lênh `docker ps` trong hướng dẫn này là 
 

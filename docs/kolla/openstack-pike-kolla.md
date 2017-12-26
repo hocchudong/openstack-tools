@@ -316,6 +316,8 @@ openstack server create \
 
 - Để xem mật khẩu của tài khoản admin trong openstack, xem nội dung file `cat /etc/kolla/admin-openrc.sh`. Sử dụng mật khẩu đó để đăng nhập vào horizon của OpenStack, trong hướng dẫn này là `172.16.68.202`.
 
+- Cần thực hiện floating ip cho máy ảo `demo1` đã tạo ở trên vì chúng ta vừa tạo máy ảo và gắn vào dải mạng selfservice-network, quan sát trong ảnh: http://prntscr.com/hsgb9f
+
 - Ngoài ra bạn còn có thể đăng nhập vào các hệ thống khác mà kolla đã cài đặt. Mật khẩu của các tài khoản này xem tại file `/etc/kolla/passwords.yml`
  - Đăng nhập vào grafana: http://172.16.68.202:3000
  - Đăn nhập vào kibana: http://172.16.68.202:5601

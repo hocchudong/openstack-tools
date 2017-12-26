@@ -202,12 +202,40 @@ kolla-ansible prechecks -i all-in-one
 
 - Cài đặt openstack bằng kolla 
 
-```sh
-kolla-ansible deploy -i all-in-one
-```
+  ```sh
+  kolla-ansible deploy -i all-in-one
+  ```
+
+- Sau khi cài đặt xong ta sẽ có màn hình thông báo kết quả như dưới
+
+  ```sh
+  TASK [common : Registering common role has run] ********************************
+  skipping: [localhost]
+
+  TASK [skydive : include] *******************************************************
+  skipping: [localhost]
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=313  changed=198  unreachable=0    failed=0
+  ```
 
 - Kiểm tra lại sau khi cài đặt xong 
 
-```sh
-kolla-ansible post-deploy
-```
+  ```sh
+  kolla-ansible post-deploy
+  ```
+
+- Kết quả như dưới là ok:
+
+  ```sh
+  PLAY [Creating admin openrc file on the deploy node] ***************************
+
+  TASK [setup] *******************************************************************
+  ok: [localhost]
+
+  TASK [template] ****************************************************************
+  changed: [localhost]
+
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=2    changed=1    unreachable=0    failed=0
+  ```

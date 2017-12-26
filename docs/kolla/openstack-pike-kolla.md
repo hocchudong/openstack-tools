@@ -185,6 +185,16 @@ cd /opt/kolla-ansible/
 kolla-ansible prechecks -i all-in-one
 ```
 
+- Kết quả như sau là ok.
+
+  ```sh
+  PLAY RECAP *********************************************************************
+  localhost                  : ok=73   changed=0    unreachable=0    failed=0
+
+  [root@compute1 kolla-ansible]#
+
+  ```
+
 - Cài đặt openstack bằng kolla 
 
 ```sh

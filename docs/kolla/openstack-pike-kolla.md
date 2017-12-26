@@ -4,11 +4,15 @@
 
 ### Mô trường
 - OS: CentOS 7.4
-- NIC1 (API + MNGT Network): 
+- NIC1 - eth0 (Dải dùng để dự phòng cho các mục đích khác - dải này không cần ra internet): 
   - IP address 172.16.68.202
   - Subnet mask: 255.255.255.0
   - Gateway: 172.16.68.1
-- NIC2 (Public network), dải này VM ra vào internet. Khi đặt IP cho máy cài Kolla thì không cần đặt gateway (gateway dùng cho các VM sau này).
+- NIC2 - eth1: dải mạng sử dụng cho API của OpenStack và MNGT Network
+  - IP address 172.16.68.202
+  - Subnet mask: 255.255.255.0
+  - Gateway: 172.16.68.1
+- NIC3 - eth2: Đây là dải để cấp public network, dải này VM ra vào internet. Khi đặt IP cho máy cài Kolla thì không cần đặt gateway (gateway dùng cho các VM sau này).
   - IP address 192.168.20.202 
   - Subnet mask: 255.255.255.0
   - Gateway: 192.168.20.1
@@ -238,4 +242,48 @@ kolla-ansible prechecks -i all-in-one
 
   PLAY RECAP *********************************************************************
   localhost                  : ok=2    changed=1    unreachable=0    failed=0
+  ```
+
+### Cấu hình cho OpenStack trước khi sử dụng
+
+
+- Cài gói OpenStack Client
+
+  ```sh
+  pip install python-openstackclient
+  ```
+  
+- Sau khi sửa xong thực thi biến môi trường để sử dụng các lệnh của openstack, có thể mở file `/etc/kolla/admin-openrc.sh` ra xem mật khẩu của tài khoản admin trong OpenStack 
+  
+  ```sh
+  source /etc/kolla/admin-openrc.sh
+  ```
+  
+- Kiểm tra hoạt động của OpenStack bằng lệnh `openstack token issue` sẽ có kết quả như dưới.
+
+  ```sh
+  [root@srv1kolla ~]# openstack token issue
+  +------------+----------------------------------+
+  | Field      | Value                            |
+  +------------+----------------------------------+
+  | expires    | 2017-12-26T14:46:59+0000         |
+  | id         | df158a1058824fc986ae1b6fc01c4a18 |
+  | project_id | 600b721c249344d0ac9b96b0536772e1 |
+  | user_id    | 49b00a4612864cceb7d6aefd0595fd09 |
+  +------------+----------------------------------+
+  [root@srv1kolla ~]#
+  ```
+   
+- Sửa file `/usr/share/kolla-ansible/init-runonce` để khai báo network, tạo image ... cho phù hợp với hệ thống của bạn. Trong hướng dẫn này sẽ cấp dải IP của public network từ `192.168.20.150`  đến `192.168.20.170`, dải này trùng với dải của NIC2 (eth2) được khai báo ở trên. Sửa 03 dòng trong file `/usr/share/kolla-ansible/init-runonce` tương ứng với nội dung dưới. 
+
+  ```sh
+  EXT_NET_CIDR='192.168.20.0/24'
+  EXT_NET_RANGE='start=192.168.20.150,end=192.168.20.170'
+  EXT_NET_GATEWAY='192.168.20.1'
+  ```
+
+- Thực thi file dưới để thiết lập các khai báo về network, tải image cirros cho hệ thống OpenStack. 
+
+  ```sh
+  bash /usr/share/kolla-ansible/init-runonce
   ```

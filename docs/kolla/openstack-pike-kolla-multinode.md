@@ -74,6 +74,11 @@
   sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
   ```
 
+- Khởi động lại, sau đó trong các bước tiếp theo đăng nhập bằng IP mới và tài khoản `root`
+
+  ```sh
+  init 6
+  ```
 
 #### 4.1.2. Đặt hostname, IP và cấu hình các gói cơ bản cho `controller1` 
 
@@ -113,3 +118,132 @@
   sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
   sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
   ```
+
+- Khởi động lại, sau đó trong các bước tiếp theo đăng nhập bằng IP mới và tài khoản `root`
+
+  ```sh
+  init 6
+  ```
+
+#### 4.1.3. Đặt hostname, IP và cấu hình các gói cơ bản cho `compute1` 
+
+
+- Đặt hostname cho `compute1`
+
+  ```sh
+  hostnamectl set-hostname compute1
+  ```
+
+- Đặt IP cho `compute1` và cấu hình cơ bản
+
+  ```sh
+  echo "Setup IP  eth0"
+  nmcli c modify eth0 ipv4.addresses 10.10.10.202/24
+  nmcli c modify eth0 ipv4.method manual
+  nmcli con mod eth0 connection.autoconnect yes
+
+  echo "Setup IP  eth1"
+  nmcli c modify eth1 ipv4.addresses 172.16.68.202/24
+  nmcli c modify eth1 ipv4.gateway 172.16.68.1
+  nmcli c modify eth1 ipv4.dns 8.8.8.8
+  nmcli c modify eth1 ipv4.method manual
+  nmcli con mod eth1 connection.autoconnect yes
+
+  echo "Setup IP  eth2"
+  nmcli c modify eth2 ipv4.addresses 192.168.20.202/24
+  nmcli c modify eth2 ipv4.method manual
+  nmcli con mod eth2 connection.autoconnect yes
+
+  sudo systemctl disable firewalld
+  sudo systemctl stop firewalld
+  sudo systemctl disable NetworkManager
+  sudo systemctl stop NetworkManager
+  sudo systemctl enable network
+  sudo systemctl start network
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+  ```
+
+- Khởi động lại, sau đó trong các bước tiếp theo đăng nhập bằng IP mới và tài khoản `root`
+
+  ```sh
+  init 6
+  ```
+  
+#### 4.1.4. Đặt hostname, IP và cấu hình các gói cơ bản cho `compute2` 
+
+
+- Đặt hostname cho `compute2`
+
+  ```sh
+  hostnamectl set-hostname compute2
+  ```
+  
+- - Đặt IP cho `compute2` và cấu hình cơ bản
+
+  ```sh
+  echo "Setup IP  eth0"
+  nmcli c modify eth0 ipv4.addresses 10.10.10.203/24
+  nmcli c modify eth0 ipv4.method manual
+  nmcli con mod eth0 connection.autoconnect yes
+
+  echo "Setup IP  eth1"
+  nmcli c modify eth1 ipv4.addresses 172.16.68.203/24
+  nmcli c modify eth1 ipv4.gateway 172.16.68.1
+  nmcli c modify eth1 ipv4.dns 8.8.8.8
+  nmcli c modify eth1 ipv4.method manual
+  nmcli con mod eth1 connection.autoconnect yes
+
+  echo "Setup IP  eth2"
+  nmcli c modify eth2 ipv4.addresses 192.168.20.203/24
+  nmcli c modify eth2 ipv4.method manual
+  nmcli con mod eth2 connection.autoconnect yes
+
+  sudo systemctl disable firewalld
+  sudo systemctl stop firewalld
+  sudo systemctl disable NetworkManager
+  sudo systemctl stop NetworkManager
+  sudo systemctl enable network
+  sudo systemctl start network
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+  sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+  ```
+
+
+Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi trường ảo hóa thì có thể snapshot lại để dùng lại nhiều lần.
+  
+### 4.2. Cấu hình các gói hỗ trợ cho việc sử dụng kolla-ansible
+
+#### 4.2.1. Thực hiện trên node `deployserver`
+
+- Cài đặt các gói phụ trợ cho `kolla-ansible` trên `deployserver`
+  ```
+  yum install -y epel-release
+  yum update -y
+
+  yum install -y git wget ansible gcc python-devel python-pip yum-utils byobu
+  ```
+
+- Cài đặt docker trên `deployserver`
+
+  ```sh
+  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+  yum install -y docker-ce
+  ```
+
+- Cấu hình cho docker 
+```sh
+mkdir /etc/systemd/system/docker.service.d
+
+tee /etc/systemd/system/docker.service.d/kolla.conf << 'EOF'
+[Service]
+MountFlags=shared
+EOF
+```
+
+- Khai báo registry cho các host cài docker.
+
+```sh
+sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.202:4000/g" /usr/lib/systemd/system/docker.service
+```

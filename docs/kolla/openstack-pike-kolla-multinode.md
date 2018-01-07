@@ -48,19 +48,19 @@
 
   ```sh
   echo "Setup IP  eth0"
-  nmcli c modify eth0 ipv4.addresses 10.10.10.199/24
+  nmcli c modify eth0 ipv4.addresses 10.10.10.200/24
   nmcli c modify eth0 ipv4.method manual
   nmcli con mod eth0 connection.autoconnect yes
 
   echo "Setup IP  eth1"
-  nmcli c modify eth1 ipv4.addresses 172.16.68.199/24
+  nmcli c modify eth1 ipv4.addresses 172.16.68.200/24
   nmcli c modify eth1 ipv4.gateway 172.16.68.1
   nmcli c modify eth1 ipv4.dns 8.8.8.8
   nmcli c modify eth1 ipv4.method manual
   nmcli con mod eth1 connection.autoconnect yes
 
   echo "Setup IP  eth2"
-  nmcli c modify eth2 ipv4.addresses 192.168.20.199/24
+  nmcli c modify eth2 ipv4.addresses 192.168.20.200/24
   nmcli c modify eth2 ipv4.method manual
   nmcli con mod eth2 connection.autoconnect yes
 

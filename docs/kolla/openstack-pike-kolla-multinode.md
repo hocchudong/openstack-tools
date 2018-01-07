@@ -224,6 +224,13 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   yum install -y git wget ansible gcc python-devel python-pip yum-utils byobu
   ```
 
+- Gỡ ansible 2.4.2.0 trên CentOS 7.4 64 bit vì không tương thích với phiên bản của kolla 5.0.1 (phiên bản kolla để cài OpenStack Pike)
+
+  ```sh
+  pip uninstall -y ansible
+  pip install ansible==2.2
+  ```
+  
 - Cài đặt docker trên `deployserver`
 
   ```sh
@@ -245,5 +252,13 @@ EOF
 - Khai báo registry cho các host cài docker.
 
 ```sh
-sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.202:4000/g" /usr/lib/systemd/system/docker.service
+sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
+```
+
+- Khở động  và kích hoạt docker 
+
+```sh
+systemctl daemon-reload
+systemctl enable docker
+systemctl restart docker
 ```

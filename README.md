@@ -10,4 +10,4 @@
 
 - [Hướng dẫn sử dụng script OpenStack Pike không có HA](./docs/openstack-pike-scripts.md)
 
-- Hướng dẫn cài đặt OpenStack sử dụng Kolla-ansible trên một node](./docs/kolla/openstack-pike-kolla.md)
+- [Hướng dẫn cài đặt OpenStack sử dụng Kolla-ansible trên một node](./docs/kolla/openstack-pike-kolla.md)

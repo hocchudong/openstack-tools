@@ -262,3 +262,19 @@ systemctl daemon-reload
 systemctl enable docker
 systemctl restart docker
 ```
+
+
+
+#### Đứng trên controller1
+
+
+```sh
+
+cd /root
+
+scp root@172.16.68.200:~/.ssh/id_rsa.pub ./
+
+cat id_rsa.pub >> ~/.ssh/authorized_keys
+
+chmod 600 ~/.ssh/authorized_keys
+```

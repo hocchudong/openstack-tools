@@ -240,28 +240,26 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   ```
 
 - Cấu hình cho docker 
-```sh
-mkdir /etc/systemd/system/docker.service.d
+  ```sh
+  mkdir /etc/systemd/system/docker.service.d
 
-tee /etc/systemd/system/docker.service.d/kolla.conf << 'EOF'
-[Service]
-MountFlags=shared
-EOF
-```
+  tee /etc/systemd/system/docker.service.d/kolla.conf << 'EOF'
+  [Service]
+  MountFlags=shared
+  EOF
+  ```
 
 - Khai báo registry cho các host cài docker.
+  ```sh
+  sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
+  ```
 
-```sh
-sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
-```
-
-- Khở động  và kích hoạt docker 
-
-```sh
-systemctl daemon-reload
-systemctl enable docker
-systemctl restart docker
-```
+- Khở động  và kích hoạt docker.
+  ```sh
+  systemctl daemon-reload
+  systemctl enable docker
+  systemctl restart docker
+  ```
 
 
 

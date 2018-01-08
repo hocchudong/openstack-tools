@@ -239,6 +239,72 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   yum install -y docker-ce
   ```
 
+- Khở động  và kích hoạt docker.
+  ```sh
+  systemctl daemon-reload
+  systemctl enable docker
+  systemctl restart docker
+  ```
+
+- Tạo ssh key để sử dụng trong quá trình cài đặt, key này sẽ được copy sang các máy còn lại ở các bước dưới.
+
+  ```sh
+  ssh-keygen -t rsa
+  ```
+
+
+#### Đứng trên các node `controller1`, `compute1` thực hiện các bước sau.
+
+- Copy ssh key được tạo ra từ node `deployserver`, key này sẽ dùng để node `deployserver` điều khiển các node target thông qua `ansible`
+
+  ```sh
+
+  cd /root
+
+  scp root@172.16.68.200:~/.ssh/id_rsa.pub ./
+  ```
+  - Nhập mật khẩu của node `deployserver`
+  
+  ```sh
+
+  cat id_rsa.pub >> ~/.ssh/authorized_keys
+
+  chmod 600 ~/.ssh/authorized_keys
+  ```
+
+#### Cài đặt các gói phụ trợ và docker 
+
+  
+- Cài đặt docker trên `deployserver`
+
+  ```sh
+  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+  yum install -y docker-ce
+  ```
+
+- Cấu hình cho docker 
+  ```sh
+  mkdir /etc/systemd/system/docker.service.d
+
+  tee /etc/systemd/system/docker.service.d/kolla.conf << 'EOF'
+  [Service]
+  MountFlags=shared
+  EOF
+  ```
+
+- Khở động  và kích hoạt docker.
+  ```sh
+  systemctl daemon-reload
+  systemctl enable docker
+  systemctl restart docker
+  ```
+  
+  
+### Thực hiện deploy kolla
+
+- Đứng trên `deployserver` cấu hình cho docker
+
 - Cấu hình cho docker 
   ```sh
   mkdir /etc/systemd/system/docker.service.d
@@ -254,25 +320,45 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
   ```
 
-- Khở động  và kích hoạt docker.
-  ```sh
-  systemctl daemon-reload
-  systemctl enable docker
-  systemctl restart docker
-  ```
-
-
-
-#### Đứng trên controller1
-
+- Sửa file `multinode` cho phù hợp với mô hình 
 
 ```sh
-
-cd /root
-
-scp root@172.16.68.200:~/.ssh/id_rsa.pub ./
-
-cat id_rsa.pub >> ~/.ssh/authorized_keys
-
-chmod 600 ~/.ssh/authorized_keys
+....
 ```
+
+- Thực hiện lệnh dưới để cấu hình cho kolla, lệnh này sẽ truy cập sang các host target để kiểm tra và cài đặt.
+  ```sh
+  kolla-ansible -i multinode bootstrap-servers
+  ```
+  - Kết quả: http://prntscr.com/hxgoxq
+
+- Thực hiện lệnh dưới để kiểm tra trước khi deploy kolla
+
+  ```sh
+  kolla-ansible prechecks -i multinode
+  ```
+  - Kết quả: http://prntscr.com/hxgmkm
+
+- Sau khi ok hết, tiếp tục thực hiện lệnh để chính thức deploy openstack, tại bước này node `deployserver` sẽ thực hiện các task của `ansible` được viết trong các playbook và bắt đầu cài lên các máy theo lần lượt.
+
+  ```sh
+  kolla-ansible deploy -i multinode
+  ```
+  
+  - Một số hình ảnh về output của màn hình khi thực hiện lệnh trên: http://prntscr.com/hxgqn9 http://prntscr.com/hxgs8n http://prntscr.com/hxgsc4 http://prntscr.com/hxgu1z
+  
+ - Kết quả của lệnh trên cuối cùng sẽ như dưới
+    ```sh
+    PLAY RECAP *********************************************************************
+    172.16.68.201              : ok=190  changed=31   unreachable=0    failed=0
+    172.16.68.202              : ok=48   changed=9    unreachable=0    failed=0
+    localhost                  : ok=1    changed=0    unreachable=0    failed=0
+    ```
+    
+
+- Sau khi deploy xong, thực hiện lệnh dưới để kiểm tra trước khi sử dụng
+  ```sh
+  kolla-ansible post-deploy -i multinode
+
+  ```
+  - Kết quả: http://prntscr.com/hxijxx

@@ -1,4 +1,4 @@
-# Hướng dẫn triển khai OpenStack sử dụng công cụ OpenStack kolla-ansible
+## Hướng dẫn triển khai OpenStack sử dụng công cụ OpenStack kolla-ansible - mô hình multinode
 
 - Mục tiêu của `OpenStack kolla-ansible` là để:
   - Kolla dùng để triển khai các service (keystone, nova, neutron ....và cả của CEPH) bằng docker - hay còn gọi là containerized (container hóa). Lợi thế của docker là nhanh - nhỏ - nhẹ.
@@ -365,4 +365,90 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   - Kết quả: http://prntscr.com/hxijxx
   
 - Có thể truy cập vào các node controller1` và `compute1` để kiểm tra các container đã được cài trên từng node bằng lệnh `docker ps -a`. Tham khảo: https://gist.github.com/congto/6a44cf22412ba9101e4b580e2e2c1718
+
+### Sử dụng OpenStack
+
+
+- Cài đặt gói openstack-client để thực thi các lệnh của OpenStack
+
+  ```sh
+  pip install python-openstackclient
+  ```
+
+- Kiểm tra hoạt động của OpenStack bằng CLI
+
+- Thực thi biến môi trường tại file `/etc/kolla/admin-openrc.sh` (có thể mở ra xem mật khẩu admin để đăng nhập vào horizon)
+
+  ```sh
+  source /etc/kolla/admin-openrc.sh
+  ```
+  
+- Thực kiện một số lệnh dưới để kiểm tra hoạt động của OpenStack thông qua CLI
+
+  ```sh
+  openstack token issue
+  ```
+
+- Các lệnh khác: `openstack project list`, `openstack user list`
+
+
+### Tạo các khai báo ban đầu sau khi cài OpenStack xong\
+
+- Các khai báo ban đề về network, subnet, router, flavor, tải images security .... được khai báo trong script do kolla cung cấp.
+
+- Sửa file /usr/share/kolla-ansible/init-runonce để khai báo network, tạo image ... cho phù hợp với hệ thống của bạn. Trong hướng dẫn này, tôi sẽ sử dụng dải `192.168.20.0/24` để sử dụng cho provider network, dải IP sẽ cấp cho các máy ảo sẽ từ 192.168.20.171 đến 192.168.20.190, dải này trùng với dải của NIC2 (eth2) được khai báo ở trên. Trong thực tế, dải dành cho `provider network` sẽ là IP PUBLIC nhé. Do vậy sửa như bên dưới.
+
+  ```sh
+  EXT_NET_CIDR='192.168.20.0/24'
+  EXT_NET_RANGE='start=192.168.20.171,end=192.168.20.190'
+  EXT_NET_GATEWAY='192.168.20.1'
+  ```
+  
+- Tiếp tục sửa dòng `60` trong file `usr/share/kolla-ansible/init-runonce` để bỏ đoạn `--no-dhcp` để máy ảo có thể gắn trực tiếp vào provider network. Dòng dưới chưa sửa
+
+  ```sh
+  openstack subnet create --no-dhcp \
+      --allocation-pool ${EXT_NET_RANGE} --network public1 \
+      --subnet-range ${EXT_NET_CIDR} --gateway ${EXT_NET_GATEWAY} public1-subnet
+  ```
+
+- Sau khi sửa, dòng 60 sẽ thành
+
+  ```sh
+   openstack subnet create \
+      --allocation-pool ${EXT_NET_RANGE} --network public1 \
+      --subnet-range ${EXT_NET_CIDR} --gateway ${EXT_NET_GATEWAY} public1-subnet
+  ```
+- Sau khi sửa xong, ta thực hiện.
+
+  ```sh
+  bash /usr/share/kolla-ansible/init-runonce
+  ```
+
+- Kết quả cuối cùng sẽ hiển thị
+
+  ```sh
+  Done.
+
+  To deploy a demo instance, run:
+
+  openstack server create \
+      --image cirros \
+      --flavor m1.tiny \
+      --key-name mykey \
+      --nic net-id=864371f9-4080-47f3-a6fa-d6e339d4863d \
+      demo1
+  [root@srv1kolla ~]#
+  ````
+  
+- Tiếp tục thực hiện đoạn lệnh dưới để tạo máy ảo
+
+```sh
+openstack server create \
+    --image cirros \
+    --flavor m1.tiny \
+    --key-name mykey \
+    --nic net-id=864371f9-4080-47f3-a6fa-d6e339d4863d \
+    demo1
+```
 

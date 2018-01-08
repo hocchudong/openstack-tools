@@ -253,7 +253,7 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   ```
 
 
-#### Đứng trên các node `controller1`, `compute1` thực hiện các bước sau.
+#### 4.2.2. Đứng trên các node `controller1`, `compute1` thực hiện các bước sau.
 
 - Copy ssh key được tạo ra từ node `deployserver`, key này sẽ dùng để node `deployserver` điều khiển các node target thông qua `ansible`
 
@@ -272,10 +272,8 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   chmod 600 ~/.ssh/authorized_keys
   ```
 
-- Cài đặt các gói phụ trợ và docker 
+- Cài đặt các gói phụ trợ và docker trên các node target, trong hướng dẫn này là trên `controller1`, `compute1` và `compute2`
   
-- Cài đặt docker trên `deployserver`
-
   ```sh
   yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
@@ -305,7 +303,7 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   ```
   
   
-### Thực hiện deploy kolla
+### 5. Thực hiện deploy kolla
 
 - Đứng trên `deployserver` cấu hình cho docker
 
@@ -334,6 +332,13 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
   ```sh
   sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
   ```
+
+- Khởi động lại docker trên node `deployserver` sau khi khai báo đường dẫn của registry server. 
+  ```sh
+  systemctl daemon-reload
+  systemctl restart docker
+  ```
+
   
 - Tạo registry local để chứa các images này 
 
@@ -345,7 +350,7 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
   
 - Tới đây nên tắt máy đi và snapshot lại nếu triển khai trên các máy ảo - mục tiêu là để cài lại nếu có nhu cầu thì việc tải các images và đặt vào registry đã sẵn sàng.
 
-- Tạo container chạy registry.
+- Tạo container chạy registry. Đây chính là registry local được sử dụng cho toàn bộ các node target.
 
   ```sh
   docker run -d -p 4000:5000 --restart=always --name registry -v /opt/registry:/var/lib/registry registry
@@ -404,24 +409,22 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
   sed -i 's/#enable_haproxy: "yes"/enable_haproxy: "yes"/g' /etc/kolla/globals.yml
   sed -i 's/#nova_compute_virt_type: "kvm"/nova_compute_virt_type: "qemu"/g' /etc/kolla/globals.yml
     ```
-
-  
+ 
 - Sửa file `/opt/kolla-ansible/multinode` cho phù hợp với mô hình, các dòng cần sửa ở bên dưới.
 
-```sh
-[root@deployserver kolla-ansible]# cat multinode | egrep -v '^#|^$'
-[control]
-172.16.68.201
-[network]
-172.16.68.201
-[compute]
-172.16.68.202
-[monitoring]
-172.16.68.201
-[storage]
-172.16.68.202
-
-```
+  ```sh
+  [root@deployserver kolla-ansible]# cat multinode | egrep -v '^#|^$'
+  [control]
+  172.16.68.201
+  [network]
+  172.16.68.201
+  [compute]
+  172.16.68.202
+  [monitoring]
+  172.16.68.201
+  [storage]
+  172.16.68.202
+  ```
 
 - Thực hiện lệnh dưới để cấu hình cho kolla, lệnh này sẽ truy cập sang các host target để kiểm tra và cài đặt.
   ```sh
@@ -463,9 +466,9 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
   
 - Có thể truy cập vào các node controller1` và `compute1` để kiểm tra các container đã được cài trên từng node bằng lệnh `docker ps -a`. Tham khảo: https://gist.github.com/congto/6a44cf22412ba9101e4b580e2e2c1718
 
-### Sử dụng OpenStack
+### 6. Sử dụng OpenStack
 
-
+#### 6.1. Tải các gói bổ trợ cho openstack client trên node `deployserver`
 - Cài đặt gói openstack-client để thực thi các lệnh của OpenStack
 
   ```sh
@@ -489,7 +492,7 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
 - Các lệnh khác: `openstack project list`, `openstack user list`
 
 
-### Tạo các khai báo ban đầu sau khi cài OpenStack xong\
+### Tạo các khai báo ban đầu sau khi cài OpenStack xong
 
 - Các khai báo ban đề về network, subnet, router, flavor, tải images security .... được khai báo trong script do kolla cung cấp.
 
@@ -551,7 +554,7 @@ openstack server create \
 
 ```
 
-### Truy cập vào dashboad
+#### 6.2. Truy cập vào dashboad
 
 - Sử dụng IP VIP do đã khai báo ở bước sửa file `global.yml` bên trên, trong hướng dẫn này là 172.16.68.199. Mật khẩu trong file `/etc/kolla/admin-openrc.sh`
 

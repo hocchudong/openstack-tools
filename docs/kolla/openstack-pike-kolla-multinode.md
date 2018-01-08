@@ -272,8 +272,7 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   chmod 600 ~/.ssh/authorized_keys
   ```
 
-#### Cài đặt các gói phụ trợ và docker 
-
+- Cài đặt các gói phụ trợ và docker 
   
 - Cài đặt docker trên `deployserver`
 
@@ -292,7 +291,12 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   MountFlags=shared
   EOF
   ```
-
+  
+- Khai báo registry cho các host cài docker. Bước này được khai báo để khi các node target tải images thì sẽ tải từ node `deployserver`.
+  ```sh
+  sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
+  ```
+ 
 - Khở động  và kích hoạt docker.
   ```sh
   systemctl daemon-reload

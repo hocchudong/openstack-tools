@@ -361,4 +361,8 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   kolla-ansible post-deploy -i multinode
 
   ```
+ 
   - Kết quả: http://prntscr.com/hxijxx
+  
+- Có thể truy cập vào các node controller1` và `compute1` để kiểm tra các container đã được cài trên từng node bằng lệnh `docker ps -a`. Tham khảo: https://gist.github.com/congto/6a44cf22412ba9101e4b580e2e2c1718
+

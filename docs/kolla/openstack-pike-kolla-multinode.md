@@ -452,3 +452,7 @@ openstack server create \
     demo1
 ```
 
+### Truy cập vào dashboad
+
+- Sử dụng IP VIP do đã khai báo ở bước sửa file `global.yml` bên trên, trong hướng dẫn này là 172.16.68.199. Mật khẩu trong file `/etc/kolla/admin-openrc.sh`
+

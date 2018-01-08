@@ -253,8 +253,17 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   ```
 
 
-#### 4.2.2. Đứng trên các node `controller1`, `compute1` thực hiện các bước sau.
+#### 4.2.2. Đứng trên các node `controller1`, `compute1` và `compute2` thực hiện các bước sau.
 
+- Cài đặt các gói phụ trợ
+
+  ```sh  
+  yum install -y epel-release
+  yum update -y
+  
+  yum install -y git wget gcc python-devel python-pip yum-utils byobu
+  ````
+  
 - Copy ssh key được tạo ra từ node `deployserver`, key này sẽ dùng để node `deployserver` điều khiển các node target thông qua `ansible`
 
   ```sh
@@ -263,14 +272,14 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
 
   scp root@172.16.68.200:~/.ssh/id_rsa.pub ./
   ```
-  - Nhập mật khẩu của node `deployserver`
   
-  ```sh
+  - Nhập mật khẩu của node `deployserver`
+    ```sh
 
-  cat id_rsa.pub >> ~/.ssh/authorized_keys
+    cat id_rsa.pub >> ~/.ssh/authorized_keys
 
-  chmod 600 ~/.ssh/authorized_keys
-  ```
+    chmod 600 ~/.ssh/authorized_keys
+    ```
 
 - Cài đặt các gói phụ trợ và docker trên các node target, trong hướng dẫn này là trên `controller1`, `compute1` và `compute2`
   
@@ -319,16 +328,16 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
 
 - Tải full images của docker để triển khai các container. Dung lượng khoảng 4GB
 
-```sh
-byobu
+  ```sh
+  byobu
 
-cd /root
+  cd /root
 
-wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.gz
+  wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.gz
 
-````
+  ````
 
-- Khai báo registry cho các host cài docker.
+- Khai báo đường dẫn của registry local cho node `deployserver`. Lưu ý: Nếu IP của các bạn khác tôi thì cần khai báo lại.
   ```sh
   sed -i "s/\/usr\/bin\/dockerd/\/usr\/bin\/dockerd --insecure-registry 172.16.68.200:4000/g" /usr/lib/systemd/system/docker.service
   ```
@@ -394,7 +403,7 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
   kolla-genpwd
   ```
   
-- Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla. Lưu ý: IP `172.16.68.202` có thể được thay theo thực tế của môi trường lab mà bạn sử dụng.
+- Sửa file `/etc/kolla/globals.yml` để khai báo các thành phần cài trong kolla. Lưu ý: IP `172.16.68.202` có thể được thay theo thực tế của môi trường lab mà bạn sử dụng. Trong khai báo này tôi sẽ lựa chọn các project core của OpenStack để triển khai.
 
   ```sh
   sed -i 's/#kolla_base_distro: "centos"/kolla_base_distro: "centos"/g' /etc/kolla/globals.yml
@@ -410,10 +419,10 @@ wget http://tarballs.openstack.org/kolla/images/centos-source-registry-pike.tar.
   sed -i 's/#nova_compute_virt_type: "kvm"/nova_compute_virt_type: "qemu"/g' /etc/kolla/globals.yml
     ```
  
-- Sửa file `/opt/kolla-ansible/multinode` cho phù hợp với mô hình, các dòng cần sửa ở bên dưới.
+- Sửa file `/opt/kolla-ansible/multinode` cho phù hợp với mô hình, các dòng cần sửa ở bên dưới. Khai báo này sẽ chỉ ra vai trò của từng node theo mô hình của hướng dẫn, thành phần network sẽ được cài cùng với controller. Lưu ý sửa lại các dòng thừa bằng cách comment, sau khi sửa xong có thể dùng lệnh dưới, lệnh sẽ hiển thị phần đầu như đoạn bên dưới.
 
   ```sh
-  [root@deployserver kolla-ansible]# cat multinode | egrep -v '^#|^$'
+  [root@deployserver kolla-ansible]# cat /opt/kolla-ansible/multinode | egrep -v '^#|^$'
   [control]
   172.16.68.201
   [network]

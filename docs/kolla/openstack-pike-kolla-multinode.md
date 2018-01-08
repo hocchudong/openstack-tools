@@ -436,8 +436,9 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
       --image cirros \
       --flavor m1.tiny \
       --key-name mykey \
-      --nic net-id=864371f9-4080-47f3-a6fa-d6e339d4863d \
+      --nic net-id=48773589-05d2-4667-bb30-1918ec7fd35f \
       demo1
+
   [root@srv1kolla ~]#
   ````
   
@@ -448,8 +449,9 @@ openstack server create \
     --image cirros \
     --flavor m1.tiny \
     --key-name mykey \
-    --nic net-id=864371f9-4080-47f3-a6fa-d6e339d4863d \
+    --nic net-id=48773589-05d2-4667-bb30-1918ec7fd35f \
     demo1
+
 ```
 
 ### Truy cập vào dashboad

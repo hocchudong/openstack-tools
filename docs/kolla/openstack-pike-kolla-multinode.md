@@ -454,7 +454,11 @@ Tới đây đã xong bước setup cơ bản, nếu sử dụng trên các môi
   kolla-ansible deploy -i multinode
   ```
   
-  - Một số hình ảnh về output của màn hình khi thực hiện lệnh trên: http://prntscr.com/hxgqn9 http://prntscr.com/hxgs8n http://prntscr.com/hxgsc4 http://prntscr.com/hxgu1z
+  - Một số hình ảnh về output của màn hình khi thực hiện lệnh trên: 
+    - http://prntscr.com/hxgqn9 
+    - http://prntscr.com/hxgs8n 
+    - http://prntscr.com/hxgsc4 
+    - http://prntscr.com/hxgu1z
   
  - Kết quả của lệnh trên cuối cùng sẽ như dưới
     ```sh

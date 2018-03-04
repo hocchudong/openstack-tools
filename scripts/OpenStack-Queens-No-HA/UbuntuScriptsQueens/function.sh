@@ -1,7 +1,7 @@
 #!/bin/bash
 #Author HOC CHU DONG
 
-source config.sh
+source config.cfg
 
 function echocolor {
     echo "#######################################################################"

@@ -58,7 +58,7 @@ function install_sql () {
 	touch $sqlfile
 	cat << EOF >$sqlfile
 [mysqld]
-bind-address = $CTL_MGNT_IP
+bind-address = 0.0.0.0
 default-storage-engine = innodb
 innodb_file_per_table = on
 max_connections = 4096

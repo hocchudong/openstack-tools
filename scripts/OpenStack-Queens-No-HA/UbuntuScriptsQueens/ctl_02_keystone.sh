@@ -9,14 +9,13 @@ function keystone_create_db () {
 	echocolor "Create database for Keystone"
 	sleep 3
 
-	cat << EOF | mysql
-CREATE DATABASE keystone;
-GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
-IDENTIFIED BY '$PASS_DATABASE_KEYSTONE';
-GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
-IDENTIFIED BY '$PASS_DATABASE_KEYSTONE';
+cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
+CREATE DATABASE keystone default character set utf8;
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '$PASS_DATABASE_KEYSTONE' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '$PASS_DATABASE_KEYSTONE' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
 EOF
-}
+
 
 # Function install components of Keystone
 function keystone_install () {

@@ -47,27 +47,48 @@ function install_ops_packages () {
 	apt-get install python-openstackclient -y
 }
 
-# Function install mysql
-function install_sql () {
-	echocolor "Install SQL database - Mariadb"
+function install_database ()
+{
+	echocolor "Install and Config MariaDB"
 	sleep 3
 
-	apt-get install mariadb-server python-pymysql  -y
+	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | \
+	    debconf-set-selections
+	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | \
+	    debconf-set-selections
 
-	sqlfile=/etc/mysql/mariadb.conf.d/99-openstack.cnf
-	touch $sqlfile
-	cat << EOF >$sqlfile
-[mysqld]
-bind-address = 0.0.0.0
-default-storage-engine = innodb
-innodb_file_per_table = on
-max_connections = 4096
-collation-server = utf8_general_ci
-character-set-server = utf8
+	apt-get install -y  mariadb-server
+
+	sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
+	sed -i 's/character-set-server  = utf8mb4/character-set-server  = utf8/' \
+	    /etc/mysql/mariadb.conf.d/50-server.cnf
+	sed -i 's/collation-server/#collation-server/'  /etc/mysql/mariadb.conf.d/50-server.cnf
+
+	systemctl restart mysql
+
+	cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT 
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '$PASS_DATABASE_ROOT' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '$PASS_DATABASE_ROOT' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
 EOF
 
-service mysql restart
+	sqlfile=/etc/mysql/mariadb.conf.d/99-openstack.cnf
+	touch $sqlfile	
+	ops_edit $sqlfile client default-character-set utf8
+	ops_edit $sqlfile mysqld bind-address 0.0.0.0
+	ops_edit $sqlfile mysqld default-storage-engine innodb
+	ops_edit $sqlfile mysqld innodb_file_per_table
+	ops_edit $sqlfile mysqld max_connections 4096
+	ops_edit $sqlfile mysqld collation-server utf8_general_ci
+	ops_edit $sqlfile mysqld character-set-server utf8
+
+	echocolor "Restarting MYSQL"
+	sleep 5
+	systemctl restart mysql
+
 }
+
+
 
 # Function install message queue
 function install_mq () {
@@ -108,7 +129,7 @@ install_ntp
 install_ops_packages
 
 # Install SQL database (Mariadb)
-install_sql
+install_database
 
 # Install Message queue (rabbitmq)
 install_mq

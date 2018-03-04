@@ -62,7 +62,7 @@ function install_database ()
 	sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
 	sed -i 's/character-set-server  = utf8mb4/character-set-server  = utf8/' \
 	    /etc/mysql/mariadb.conf.d/50-server.cnf
-	sed -i 's/collation-server/#collation-server/'  /etc/mysql/mariadb.conf.d/50-server.cnf
+	sed -i 's/collation-server/#collation-server/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 	systemctl restart mysql
 

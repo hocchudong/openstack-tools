@@ -50,12 +50,6 @@ iface ens5 inet static
 address $COM1_IP_NIC3
 netmask $NETMASK_NIC3
 EOF
- 
-	ip a flush ens3
-	ip a flush ens4
-	ip a flush ens5
-	ip r del default
-	ifdown -a && ifup -a
 }
 
 #######################
@@ -63,7 +57,7 @@ EOF
 #######################
 
 # Config CONTROLLER node
-echocolor "Config CONTROLLER node"
+echocolor "Config $COM1_HOSTNAME node"
 sleep 3
 
 ## Config hostname
@@ -71,3 +65,7 @@ config_hostname
 
 ## IP address
 config_ip
+
+echocolor "Reboot $COM1_HOSTNAME node"
+init 6
+

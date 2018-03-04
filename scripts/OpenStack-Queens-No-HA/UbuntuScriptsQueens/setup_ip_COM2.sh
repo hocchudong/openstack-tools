@@ -1,13 +1,5 @@
 #!/bin/bash
 # Author: HOC CHU DONG
-
-function echocolor {
-    echo "#######################################################################"
-    echo "$(tput setaf 3)##### $1 #####$(tput sgr0)"
-    echo "#######################################################################"
-
-}
-
 source config.cfg
 
 # Function config hostname

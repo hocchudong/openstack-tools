@@ -17,11 +17,23 @@
 ## 1. Các bước thực hiện
 
 ### 1.1. Đặt IP theo IP Planning cho từng node.
-- Trên Controller thực hiện
+#### Thực hiện trên Controller1
+
+- Tải script 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.20.33 10.10.0.33 172.16.20.33 192.168.40.33
-	```
+  apt-get -y update && apt-get -y install git curl vim
+  
+  git clone https://github.com/congto/openstack-tools.git
+  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/
+  
+  cd cd UbuntuScriptsQueens/
+	chmod +x *
+  ```
+  
+Thực thi script để thiết lập IP và hostname.
+
+  
+  #### Thực hiện trên Compute1
 
 - Trên Compute1 thực hiện
 	```sh
@@ -29,6 +41,7 @@
 	bash setup_ip.sh compute1 192.168.20.34 10.10.0.34 172.16.20.34 192.168.40.34
 	```
 
+#### Thực hiện trên Compute2
 - Trên Compute2 thực hiện
 
 	```sh

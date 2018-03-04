@@ -1,16 +1,22 @@
 #!/bin/bash
-#Author Son Do Xuan
+# Author: HOC CHU DONG
 
-source function.sh
-source config.sh
+function echocolor {
+    echo "#######################################################################"
+    echo "$(tput setaf 3)##### $1 #####$(tput sgr0)"
+    echo "#######################################################################"
+
+}
+
+source config.cfg
 
 # Function config hostname
 function config_hostname () {
 echo "$CTL1_HOSTNAME" > /etc/hostname
-echo "$CTL1_IP_NIC1 controller1" >> /etc/hosts
-echo "$COM1_IP_NIC1 compute1" >> /etc/hosts
-echo "$COM2_IP_NIC1 compute2" >> /etc/hosts
-echo "$CINDER1_IP_NIC1 cinder1" >> /etc/hosts
+echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
+echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
+echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
+echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
 }
 
 # Function IP address
@@ -44,8 +50,9 @@ address $CTL1_IP_NIC3
 netmask $NETMASK_NIC3
 EOF
  
-	ip a flush $CTL_EXT_IF
-	ip a flush $CTL_MGNT_IF
+	ip a flush $CTL1_IP_NIC1
+	ip a flush $CTL1_IP_NIC2
+	ip a flush $CTL1_IP_NIC3
 	ip r del default
 	ifdown -a && ifup -a
 }

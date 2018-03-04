@@ -21,26 +21,47 @@
 
 - Tải script 
 	```sh
+  echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
+
   apt-get -y update && apt-get -y install git curl vim
   
   git clone https://github.com/congto/openstack-tools.git
-  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/
   
-  cd cd UbuntuScriptsQueens/
+  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
+  cd UbuntuScriptsQueens/
 	chmod +x *
   ```
   
-Thực thi script để thiết lập IP và hostname.
+- Thực thi script để thiết lập IP và hostname.
+
+  ```sh
+  bash setup_ip_CTL1.sh
+  ```
+  
 
   
-  #### Thực hiện trên Compute1
+#### Thực hiện trên Compute1
 
-- Trên Compute1 thực hiện
+- Tải script 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/setup_ip.sh
-	bash setup_ip.sh compute1 192.168.20.34 10.10.0.34 172.16.20.34 192.168.40.34
-	```
+  echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
+  
+  apt-get -y update && apt-get -y install git curl vim
+  
+  git clone https://github.com/congto/openstack-tools.git
+  
+  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
+  cd UbuntuScriptsQueens/
+	chmod +x *
+  ```
+  
+- Thực thi script để thiết lập IP và hostname.
 
+  ```sh
+  bash setup_ip_COM1.sh
+  ```
+  
+  
 #### Thực hiện trên Compute2
 - Trên Compute2 thực hiện
 

@@ -23,7 +23,7 @@
 	```sh
   echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
 
-  apt-get -y update && apt-get -y install git curl vim
+  apt-get -y update && apt-get -y install git curl vim byobu
   
   git clone https://github.com/congto/openstack-tools.git
   
@@ -46,7 +46,7 @@
 	```sh
   echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
   
-  apt-get -y update && apt-get -y install git curl vim
+  apt-get -y update && apt-get -y install git curl vim byobu
   
   git clone https://github.com/congto/openstack-tools.git
   
@@ -68,7 +68,7 @@
 	```sh
   echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
   
-  apt-get -y update && apt-get -y install git curl vim
+  apt-get -y update && apt-get -y install git curl vim byobu
   
   git clone https://github.com/congto/openstack-tools.git
   

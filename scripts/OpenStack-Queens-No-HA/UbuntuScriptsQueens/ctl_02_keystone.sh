@@ -15,6 +15,7 @@ GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '$PAS
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '$PASS_DATABASE_KEYSTONE' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EOF
+}
 
 
 # Function install components of Keystone
@@ -102,7 +103,7 @@ keystone_create_opsclient_scripts () {
 	echocolor "Create OpenStack client environment scripts" 
 	sleep 3
 
-	cat << EOF > /root/admin-openrc
+cat << EOF > /root/admin-openrc
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
@@ -116,7 +117,7 @@ EOF
 	chmod +x /root/admin-openrc
 
 
-	cat << EOF > /root/demo-openrc
+cat << EOF > /root/demo-openrc
 export OS_PROJECT_DOMAIN_NAME=Default
 export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=demo

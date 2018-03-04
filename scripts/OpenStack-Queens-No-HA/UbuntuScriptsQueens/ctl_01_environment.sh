@@ -47,8 +47,7 @@ function install_ops_packages () {
 	apt-get install python-openstackclient -y
 }
 
-function install_database ()
-{
+function install_database() {
 	echocolor "Install and Config MariaDB"
 	sleep 3
 
@@ -74,20 +73,19 @@ EOF
 
 	sqlfile=/etc/mysql/mariadb.conf.d/99-openstack.cnf
 	touch $sqlfile	
-	ops_edit $sqlfile client default-character-set utf8
-	ops_edit $sqlfile mysqld bind-address 0.0.0.0
-	ops_edit $sqlfile mysqld default-storage-engine innodb
-	ops_edit $sqlfile mysqld innodb_file_per_table
-	ops_edit $sqlfile mysqld max_connections 4096
-	ops_edit $sqlfile mysqld collation-server utf8_general_ci
-	ops_edit $sqlfile mysqld character-set-server utf8
+	ops_add $sqlfile client default-character-set utf8
+	ops_add $sqlfile mysqld bind-address 0.0.0.0
+	ops_add $sqlfile mysqld default-storage-engine innodb
+	ops_add $sqlfile mysqld innodb_file_per_table
+	ops_add $sqlfile mysqld max_connections 4096
+	ops_add $sqlfile mysqld collation-server utf8_general_ci
+	ops_add $sqlfile mysqld character-set-server utf8
 
 	echocolor "Restarting MYSQL"
 	sleep 5
 	systemctl restart mysql
 
 }
-
 
 
 # Function install message queue

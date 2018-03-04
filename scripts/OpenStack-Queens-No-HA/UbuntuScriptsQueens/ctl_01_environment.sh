@@ -2,7 +2,7 @@
 #Author HOC CHU DONG
 
 source function.sh
-source config.sh
+source config.cfg
 
 # Function update and upgrade for CONTROLLER
 function update_upgrade () {

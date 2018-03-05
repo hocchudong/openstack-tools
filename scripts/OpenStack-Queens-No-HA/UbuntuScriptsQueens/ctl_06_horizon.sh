@@ -9,6 +9,7 @@ horizon_install () {
 	echocolor "Install the packages"
 	sleep 3
 	apt install openstack-dashboard -y
+  apt-get remove --auto-remove openstack-dashboard-ubuntu-theme
 }
 
 

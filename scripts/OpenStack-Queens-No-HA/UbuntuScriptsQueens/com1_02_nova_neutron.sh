@@ -142,6 +142,21 @@ function neutron_restart () {
 	service neutron-linuxbridge-agent restart
 }
 
+
+#######################
+###Execute functions###
+#######################
+
+# Install nova-compute
+nova_install
+
+# Edit /etc/nova/nova.conf file
+nova_config
+
+# Finalize installation
+nova_resart
+
+
 #######################
 ###Execute functions###
 #######################
@@ -160,16 +175,3 @@ neutron_config_compute_use_network
 	
 # Restart installation
 neutron_restart
-
-#######################
-###Execute functions###
-#######################
-
-# Install nova-compute
-nova_install
-
-# Edit /etc/nova/nova.conf file
-nova_config
-
-# Finalize installation
-nova_resart

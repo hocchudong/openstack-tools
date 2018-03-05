@@ -35,7 +35,7 @@
 - Thực thi script để thiết lập IP và hostname.
 
   ```sh
-  bash setup_ip_CTL1.sh
+  bash ctl_setup_ip.sh
   ```
   
 
@@ -58,7 +58,7 @@
 - Thực thi script để thiết lập IP và hostname.
 
   ```sh
-  bash setup_ip_COM1.sh
+  bash com1_setup_ip.sh
   ```
   
   
@@ -80,7 +80,7 @@
 - Thực thi script để thiết lập IP và hostname.
 
   ```sh
-  bash setup_ip_COM2.sh
+  bash com2_setup_ip.sh
   ```
   
 	

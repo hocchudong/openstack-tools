@@ -57,7 +57,7 @@ glance_config_api () {
 		connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
 	ops_add $glanceapifile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000	  
-	ops_add $glanceapifile keystone_authtoken auth_url http://$CTL1_IP_NIC2:35357
+	ops_add $glanceapifile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
 	ops_add $glanceapifile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211	  
 	ops_add $glanceapifile keystone_authtoken auth_type password	  
 	ops_add $glanceapifile keystone_authtoken project_domain_name default
@@ -66,7 +66,7 @@ glance_config_api () {
 	ops_add $glanceapifile keystone_authtoken username glance
 	ops_add $glanceapifile keystone_authtoken password $GLANCE_PASS
 
-	ops_add $glanceapifile paste_deploy flavor glance	
+	ops_add $glanceapifile paste_deploy flavor keystone	
 
 	ops_add $glanceapifile glance_store stores file,http		
 	ops_add $glanceapifile glance_store default_store file		
@@ -84,7 +84,7 @@ glance_config_registry () {
 	connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
 	ops_add $glanceregistryfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
-	ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:35357		
+	ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000		
 	ops_add $glanceregistryfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211		
 	ops_add $glanceregistryfile keystone_authtoken auth_type password			
 	ops_add $glanceregistryfile keystone_authtoken project_domain_name default
@@ -93,7 +93,7 @@ glance_config_registry () {
 	ops_add $glanceregistryfile keystone_authtoken username glance
 	ops_add $glanceregistryfile keystone_authtoken password $GLANCE_PASS
 
-	ops_add $glanceregistryfile paste_deploy flavor glance
+	ops_add $glanceregistryfile paste_deploy flavor keystone
 }
 
 # Function populate the Image service database

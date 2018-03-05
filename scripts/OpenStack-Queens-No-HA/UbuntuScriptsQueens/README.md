@@ -123,8 +123,68 @@ Sau khi chạy xong script cài đặt keystone, script sẽ sinh ra các file t
   source /root/admin-openrc
   ```
   
-- Thưc thi script cài đặt glance trên controller1
+- Thực thi script cài đặt glance trên controller1
 
   ```sh
   bash ctl_03_glance.sh
   ```
+  
+- Thực thi script cài đặt nova trên controller1
+
+  ```sh
+  bash ctl_04_nova.sh
+  ```
+
+
+- Thực thi script cài đặt neutron trên controller1
+
+  ```sh
+  bash ctl_05_neutron.sh
+  ```
+
+  
+- Thực hiện cài đặt horizon
+
+```sh
+bash ctl_06_horizon.sh
+```
+
+Lúc này có thể truy cập vào địa chỉ: `http://172.16.68.211/horizon` với Domain là `Default`, User là `admin`, mật khẩu là `Vntp2018` (hoặc xem thêm file `/root/admin-openrc` để biết nếu bạn không nhớ). 
+
+### 3. Thực hiện trên Compute1 và Compute2
+#### 3.1 Thực hiện trên Compute1
+
+- SSH vào máy chủ có IP 172.16.68.212 với quyền root 
+- Thực hiện lệnh dưới để cài các gói môi trường cho `Compute1`
+
+  ```sh
+  cd UbuntuScriptsQueens
+
+  bash com1_01_env.sh
+  ```
+
+- Cài đặt Neutron và nova 
+
+  ```sh
+  bash com1_02_nova_neutron.sh
+  ```
+
+#### 3.1 Thực hiện trên Compute2
+
+- SSH vào máy chủ có IP 172.16.68.213 với quyền root 
+- Thực hiện lệnh dưới để cài các gói môi trường cho `Compute2`
+
+  ```sh
+  cd UbuntuScriptsQueens
+
+  bash com2_01_env.sh
+  ```
+
+- Cài đặt Neutron và nova 
+
+  ```sh
+  bash com2_02_nova_neutron.sh
+  ```
+
+
+### Tạo network, router, vm

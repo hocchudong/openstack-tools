@@ -34,7 +34,7 @@ function neutron_create_info () {
 }
 
 # Function install the components
-neutron_install () {
+function neutron_install () {
 	echocolor "Install the components"
 	sleep 3
 	apt install neutron-server neutron-plugin-ml2 \
@@ -43,7 +43,7 @@ neutron_install () {
 }
 
 # Function configure the server component
-neutron_config_server_component () { 
+function neutron_config_server_component () { 
 	echocolor "Configure the server component"
 	sleep 3
 	neutronfile=/etc/neutron/neutron.conf
@@ -85,7 +85,7 @@ neutron_config_server_component () {
 }
 
 # Function configure the Modular Layer 2 (ML2) plug-in
-neutron_config_ml2 () {
+function neutron_config_ml2 () {
 	echocolor "Configure the Modular Layer 2 (ML2) plug-in"
 	sleep 3
 	ml2file=/etc/neutron/plugins/ml2/ml2_conf.ini
@@ -113,7 +113,7 @@ function neutron_config_linuxbridge () {
 	cp $linuxbridgefile $linuxbridgefilebak
 	egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
-	ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$ens5
+	ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
 	ops_add $linuxbridgefile vxlan enable_vxlan false
 	ops_add $linuxbridgefile securitygroup enable_security_group true
 	ops_add $linuxbridgefile securitygroup \
@@ -121,7 +121,7 @@ function neutron_config_linuxbridge () {
 }
 
 # Function configure the DHCP agent
-neutron_config_dhcp () {
+function neutron_config_dhcp () {
 	echocolor "Configure the DHCP agent"
 	sleep 3
 	dhcpfile=/etc/neutron/dhcp_agent.ini
@@ -135,7 +135,7 @@ neutron_config_dhcp () {
 }
 
 # Function configure the metadata agent
-neutron_config_metadata () {
+function neutron_config_metadata () {
 	echocolor "Configure the metadata agent"
 	sleep 3
 	metadatafile=/etc/neutron/metadata_agent.ini
@@ -148,7 +148,7 @@ neutron_config_metadata () {
 }
 
 # Function configure the Compute service to use the Networking service
-neutron_config_compute_use_network () {
+function neutron_config_compute_use_network () {
 	echocolor "Configure the Compute service to use the Networking service"
 	sleep 3
 	novafile=/etc/nova/nova.conf
@@ -167,7 +167,7 @@ neutron_config_compute_use_network () {
 }
 
 # Function populate the database
-neutron_populate_db () {
+function neutron_populate_db () {
 	echocolor "Populate the database"
 	sleep 3
 	su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
@@ -175,7 +175,9 @@ neutron_populate_db () {
 }
 
 # Function restart installation
-neutron_restart () {
+function neutron_restart () {
+	echocolor "Neutron services restart "
+	sleep 3
 	service nova-api restart
 	service neutron-server restart
 	service neutron-linuxbridge-agent restart

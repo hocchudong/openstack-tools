@@ -6,7 +6,7 @@
 
 ### B. MÔ HÌNH
 
-![noha_openstack_topology.png](/images/noha_openstack_topology.png)
+![noha_openstack_topology.png](/images/openstack-queen-topo.png)
 
 ### C. IP PLANNING
 
@@ -36,7 +36,7 @@
 - Thực thi script để thiết lập IP và hostname.
 
   ```sh
-  bash ctl_setup_ip.sh
+  bash ctl_00_setup_ip.sh
   ```
   
 Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP `172.16.68.211` để ssh vào và thực hiện theo các bước dưới trên node controller1.
@@ -62,7 +62,7 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
 - Thực thi script để thiết lập IP và hostname.
 
   ```sh
-  bash com1_setup_ip.sh
+  bash com1_00_setup_ip.sh
   ```
   
 Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP `172.16.68.212` để ssh vào và thực hiện theo các bước dưới trên node compute1.
@@ -85,7 +85,7 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
 - Thực thi script để thiết lập IP và hostname.
 
   ```sh
-  bash com2_setup_ip.sh
+  bash com2_00_setup_ip.sh
   ```
   
 Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP `172.16.68.213` để ssh vào và thực hiện theo các bước dưới trên node compute2.

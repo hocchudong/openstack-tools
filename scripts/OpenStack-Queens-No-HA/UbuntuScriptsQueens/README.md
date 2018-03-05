@@ -10,7 +10,7 @@
 
 ### C. IP PLANNING
 
-![noha_ip_planning.png](/images/noha_ip_planning.png)
+![noha_ip_planning.png](/images/IP_Planning_queens.png)
 
 
 

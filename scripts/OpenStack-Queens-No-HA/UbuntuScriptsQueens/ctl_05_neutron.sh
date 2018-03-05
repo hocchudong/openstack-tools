@@ -2,7 +2,7 @@
 # Author  HOC CHU DONG
 
 source function.sh
-source config.sh
+source config.cfg
 
 # Function create database for Neutron
 function neutron_create_db () {

@@ -57,6 +57,16 @@ function nova_config () {
 	ops_add $novafile placement auth_url http://$CTL1_IP_NIC2:5000/v3
 	ops_add $novafile placement username placement
 	ops_add $novafile placement password $PLACEMENT_PASS
+  
+  ops_add $novafile neutron url http://$CTL1_IP_NIC2:9696
+	ops_add $novafile neutron auth_url http://$CTL1_IP_NIC2:5000
+	ops_add $novafile neutron auth_type password
+	ops_add $novafile neutron project_domain_name default
+	ops_add $novafile neutron user_domain_name default
+	ops_add $novafile neutron region_name RegionOne
+	ops_add $novafile neutron project_name service
+	ops_add $novafile neutron username neutron
+	ops_add $novafile neutron password $NEUTRON_PASS
 }
 
 # Function finalize installation
@@ -86,8 +96,8 @@ function neutron_config_server_component () {
 
 	ops_del $neutronfile database connection
 	ops_add $neutronfile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
-
 	ops_add $neutronfile DEFAULT auth_strategy keystone
+  
 	ops_add $neutronfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
 	ops_add $neutronfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
 	ops_add $neutronfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
@@ -115,25 +125,6 @@ function neutron_config_linuxbridge () {
 		firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 }
 
-# Function configure the Compute service to use the Networking service
-function neutron_config_compute_use_network () {
-	echocolor "Configure the Compute service to use the Networking service"
-	sleep 3
-	novafile=/etc/nova/nova.conf
-
-	ops_add $novafile neutron url http://$CTL1_IP_NIC2:9696
-	ops_add $novafile neutron auth_url http://$CTL1_IP_NIC2:5000
-	ops_add $novafile neutron auth_type password
-	ops_add $novafile neutron project_domain_name default
-	ops_add $novafile neutron user_domain_name default
-	ops_add $novafile neutron region_name RegionOne
-	ops_add $novafile neutron project_name service
-	ops_add $novafile neutron username neutron
-	ops_add $novafile neutron password $NEUTRON_PASS
-	ops_add $novafile neutron service_metadata_proxy true
-	ops_add $novafile neutron metadata_proxy_shared_secret $METADATA_SECRET	
-}
-
 # Function restart installation
 function neutron_restart () {
 	echocolor "Finalize installation"
@@ -156,11 +147,6 @@ nova_config
 # Finalize installation
 nova_resart
 
-
-#######################
-###Execute functions###
-#######################
-
 # Install the components Neutron
 neutron_install
 
@@ -171,7 +157,7 @@ neutron_config_server_component
 neutron_config_linuxbridge
 	
 # Configure the Compute service to use the Networking service
-neutron_config_compute_use_network
+#neutron_config_compute_use_network
 	
 # Restart installation
 neutron_restart

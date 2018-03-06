@@ -126,7 +126,7 @@ function neutron_config_linuxbridge () {
 }
 
 function neutron_config_l3agent () {
-	echocolor "Configure the Linux bridge agent"
+	echocolor "Configure the L3 Agent"
 	sleep 3
 	l3agent=/etc/neutron/l3_agent.ini
 	l3agentbak=/etc/neutron/l3_agent.ini.bak
@@ -227,6 +227,7 @@ neutron_config_ml2
 # Configure the Linux bridge agent
 neutron_config_linuxbridge
 
+# Configure the L3 Agent
 neutron_config_l3agent
 
 # Configure the DHCP agent

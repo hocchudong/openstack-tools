@@ -108,7 +108,6 @@ function cinder_syncdb() {
 }
 
 function cinder_enable_restart() {
-	echocolor "Restart dich vu cinder"
 	sleep 3
 	if [ "$1" == "aio" ]; then
     

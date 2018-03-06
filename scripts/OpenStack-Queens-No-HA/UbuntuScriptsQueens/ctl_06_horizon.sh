@@ -15,7 +15,7 @@ horizon_install () {
 function redirect_web () {
 echocolor "Creating redirect page"
 sleep 5
-
+filehtml=/var/www/html/index.html
 test -f $filehtml.orig || cp $filehtml $filehtml.orig
 rm $filehtml
 touch $filehtml
@@ -96,9 +96,10 @@ horizon_config
 # Restart installation
 horizon_restart
 
-echocolor #################################
+echocolor ***********************************
 echo "LOGIN INFORMATION IN HORIZON"
 echo "URL: http://$CTL1_IP_NIC2/horizon"
+echo "Domain: Default"
 echo "User: admin or demo"
 echo "Password: $ADMIN_PASS"
-echocolor #################################
+echocolor ***********************************

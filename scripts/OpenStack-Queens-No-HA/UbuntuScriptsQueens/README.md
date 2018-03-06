@@ -228,6 +228,11 @@ source /root/admin-openrc
   
 - Truy cập vào horizon với địa chỉ `http://172.16.68.211/horizon` để quan sát tiếp (mật khẩu xem ở file `/root/admin-openrc`
 
+Kết quả ta sẽ có giao diện OpenStack tương tự như hình dưới
+
+![queens-vm-provider01.png](/images/queens-images/queens-vm-provider01.png)
+
+
 #### Tạo network, router, flavor, vm bằng Web
 
 - Truy cập vào horizon với địa chỉ `http://172.16.68.211/horizon` để quan sát tiếp (mật khẩu xem ở file `/root/admin-openrc`

@@ -61,7 +61,7 @@ EOF
 echo 'OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"' >> $horizonfile
 sed -i 's/OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"/OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"/g' $horizonfile
 
-sed -i "s/'enable_router': True,/'enable_router': False,/g" $horizonfile
+sed -i "s/'enable_router': True,/'enable_router': True,/g" $horizonfile
 sed -i "s/'enable_quotas': True,/'enable_quotas': False,/g" $horizonfile
 sed -i "s/'enable_ipv6': True,/'enable_ipv6': False,/g" $horizonfile
 sed -i "s/'enable_ha_router': False,/'enable_ha_router': False,/g" $horizonfile

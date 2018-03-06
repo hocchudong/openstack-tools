@@ -7,17 +7,18 @@
 ### B. MÔ HÌNH
 
 ##### Mô hình tối thiểu
+==
 
 ![topo-openstack-queens-toithieu.png](/images/queens-images/topo-openstack-queens-toithieu.png)
 
 ##### Mô hình đầy đủ
-===
+=
 
 ![topo-openstack-queens-full.png](/images/queens-images/topo-openstack-queens-full.png)
 
 
 ### C. IP PLANNING
-===
+
 
 ![noha_ip_planning.png](/images/queens-images/IP_Planning_queens.png)
 
@@ -166,11 +167,23 @@ Sau khi chạy xong script cài đặt keystone, script sẽ sinh ra các file t
   bash ctl_05_neutron.sh
   ```
 
+- Tới đây có 02 lựa chọn cho việc cài cinder:
+  - Nếu node controller đóng vai trò là block storage thì thực hiện lệnh (cài chung cinder-volume cùng controller). Với yêu cầu này thì máy chủ controller cần có ổ cứng thứ 02 cho máy controller.
+
+    ```sh
+    bash ctl_06_cinder.sh aio
+    ```
+
+  - Nếu cinder-volume được cài đặt ra một node khác thì thực hiện lệnh dưới trên controller1, lúc này thành phần cinder-volume sẽ không được cài trên controller1.
+
+  ```sh
+  bash ctl_06_cinder.sh
+  ```
   
 - Thực hiện cài đặt horizon
 
 ```sh
-bash ctl_06_horizon.sh
+bash ctl_07_horizon.sh
 ```
 
 Lúc này có thể truy cập vào địa chỉ: `http://172.16.68.211/horizon` với Domain là `Default`, User là `admin`, mật khẩu là `Vntp2018` (hoặc xem thêm file `/root/admin-openrc` để biết nếu bạn không nhớ). 

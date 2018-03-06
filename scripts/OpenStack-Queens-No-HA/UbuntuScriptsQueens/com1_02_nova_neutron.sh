@@ -84,6 +84,7 @@ function neutron_install () {
 	apt install neutron-linuxbridge-agent -y
 }
 
+
 # Function configure the common component
 function neutron_config_server_component () {
 	echocolor "Configure the common component"
@@ -119,7 +120,12 @@ function neutron_config_linuxbridge () {
 	egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
 	ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
-	ops_add $linuxbridgefile vxlan enable_vxlan false
+	ops_add $linuxbridgefile vxlan enable_vxlan true
+	ops_add $linuxbridgefile vxlan local_ip ens3
+	ops_add $linuxbridgefile vxlan l2_population true
+  
+  
+  
 	ops_add $linuxbridgefile securitygroup enable_security_group true
 	ops_add $linuxbridgefile securitygroup \
 		firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver

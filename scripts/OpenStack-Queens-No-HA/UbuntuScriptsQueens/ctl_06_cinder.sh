@@ -4,9 +4,9 @@
 source function.sh
 source config.cfg
 
-# Function create database for Nova
+# Function create database for Cinder
 function cinder_create_db () {
-	echocolor "Create database for cinder"
+	echocolor "Create database for Cinder"
 	sleep 3
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT

@@ -36,6 +36,7 @@
   
   mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
   cd UbuntuScriptsQueens/
+  
 	chmod +x *
   ```
   
@@ -66,6 +67,7 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
   
   mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
   cd UbuntuScriptsQueens/
+  
 	chmod +x *
   ```
   

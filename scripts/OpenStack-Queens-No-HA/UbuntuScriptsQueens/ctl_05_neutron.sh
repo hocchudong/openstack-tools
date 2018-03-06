@@ -94,14 +94,14 @@ function neutron_config_ml2 () {
 	cp $ml2file $ml2filebak
 	egrep -v "^$|^#" $ml2filebak > $ml2file
 
-	ops_add $ml2file ml2 type_drivers flat,vlan, vxlan
+	ops_add $ml2file ml2 type_drivers flat,vlan,vxlan
 	ops_add $ml2file ml2 tenant_network_types vxlan
 	ops_add $ml2file ml2 mechanism_drivers linuxbridge,l2population
 	ops_add $ml2file ml2 extension_drivers port_security
   
 	ops_add $ml2file ml2_type_flat flat_networks provider
 	ops_add $ml2file ml2_type_vlan network_vlan_ranges provider
-	ops_add $ml2file ml2_type_vlan vni_ranges 1:1000
+	ops_add $ml2file ml2_type_vxlan vni_ranges 1:1000
   
 	ops_add $ml2file securitygroup enable_ipset true
 }
@@ -117,7 +117,7 @@ function neutron_config_linuxbridge () {
 
 	ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
 	ops_add $linuxbridgefile vxlan enable_vxlan true
-	ops_add $linuxbridgefile vxlan local_ip  ens3
+	ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC1
 	ops_add $linuxbridgefile vxlan l2_population true
   
 	ops_add $linuxbridgefile securitygroup enable_security_group true

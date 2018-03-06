@@ -78,7 +78,7 @@ function cinder_install_config() {
 		ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
 		ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2
 		ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
-		ops_add $ctl_cinder_conf DEFAULT osapi_volume_listen  \$my_ip
+		ops_add $ctl_cinder_conf DEFAULT osapi_volume_listen \$my_ip
 		ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
 		ops_add $ctl_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC2:9292
 

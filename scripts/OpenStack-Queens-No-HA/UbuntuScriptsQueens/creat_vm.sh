@@ -24,9 +24,9 @@ openstack network create  --share --external \
 echocolor "Tao subnet cho provider network"
 sleep 3
 openstack subnet create --network provider \
-	--allocation-pool start=192.168.20.130,end=192.168.20.150 \
-	--dns-nameserver 8.8.8.8 --gateway 192.168.20.1 \
-	--subnet-range 192.168.20.0/24 provider
+	--allocation-pool start=$PROVIDER_IP_START,end=$PROVIDER_IP_END \
+	--dns-nameserver $PROVIDER_DNS --gateway $PROVIDER_GATEWAY \
+	--subnet-range $PROVIDER_SUBNET provider
   
 echocolor "Tao VM gan vao provider network"
 sleep 5

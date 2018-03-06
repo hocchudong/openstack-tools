@@ -205,4 +205,31 @@ Lúc này có thể truy cập vào địa chỉ: `http://172.16.68.211/horizon`
   ```
 
 
-### Tạo network, router, vm
+### Tạo network, router, flavor, vm
+
+Tơi bước này có 02 lựa chọn tạo các yêu cầu cần thiết để bắt đầu sử dụng OpenStack.
+
+#### Tạo network, router, flavor, vm bằng script
+Trong bộ script đã có sẵn script để tạo ra các hạ tầng bao gồm: Network, Router, Subnet, Flavor, VM, mở rule .... để sử dụng. Thực hiện script sau:
+
+Đứng trên controller1 và thực hiện các lệnh sau:
+
+```sh
+source /root/admin-openrc
+```
+
+- Di chuyển vào thư mục chứa script và thực hiện script dưới. Lưu ý thực hiện với quyền root.
+
+  ```sh
+  cd UbuntuScriptsQueens
+
+  bash creat_vm.sh
+  ```
+  
+- Truy cập vào horizon với địa chỉ `http://172.16.68.211/horizon` để quan sát tiếp (mật khẩu xem ở file `/root/admin-openrc`
+
+#### Tạo network, router, flavor, vm bằng Web
+
+- Truy cập vào horizon với địa chỉ `http://172.16.68.211/horizon` để quan sát tiếp (mật khẩu xem ở file `/root/admin-openrc`
+
+

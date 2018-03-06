@@ -118,6 +118,8 @@ nova_config () {
 	ops_add $novafile placement auth_url http://$CTL1_IP_NIC2:5000/v3
 	ops_add $novafile placement username placement
 	ops_add $novafile placement password $PLACEMENT_PASS
+  
+	ops_add $novafile scheduler discover_hosts_in_cells_interval 300
 }
 
 # Function populate the nova-api database

@@ -3,7 +3,7 @@
 ###############################################################################
 ## Init enviroiment source
 source config.cfg
-source functions.sh
+source function.sh
 
 ###############################################################################
 echocolor "Tao flavor"

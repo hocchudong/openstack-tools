@@ -33,8 +33,11 @@ sleep 5
 
 PROVIDER_NET_ID=`openstack network list | egrep -w provider | awk '{print $2}'`
 
+ID_ADMIN_PROJECT=`openstack project list | grep admin | awk '{print $2}'`
+ID_SECURITY_GROUP=`openstack security group list | grep $ID_ADMIN_PROJECT | awk '{print $2}'`
+
 openstack server create --flavor m1.nano --image cirros \
-	--nic net-id=$PROVIDER_NET_ID --security-group default \
+	--nic net-id=$PROVIDER_NET_ID --security-group $ID_SECURITY_GROUP \
 	provider-VM1
 
 ###############################################################################
@@ -56,9 +59,13 @@ neutron router-gateway-set R1 provider
 
 echocolor "Tao may ao gan vao private network (selfservice network)"
 sleep 5
+ID_ADMIN_PROJECT=`openstack project list | grep admin | awk '{print $2}'`
+ID_SECURITY_GROUP=`openstack security group list | grep $ID_ADMIN_PROJECT | awk '{print $2}'`
+
 PRIVATE_NET_ID=`openstack network list | egrep -w selfservice | awk '{print $2}'`
+
 openstack server create --flavor m1.nano --image cirros \
-  --nic net-id=$PRIVATE_NET_ID --security-group default \
+  --nic net-id=$PRIVATE_NET_ID --security-group $ID_SECURITY_GROUP \
   selfservice-VM1
 
 

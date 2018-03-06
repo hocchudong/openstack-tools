@@ -6,7 +6,7 @@ source config.cfg
 
 # Function create database for Nova
 function cinder_create_db () {
-	echocolor "Create database for Nova"
+	echocolor "Create database for cinder"
 	sleep 3
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
@@ -116,7 +116,6 @@ function cinder_enable_restart() {
     service cinder-volume restart
     service cinder-scheduler restart
     service apache2 restart
-	
   else
     service cinder-scheduler restart
     service apache2 restart

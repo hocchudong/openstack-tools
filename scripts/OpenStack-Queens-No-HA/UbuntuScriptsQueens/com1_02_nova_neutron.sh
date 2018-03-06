@@ -45,6 +45,8 @@ function nova_config () {
 	ops_add $novafile vnc novncproxy_base_url http://$CTL1_IP_NIC2:6080/vnc_auto.html
 
 	ops_add $novafile glance api_servers http://$CTL1_IP_NIC2:9292
+  ops_add $novafile cinder os_region_name RegionOne
+    
 	ops_add $novafile oslo_concurrency lock_path /var/lib/nova/tmp
 	ops_del $novafile DEFAULT log_dir
 

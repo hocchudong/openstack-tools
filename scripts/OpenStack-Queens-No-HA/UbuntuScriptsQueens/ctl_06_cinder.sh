@@ -73,7 +73,7 @@ function cinder_install_config() {
 		ops_add $ctl_cinder_conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
 		ops_add $ctl_cinder_conf lvm volume_group cinder-volumes
 		ops_add $ctl_cinder_conf lvm iscsi_protocol iscsi
-		ops_add $ctl_cinder_conf lvm iscsi_helper lioadm
+		ops_add $ctl_cinder_conf lvm iscsi_helper tgtadm
 	else
 		ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
 		ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2

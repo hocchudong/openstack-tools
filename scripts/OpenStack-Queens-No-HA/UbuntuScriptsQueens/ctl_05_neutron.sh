@@ -227,6 +227,8 @@ neutron_config_ml2
 # Configure the Linux bridge agent
 neutron_config_linuxbridge
 
+neutron_config_l3agent
+
 # Configure the DHCP agent
 neutron_config_dhcp
 

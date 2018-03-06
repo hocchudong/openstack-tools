@@ -19,10 +19,16 @@
 ### 1.1. Đặt IP theo IP Planning cho từng node.
 #### Thực hiện trên Controller1
 `Lưu ý:` IP được thiết lập như trong file excel, nếu cần sửa thì sau khi tải script về, sửa trong file `config.cfg`
-- Tải script 
+
+- Khai báo repos offline nếu muốn sử dụng để tăng tốc độ cài đặt (bỏ qua bước này nếu bạn không có máy chủ repos offline).
 	```sh
   echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
-
+  apt-get update -y
+  ```
+  
+- Tải script 
+  
+  ```sh
   apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
   apt-get -y install git curl vim byobu
   
@@ -45,10 +51,14 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
 #### Thực hiện trên Compute1
 `Lưu ý:` IP được thiết lập như trong file excel, nếu cần sửa thì sau khi tải script về, sửa trong file `config.cfg`
 
-- Tải script 
+- Khai báo repos offline nếu muốn sử dụng để tăng tốc độ cài đặt (bỏ qua bước này nếu bạn không có máy chủ repos offline).
 	```sh
   echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
+  apt-get update -y
+  ```
   
+- Tải script 
+	```sh
   apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
   apt-get -y install git curl vim byobu
   
@@ -69,9 +79,15 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
   
 #### Thực hiện trên Compute2
 `Lưu ý:` IP được thiết lập như trong file excel, nếu cần sửa thì sau khi tải script về, sửa trong file `config.cfg`
-- Tải script 
+
+- Khai báo repos offline nếu muốn sử dụng để tăng tốc độ cài đặt (bỏ qua bước này nếu bạn không có máy chủ repos offline).
 	```sh
   echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
+  apt-get update -y
+  ```
+  
+- Tải script 
+	```sh
   apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
   apt-get -y install git curl vim byobu
   

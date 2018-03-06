@@ -112,7 +112,6 @@ nova_config () {
 
 	ops_add $novafile oslo_concurrency lock_path /var/lib/nova/tmp
 		
-	ops_del $novafile placement os_region_name
 	ops_add $novafile placement os_region_name RegionOne
 	ops_add $novafile placement project_domain_name Default
 	ops_add $novafile placement project_name service

@@ -34,7 +34,7 @@ EOF
 
 # Function edit the /etc/openstack-dashboard/local_settings.py file
 horizon_config () {
-	echocolor "Edit the /etc/openstack-dashboard/local_settings.py file"
+	echocolor "Config horizon"
 	sleep 3
 
 	horizonfile=/etc/openstack-dashboard/local_settings.py

@@ -38,32 +38,31 @@ openstack server create --flavor m1.nano --image cirros \
 	provider-VM1
 
 ###############################################################################
-# echocolor "Tao private network (selfservice network)"
-# sleep 3
-# openstack network create selfservice
+echocolor "Tao private network (selfservice network)"
+sleep 3
+openstack network create selfservice
 
-# echocolor "Tao subnnet cho private network"
-# sleep 3
- # openstack subnet create --network selfservice \
- 	# --dns-nameserver 8.8.4.4 --gateway 192.168.10.1 \
- 	# --subnet-range 192.168.10.0/24 selfservice
+echocolor "Tao subnnet cho private network"
+sleep 3
+ openstack subnet create --network selfservice \
+ 	--dns-nameserver $PRIVATE_DNS --gateway $PRIVATE_GATEWAY \
+ 	--subnet-range $PRIVATE_SUBNET selfservice
 
-# echocolor "Tao va gan inteface cho ROUTER"
-# sleep 3
-# openstack router create router
-# neutron net-update provider --router:external
-# neutron router-interface-add router selfservice
-# neutron router-gateway-set router provider
+echocolor "Tao va gan inteface cho ROUTER"
+sleep 3
+openstack router create R1
+neutron router-interface-add R1 selfservice
+neutron router-gateway-set R1 provider
 
-# echocolor "Tao may ao gan vao private network (selfservice network)"
-# sleep 5
-# PRIVATE_NET_ID=`openstack network list | egrep -w selfservice | awk '{print $2}'`
-# openstack server create --flavor m1.nano --image cirros \
-  # --nic net-id=$PRIVATE_NET_ID --security-group default \
-  # selfservice-VM1
+echocolor "Tao may ao gan vao private network (selfservice network)"
+sleep 5
+PRIVATE_NET_ID=`openstack network list | egrep -w selfservice | awk '{print $2}'`
+openstack server create --flavor m1.nano --image cirros \
+  --nic net-id=$PRIVATE_NET_ID --security-group default \
+  selfservice-VM1
 
 
-# echocolor "Floatig IP"
-# sleep 5
-# FLOATING_IP=`openstack floating ip create provider | egrep -w floating_ip_address | awk '{print $4}'`
-# openstack server add floating ip selfservice-VM1 $FLOATING_IP
+echocolor "Floatig IP"
+sleep 5
+FLOATING_IP=`openstack floating ip create provider | egrep -w floating_ip_address | awk '{print $4}'`
+openstack server add floating ip selfservice-VM1 $FLOATING_IP

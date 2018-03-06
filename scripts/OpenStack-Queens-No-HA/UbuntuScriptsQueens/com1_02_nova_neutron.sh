@@ -124,9 +124,7 @@ function neutron_config_linuxbridge () {
 	ops_add $linuxbridgefile vxlan local_ip ens3
 	ops_add $linuxbridgefile vxlan l2_population true
   
-  
-  
-	ops_add $linuxbridgefile securitygroup enable_security_group true
+  ops_add $linuxbridgefile securitygroup enable_security_group true
 	ops_add $linuxbridgefile securitygroup \
 		firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 }

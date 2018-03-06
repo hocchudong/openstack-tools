@@ -11,15 +11,15 @@
 ![topo-openstack-queens-toithieu.png](/images/queens-images/topo-openstack-queens-toithieu.png)
 
 ##### Mô hình đầy đủ
+===
 
 ![topo-openstack-queens-full.png](/images/queens-images/topo-openstack-queens-full.png)
 
 
-
 ### C. IP PLANNING
+===
 
 ![noha_ip_planning.png](/images/queens-images/IP_Planning_queens.png)
-
 
 
 ## 1. Các bước thực hiện
@@ -42,10 +42,9 @@
   
   git clone https://github.com/congto/openstack-tools.git
   
-  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
-  cd UbuntuScriptsQueens/
+  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ /root/queens/
   
-	chmod +x *
+  cd queens/  && chmod +x *
   ```
   
 - Thực thi script để thiết lập IP và hostname.
@@ -73,10 +72,9 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
   
   git clone https://github.com/congto/openstack-tools.git
   
-  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
-  cd UbuntuScriptsQueens/
+  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ /root/queens/
   
-	chmod +x *
+  cd queens/  && chmod +x *
   ```
   
 - Thực thi script để thiết lập IP và hostname.
@@ -103,9 +101,9 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
   
   git clone https://github.com/congto/openstack-tools.git
   
-  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ .
-  cd UbuntuScriptsQueens/
-	chmod +x *
+  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ /root/queens/
+  
+  cd queens/ && chmod +x *
   ```
   
 - Thực thi script để thiết lập IP và hostname.
@@ -128,7 +126,7 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
 	
 - Cài đặt git và script cài đặt.
 	```sh
-  cd UbuntuScriptsQueens
+  cd /root/queens/
 	```
 
 - Thực thi script cài đặt các gói bổ trợ trên node controller1
@@ -184,7 +182,7 @@ Lúc này có thể truy cập vào địa chỉ: `http://172.16.68.211/horizon`
 - Thực hiện lệnh dưới để cài các gói môi trường cho `Compute1`
 
   ```sh
-  cd UbuntuScriptsQueens
+  cd /root/queens/
 
   bash com1_01_env.sh
   ```
@@ -201,7 +199,7 @@ Lúc này có thể truy cập vào địa chỉ: `http://172.16.68.211/horizon`
 - Thực hiện lệnh dưới để cài các gói môi trường cho `Compute2`
 
   ```sh
-  cd UbuntuScriptsQueens
+  cd /root/queens/
 
   bash com2_01_env.sh
   ```

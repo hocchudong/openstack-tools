@@ -109,7 +109,7 @@ function cinder_syncdb() {
 
 function cinder_enable_restart() {
 	sleep 3
-	if [ "$1" == "aio" ]; then
+	if [ "$var_block" == "aio" ]; then
     
     service tgt restart
     service cinder-volume restart
@@ -118,12 +118,11 @@ function cinder_enable_restart() {
   else
     service cinder-scheduler restart
     service apache2 restart
-
 	fi
 }
 
 function create_lvm() {
-	if [ "$1" == "aio" ]; then
+	if [ "$var_block" == "aio" ]; then
 		echocolor "Cau hinh LVM"
 		pvcreate /dev/vdb
 		vgcreate cinder-volumes /dev/vdb
@@ -145,9 +144,23 @@ function create_lvm() {
 # Thuc thi cac functions
 ## Goi cac functions
 ############################
+echocolor "Nhap tuy chon 1 hoac 2 de cai dat cinder"
+echocolor "Nhap tuy chon 1 hoac 2 de cai dat cinder"
+read -e var
+if [ $var == "1" ]; then
+  var_block='aio'
+elif [ $var == "2" ]; then
+  var_block=''
+else
+  echocolor "Sai khi tu"
+  exit
+fi
+  
+
+
 source /root/admin-openrc
 echocolor "Bat dau cai dat CINDER"
-create_lvm $1
+create_lvm
 
 echocolor "Tao DB CINDER"
 sleep 3
@@ -159,7 +172,7 @@ cinder_user_endpoint
 
 echocolor "Cai dat va cau hinh CINDER"
 sleep 3
-cinder_install_config $1
+cinder_install_config
 
 echocolor "Dong bo DB cho CINDER"
 sleep 3
@@ -167,6 +180,6 @@ cinder_syncdb
 
 echocolor "Restart dich vu CINDER"
 sleep 3
-cinder_enable_restart $1
+cinder_enable_restart
 
 echocolor "Da cai dat xong CINDER"

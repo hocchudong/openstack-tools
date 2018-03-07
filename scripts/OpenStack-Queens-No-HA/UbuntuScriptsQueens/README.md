@@ -167,18 +167,14 @@ Sau khi chạy xong script cài đặt keystone, script sẽ sinh ra các file t
   bash ctl_05_neutron.sh
   ```
 
-- Tới đây có 02 lựa chọn cho việc cài cinder:
-  - Nếu node controller đóng vai trò là block storage thì thực hiện lệnh (cài chung cinder-volume cùng controller). Với yêu cầu này thì máy chủ controller cần có ổ cứng thứ 02 cho máy controller.
-
-    ```sh
-    bash ctl_06_cinder.sh aio
-    ```
-
-  - Nếu cinder-volume được cài đặt ra một node khác thì thực hiện lệnh dưới trên controller1, lúc này thành phần cinder-volume sẽ không được cài trên controller1.
+- Tới đây có 02 lựa chọn cho việc cài cinder thực hiện script dưới và nhập tùy chọn là `1` hoặc `2` để lựa chọn.
 
   ```sh
   bash ctl_06_cinder.sh
   ```
+  - Nhập 1 để cài cinder-volume cùng với controller, lúc này điều kiện cần là có ổ cứng thứ 2 trên controller để tạo các volume.
+  - Nhập 2 để KHÔNG cài cinder-volume, lúc này cinder-volume sẽ được cài ở node khác.
+
   
 - Thực hiện cài đặt horizon
 

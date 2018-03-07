@@ -144,8 +144,9 @@ function create_lvm() {
 # Thuc thi cac functions
 ## Goi cac functions
 ############################
-echocolor "Nhap tuy chon 1 hoac 2 de cai dat cinder"
-echocolor "Nhap tuy chon 1 hoac 2 de cai dat cinder"
+echocolor "Nhap tuy chon la so 1 hoac so 2 de cai dat cinder"
+echocolor "1. Cai dat cinder-volume cung controller"
+echocolor "2. KHONG cai cinder-volume trne cung controller"
 read -e var
 if [ $var == "1" ]; then
   var_block='aio'

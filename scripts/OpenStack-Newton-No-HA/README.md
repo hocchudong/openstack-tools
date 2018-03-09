@@ -1,4 +1,5 @@
-#### Hướng dẫn thực thi script cài đặt OpenStack Newton không có HA
+## Thư mục chứa script cài đặt Newton
+- Hướng dẫn được tập hợp tại thư mục docs.#### Hướng dẫn thực thi script cài đặt OpenStack Newton không có HA
 
 ### A. MÔI TRƯỜNG LAB
 - Giả lập trên VMware Workstatios, hoặc ESX hoặc Virtualbox hoặc KVM hoặc máy vật lý.

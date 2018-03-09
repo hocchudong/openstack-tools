@@ -1,5 +1,4 @@
-## Thư mục chứa script cài đặt Newton
-- Hướng dẫn được tập hợp tại thư mục docs.#### Hướng dẫn thực thi script cài đặt OpenStack Newton không có HA
+#### Hướng dẫn thực thi script cài đặt OpenStack Newton không có HA
 
 ### A. MÔI TRƯỜNG LAB
 - Giả lập trên VMware Workstatios, hoặc ESX hoặc Virtualbox hoặc KVM hoặc máy vật lý.
@@ -20,27 +19,27 @@
 ### 1.1. Đặt IP theo IP Planning cho từng node.
 - Trên Controller thực hiện
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 	bash setup_ip.sh controller1 192.168.20.33 10.10.0.33 172.16.20.33 192.168.40.33
 	```
 
 - Trên Compute1 thực hiện
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 	bash setup_ip.sh compute1 192.168.20.34 10.10.0.34 172.16.20.34 192.168.40.34
 	```
 
 - Trên Compute2 thực hiện
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 	bash setup_ip.sh compute2 192.168.20.35 10.10.0.35 172.16.20.35 192.168.40.35
 	```
 
 - Thực hiện trên máy Cinder
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
 	```
@@ -60,9 +59,9 @@
 	yum -y install git
 	git clone https://github.com/congto/openstack-tools.git
 
-	mv openstack-tools/scripts/OpenStack-Newton-No-HA /root/
+	mv openstack-tools/scripts/OpenStack-Ocata-No-HA /root/
 
-	cd OpenStack-Newton-No-HA
+	cd OpenStack-Ocata-No-HA
 	chmod +x *.sh
 	```
 
@@ -91,7 +90,7 @@
 
 #### 2.2. Thực thi script `noha_ctl_prepare.sh`
 
-- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Newton-No-HA/` của node CTL1
+- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Ocata-No-HA/` của node CTL1
 
 - Thực thi script  `noha_ctl_prepare.sh`
 
@@ -106,7 +105,7 @@
 - Sau khi node CTL khởi động lại, đăng nhập bằng quyền root và thực thi các lệnh dưới.
 
 	```sh
-	cd /root/OpenStack-Newton-No-HA/
+	cd /root/OpenStack-Ocata-No-HA/
 
 	bash noha_ctl_install_db_rabbitmq.sh
 	```
@@ -160,22 +159,21 @@
 	```
 	
 - Sau khi script thực thi xong, kiểm tra xem nova đã cài đặt thành công trên Controller bằng lệnh dưới.
-
 	```sh
 	openstack compute service list
 	```
 
-- Kết quả như sau là đã hoàn tất việc cài nova trên controller			
-
-	```sh
-	+----+------------------+------+----------+---------+-------+----------------------------+
-	| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-	+----+------------------+------+----------+---------+-------+----------------------------+
-	|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
-	|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
-	|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
-	+----+------------------+------+----------+---------+-------+----------------------------+
-	```
+  - Kết quả như sau là đã hoàn tất việc cài nova trên controller
+	
+		```sh
+		+----+------------------+------+----------+---------+-------+----------------------------+
+		| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
+		+----+------------------+------+----------+---------+-------+----------------------------+
+		|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
+		|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
+		|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
+		+----+------------------+------+----------+---------+-------+----------------------------+
+		```
 
 #### 2.7. Thực thi script `noha_ctl_neutron.sh` để cài đặt `Neutron`.
 
@@ -185,64 +183,6 @@
 	bash noha_ctl_neutron.sh
 	```
 	
-- Sau khi cài neutron trên node Controller xong, thực hiện các lệnh dưới để kiểm tra
-	
-	- Kiểm tra các agent của neutron sau khi cài, trong script này trên controller chỉ cài neutron server, các agent của neutron được cài trên các node Compute. Kết quả của lệnh dưới sẽ là rỗng.
-		```sh
-		openstack network agent list
-		```
-	
-	- Kiểm tra các extention của neutron
-		```sh
-		neutron ext-list
-		```
-	
-		- Kết quả lệnh trên như dưới
-			```sh
-			+---------------------------+-----------------------------------------------+
-			| alias                     | name                                          |
-			+---------------------------+-----------------------------------------------+
-			| default-subnetpools       | Default Subnetpools                           |
-			| network-ip-availability   | Network IP Availability                       |
-			| network_availability_zone | Network Availability Zone                     |
-			| auto-allocated-topology   | Auto Allocated Topology Services              |
-			| ext-gw-mode               | Neutron L3 Configurable external gateway mode |
-			| binding                   | Port Binding                                  |
-			| agent                     | agent                                         |
-			| subnet_allocation         | Subnet Allocation                             |
-			| l3_agent_scheduler        | L3 Agent Scheduler                            |
-			| tag                       | Tag support                                   |
-			| external-net              | Neutron external network                      |
-			| flavors                   | Neutron Service Flavors                       |
-			| net-mtu                   | Network MTU                                   |
-			| availability_zone         | Availability Zone                             |
-			| quotas                    | Quota management support                      |
-			| l3-ha                     | HA Router extension                           |
-			| provider                  | Provider Network                              |
-			| multi-provider            | Multi Provider Network                        |
-			| address-scope             | Address scope                                 |
-			| extraroute                | Neutron Extra Route                           |
-			| subnet-service-types      | Subnet service types                          |
-			| standard-attr-timestamp   | Resource timestamps                           |
-			| service-type              | Neutron Service Type Management               |
-			| l3-flavors                | Router Flavor Extension                       |
-			| port-security             | Port Security                                 |
-			| extra_dhcp_opt            | Neutron Extra DHCP opts                       |
-			| standard-attr-revisions   | Resource revision numbers                     |
-			| pagination                | Pagination support                            |
-			| sorting                   | Sorting support                               |
-			| security-group            | security-group                                |
-			| dhcp_agent_scheduler      | DHCP Agent Scheduler                          |
-			| router_availability_zone  | Router Availability Zone                      |
-			| rbac-policies             | RBAC Policies                                 |
-			| standard-attr-description | standard-attr-description                     |
-			| router                    | Neutron L3 Router                             |
-			| allowed-address-pairs     | Allowed Address Pairs                         |
-			| project-id                | project_id field enabled                      |
-			| dvr                       | Distributed Virtual Router                    |
-			+---------------------------+-----------------------------------------------+
-			```
-
 #### 2.8. Thực thi script `noha_ctl_cinder.sh` để cài đặt `Cinder`.
 
 - Thực thi script dưới để cài đặt Cinder trên node controller. Tới đây có 2 lựa chọn.
@@ -271,40 +211,16 @@
 	```sh
 	bash noha_ctl_ceilometer.sh
 	```
-	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh. Có thể các lệnh sẽ không có output ra.
-		
+	- Sau khi cài đặt xong, thực hiện các lệnh dưới để kiểm tra hoạt động của ceilometer, gnocchi, aodh.
 		```sh
-		gnocchi resource list HOẶC openstack metric resource list 
-		gnocchi metric list HOẶC openstack metric metric list 
+		openstack metric metric list 
+		openstack metric resource list 
 		
 		aodh alarm list
 		```
-
-- Khi chạy các lệnh `gnocchi metric list` HOẶC `openstack metric metric list ` thì output như dưới:
-	```sh
-	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
-	| id                                   | archive_policy/name | name           | unit | resource_id                          |
-	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
-	| ac177241-405b-4028-a72d-6084c43552e6 | low                 | image.size     | B    | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
-	| db267fbe-bbb7-4c3f-952f-aa5869c57127 | low                 | image.download | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
-	| e9df3db9-87bb-472b-8ac4-f7fa4b3782f6 | low                 | image.serve    | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
-	| f37af4ec-8f20-4558-89ce-aeaa3402c931 | low                 | image          | None | 7cef7f8a-24ef-48a0-95de-0a6908b0c8c9 |
-	+--------------------------------------+---------------------+----------------+------+--------------------------------------+
-	```
-
-- Khi chạy các lệnh `gnocchi resource list` HOẶC `openstack metric resource list` thì output như dưới:
-	```sh
-	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
-	| id                        | type  | project_id                | user_id | original_resource_id      | started_at                | ended_at | revision_start               | revision_end |
-	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
-	| 7cef7f8a-24ef-48a0-95de-  | image | 428c840991bb426baa82e4e45 | None    | 7cef7f8a-24ef-48a0-95de-  | 2017-08-14T08:37:47.35056 | None     | 2017-08-14T08:37:47.350581+0 | None         |
-	| 0a6908b0c8c9              |       | 728809d                   |         | 0a6908b0c8c9              | 0+00:00                   |          | 0:00                         |              |
-	+---------------------------+-------+---------------------------+---------+---------------------------+---------------------------+----------+------------------------------+--------------+
-	[
-	```
-
-- Do gnocchi client được thay thế bởi tập lệnh openstack client nên kết quả các lệnh là giống nhau. Có thể trong các phiên bản OpenStack khác OpenStack Newton thì câu lệnh sẽ khác nhau.
-
+		
+		- Lưu ý: Trong OpenStack Ocata, lệnh `openstack metric` sẽ thay thế lệnh `gnocchi`
+		
 #### 2.10. Thực thi script `noha_ctl_horizon.sh` để cài đặt Dashboad.
 - Cài đặt dashboad để cung cấp giao diện cho OpenStack.
 	```sh
@@ -320,7 +236,7 @@
 - Tải script cài đặt nova và neutron cho Compute1
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/noha_com_install.sh
+	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/noha_com_install.sh
 	
 	bash noha_com_install.sh
 	```
@@ -378,8 +294,8 @@
 
 	```sh
 	openstack network create  --share --external \
-		--provider-physical-network provider \
-		--provider-network-type flat provider
+	--provider-physical-network provider \
+	--provider-network-type flat provider
 	```
 	
 	- Giả sửa ID của network là `9681d9dd-aae2-42fe-9b84-dd7cb04c1aca`
@@ -387,10 +303,10 @@
 - Tạo subnet thuộc provider network. Lưu ý nhập đúng gateway, IP cấp cho máy ảo từ 200 tới 220.
 
 	```sh
-	openstack subnet create provider --network provider \
-		--allocation-pool start=192.168.40.200,end=192.168.40.220 \
-		--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
-		--subnet-range 192.168.40.0/24 
+	openstack subnet create subnet1_provider --network provider \
+	--allocation-pool start=192.168.40.200,end=192.168.40.220 \
+	--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
+	--subnet-range 192.168.40.0/24 
 	```
 
 #### 4.2. Tạo flavor
@@ -435,7 +351,7 @@ openstack server list
 
 - Login vào máy chủ cinder và thực thi script dưới và khai báo các tham số về hostname và IP của các NICs.
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
 	```
@@ -451,14 +367,14 @@ openstack server list
 
 - Login vào máy chủ cinder và thực hiện script dưới tại thư mục root. Lưu ý, ở script trên đã copy file `config.cfg` từ máy chủ controller sang máy chủ cinder. 
 	```sh
-	curl -O https://github.com/congto/openstack-tools/blob/master/scripts/OpenStack-Newton-No-HA/noha_cinder_install.sh
+	curl -O https://github.com/congto/openstack-tools/blob/master/scripts/OpenStack-Ocata-No-HA/noha_cinder_install.sh
 
 	bash noha_cinder_install.sh
 	```
 
 - Sau khi cài đặt xong trên máy chủ cinder, quay lại máy chủ controller kiểm tra xem cinder đã hoạt động hay chưa bằng lệnh.
 	```sh
-	openstack volume serivce list
+	openstack volume service list
 	```
 	
 	- Kết quả là các service của cinder sẽ hiển thị, việc `cinder-volume` tại controller node bị down là do ta không dùng `cinder-volume` không kích hoạt trên máy chủ cinder.
@@ -483,7 +399,7 @@ openstack server list
 #### Thực hiện trên máy chủ SWIFT1
 - Login vào máy chủ SWIFT1 với quyền root và thực hiện script dưới.
 	```sh 
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh swift1  192.168.20.37 10.10.0.37 172.16.20.37 192.168.40.37
 	```
@@ -491,7 +407,7 @@ openstack server list
 #### Thực hiện trên máy chủ SWIFT2
 - Login vào máy chủ SWIFT1 với quyền root và thực hiện script dưới.
 	```sh 
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Newton-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Ocata-No-HA/setup_ip.sh
 
 	bash setup_ip.sh swift2  192.168.20.38 10.10.0.38 172.16.20.38 192.168.40.38
 	```
@@ -528,7 +444,7 @@ openstack server list
 ##### 6.2.3. Cài đặt các thành phần của Swift trên máy chủ controller
 - Login vào máy chủ controller với quyền `root` và di duyển vào thư mục chưa script
 	```sh
-	cd /root/OpenStack-Newton-No-HA
+	cd /root/OpenStack-Ocata-No-HA
 	bash noha_ctl_swift.sh
 	```
 
@@ -571,7 +487,7 @@ openstack server list
 
 - Upload file `file_test.txt` lên container vừa tạo.
 	```sh
-	cd /root/
+	cd /root/ 
 	
 	openstack object create container1 file_test.txt
 	```
@@ -587,69 +503,3 @@ openstack server list
 	```
 
 - Bạn cũng có thể login vào tài khoản demo để quan sát Object Storage ở tab http://prntscr.com/g18ik9
-
-
-### 7. Cài đặt Heat
-- Thực hiện script `noha_ctl_heat.sh` để cài đặt heat
-	```sh
-	bash noha_ctl_heat.sh
-	````
-
-- Sau khi thực hiện xong script, thực hiện lệnh `openstack orchestration service list` để kiểm tra heat đã hoạt động hay chưa. Kết quả như sau: 
-	```sh
-	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
-	| hostname    | binary      | engine_id                            | host        | topic  | updated_at                 | status |
-	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
-	| controller1 | heat-engine | ddcab7f5-04f8-4c78-83e9-976f763db61b | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
-	| controller1 | heat-engine | fc010868-416d-4728-9b0c-fb532d12e5dd | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
-	| controller1 | heat-engine | 4383b86b-0316-4e62-902a-721979e1bc50 | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
-	| controller1 | heat-engine | 6a8e6e4c-4c49-49fc-a698-e906137607fd | controller1 | engine | 2017-08-15T05:02:18.000000 | up     |
-	+-------------+-------------+--------------------------------------+-------------+--------+----------------------------+--------+
-	```
-	
-- Tải template mẫu dành cho heat
-
-	```sh
-	wget https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/conf/ctl/heat/demo-template.yml
-	```
-
-- Chuyển sang project demo để tạo stack ở project demo 
-
-	```sh
-	source /root/demo-openrc
-	```
-
-- Tạo biến `NET_ID` để sử dụng cho heat ở dưới. Lấy ID của provider network. 
-
-	```sh
-	export NET_ID=$(openstack network list | awk '/ provider / { print $2 }')
-	```
-
-- Thực hiện tạo stack 
-
-	```sh
-	openstack stack create -t demo-template.yml --parameter "NetID=$NET_ID" stack
-	```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -38,8 +38,7 @@ function neutron_install () {
 	echocolor "Install the components"
 	sleep 3
 	apt install neutron-server neutron-plugin-ml2 \
-	  neutron-linuxbridge-agent neutron-dhcp-agent \
-	  neutron-metadata-agent neutron-l3-agent -y 
+	  neutron-linuxbridge-agent neutron-l3-agent -y 
 }
 
 # Function configure the server component
@@ -58,6 +57,8 @@ function neutron_config_server_component () {
 	ops_add $neutronfile DEFAULT core_plugin ml2
 	ops_add $neutronfile DEFAULT service_plugins router
 	ops_add $neutronfile DEFAULT allow_overlapping_ips true
+	ops_add $neutronfile DEFAULT dhcp_agents_per_network 2
+
 
 	ops_add $neutronfile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
 	ops_add $neutronfile DEFAULT auth_strategy keystone
@@ -161,7 +162,7 @@ function neutron_config_metadata () {
 	cp $metadatafile $metadatafilebak
 	egrep -v "^$|^#" $metadatafilebak > $metadatafile
 
-	ops_add $metadatafile DEFAULT nova_metadata_ip $CTL1_IP_NIC2
+	ops_add $metadatafile DEFAULT nova_metadata_host $CTL1_IP_NIC2
 	ops_add $metadatafile DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
 }
 
@@ -198,9 +199,15 @@ function neutron_restart () {
 	sleep 3
 	service nova-api restart
 	service neutron-server restart
+  systemctl stop neutron-dhcp-agent
+	systemctl stop neutron-metadata-agent
+  
+  systemctl disable neutron-dhcp-agent
+	systemctl disable neutron-metadata-agent
+  
 	service neutron-linuxbridge-agent restart
-	service neutron-dhcp-agent restart
-	service neutron-metadata-agent restart
+	#service neutron-dhcp-agent restart
+	#service neutron-metadata-agent restart
   service neutron-l3-agent restart
 }
 
@@ -231,10 +238,10 @@ neutron_config_linuxbridge
 neutron_config_l3agent
 
 # Configure the DHCP agent
-neutron_config_dhcp
+#neutron_config_dhcp
 
 # Configure the metadata agent
-neutron_config_metadata
+#neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
 neutron_config_compute_use_network

@@ -2,7 +2,7 @@
 
 ### A. MÔI TRƯỜNG LAB
 - Giả lập trên VMware Workstatios, hoặc ESX hoặc Virtualbox hoặc KVM hoặc máy vật lý.
-- Centos 7.3 Server 64 bit - 1611
+- Ubuntu server 16.04 64 bit
 
 ### B. MÔ HÌNH
 

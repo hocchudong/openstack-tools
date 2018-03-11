@@ -38,8 +38,7 @@ function neutron_install () {
 	echocolor "Install the components"
 	sleep 3
 	apt install neutron-server neutron-plugin-ml2 \
-	  neutron-linuxbridge-agent neutron-dhcp-agent \
-	  neutron-metadata-agent neutron-l3-agent -y 
+	  neutron-linuxbridge-agent neutron-l3-agent -y 
 }
 
 # Function configure the server component
@@ -58,6 +57,8 @@ function neutron_config_server_component () {
 	ops_add $neutronfile DEFAULT core_plugin ml2
 	ops_add $neutronfile DEFAULT service_plugins router
 	ops_add $neutronfile DEFAULT allow_overlapping_ips true
+	ops_add $neutronfile DEFAULT dhcp_agents_per_network 2
+
 
 	ops_add $neutronfile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
 	ops_add $neutronfile DEFAULT auth_strategy keystone

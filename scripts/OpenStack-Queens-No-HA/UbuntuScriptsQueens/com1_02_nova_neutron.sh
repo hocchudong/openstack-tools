@@ -83,7 +83,7 @@ function neutron_install () {
 	echocolor "Install the components Neutron"
 	sleep 3
 
-  apt install -y neutron-linuxbridge-agent \ 
+  apt install -y neutron-linuxbridge-agent \
   neutron-dhcp-agent \
   neutron-metadata-agent
 }

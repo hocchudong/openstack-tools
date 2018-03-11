@@ -162,7 +162,7 @@ function neutron_config_metadata () {
 	cp $metadatafile $metadatafilebak
 	egrep -v "^$|^#" $metadatafilebak > $metadatafile
 
-	ops_add $metadatafile DEFAULT nova_metadata_ip $CTL1_IP_NIC2
+	ops_add $metadatafile DEFAULT nova_metadata_host $CTL1_IP_NIC2
 	ops_add $metadatafile DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
 }
 

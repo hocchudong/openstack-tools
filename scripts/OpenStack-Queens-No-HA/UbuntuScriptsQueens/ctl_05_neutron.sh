@@ -199,7 +199,13 @@ function neutron_restart () {
 	sleep 3
 	service nova-api restart
 	service neutron-server restart
-	#service neutron-linuxbridge-agent restart
+  systemctl stop neutron-dhcp-agent
+	systemctl stop neutron-metadata-agent
+  
+  systemctl disable neutron-dhcp-agent
+	systemctl disable neutron-metadata-agent
+  
+	service neutron-linuxbridge-agent restart
 	#service neutron-dhcp-agent restart
 	#service neutron-metadata-agent restart
   service neutron-l3-agent restart

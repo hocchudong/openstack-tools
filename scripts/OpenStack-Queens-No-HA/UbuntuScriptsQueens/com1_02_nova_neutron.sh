@@ -83,7 +83,9 @@ function neutron_install () {
 	echocolor "Install the components Neutron"
 	sleep 3
 
-	apt install neutron-linuxbridge-agent -y
+  apt install -y neutron-linuxbridge-agent \ 
+  neutron-dhcp-agent \
+  neutron-metadata-agent
 }
 
 
@@ -100,6 +102,7 @@ function neutron_config_server_component () {
 	ops_del $neutronfile database connection
 	ops_add $neutronfile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
 	ops_add $neutronfile DEFAULT auth_strategy keystone
+	ops_add $neutronfile DEFAULT core_plugin ml2
   
 	ops_add $neutronfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
 	ops_add $neutronfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
@@ -131,12 +134,45 @@ function neutron_config_linuxbridge () {
 		firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 }
 
+
+# Function configure the DHCP agent
+function neutron_config_dhcp () {
+	echocolor "Configure the DHCP agent"
+	sleep 3
+	dhcpfile=/etc/neutron/dhcp_agent.ini
+	dhcpfilebak=/etc/neutron/dhcp_agent.ini.bak
+	cp $dhcpfile $dhcpfilebak
+	egrep -v "^$|^#" $dhcpfilebak > $dhcpfile
+
+	ops_add $dhcpfile DEFAULT interface_driver linuxbridge
+	ops_add $dhcpfile DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
+	ops_add $dhcpfile DEFAULT enable_isolated_metadata true
+	ops_add $dhcpfile DEFAULT force_metadata True
+  
+}
+
+# Function configure the metadata agent
+function neutron_config_metadata () {
+	echocolor "Configure the metadata agent"
+	sleep 3
+	metadatafile=/etc/neutron/metadata_agent.ini
+	metadatafilebak=/etc/neutron/metadata_agent.ini.bak
+	cp $metadatafile $metadatafilebak
+	egrep -v "^$|^#" $metadatafilebak > $metadatafile
+
+	ops_add $metadatafile DEFAULT nova_metadata_ip $CTL1_IP_NIC2
+	ops_add $metadatafile DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
+}
+
+
 # Function restart installation
 function neutron_restart () {
 	echocolor "Finalize installation"
 	sleep 3
 	service nova-compute restart
 	service neutron-linuxbridge-agent restart
+	service neutron-dhcp-agent restart
+	service neutron-metadata-agent restart
 }
 
 
@@ -161,6 +197,10 @@ neutron_config_server_component
 
 # Configure the Linux bridge agent
 neutron_config_linuxbridge
+
+neutron_config_dhcp
+
+neutron_config_metadata
 	
 # Configure the Compute service to use the Networking service
 #neutron_config_compute_use_network

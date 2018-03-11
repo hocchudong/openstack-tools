@@ -198,9 +198,9 @@ function neutron_restart () {
 	sleep 3
 	service nova-api restart
 	service neutron-server restart
-	service neutron-linuxbridge-agent restart
-	service neutron-dhcp-agent restart
-	service neutron-metadata-agent restart
+	#service neutron-linuxbridge-agent restart
+	#service neutron-dhcp-agent restart
+	#service neutron-metadata-agent restart
   service neutron-l3-agent restart
 }
 
@@ -231,10 +231,10 @@ neutron_config_linuxbridge
 neutron_config_l3agent
 
 # Configure the DHCP agent
-neutron_config_dhcp
+#neutron_config_dhcp
 
 # Configure the metadata agent
-neutron_config_metadata
+#neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
 neutron_config_compute_use_network

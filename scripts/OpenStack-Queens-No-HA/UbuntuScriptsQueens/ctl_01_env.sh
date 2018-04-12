@@ -65,7 +65,7 @@ function install_database() {
 
 	systemctl restart mysql
 
-	cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT 
+cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT 
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '$PASS_DATABASE_ROOT' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '$PASS_DATABASE_ROOT' WITH GRANT OPTION;
 FLUSH PRIVILEGES;

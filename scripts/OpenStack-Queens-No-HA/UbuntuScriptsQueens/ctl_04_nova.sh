@@ -106,10 +106,12 @@ nova_config () {
 	ops_add $novafile vnc vncserver_proxyclient_address \$my_ip
 
 	ops_add $novafile glance api_servers http://$CTL1_IP_NIC2:9292
+  
+  ops_add $novafile cinder os_region_name RegionOne
+
 
 	ops_add $novafile oslo_concurrency lock_path /var/lib/nova/tmp
 		
-	ops_del $novafile placement os_region_name
 	ops_add $novafile placement os_region_name RegionOne
 	ops_add $novafile placement project_domain_name Default
 	ops_add $novafile placement project_name service
@@ -118,6 +120,9 @@ nova_config () {
 	ops_add $novafile placement auth_url http://$CTL1_IP_NIC2:5000/v3
 	ops_add $novafile placement username placement
 	ops_add $novafile placement password $PLACEMENT_PASS
+  
+	ops_add $novafile scheduler discover_hosts_in_cells_interval 300
+  
 }
 
 # Function populate the nova-api database

@@ -25,7 +25,7 @@
 
 - Trên Compute1 thực hiện
 	```sh
-	 curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 	bash setup_ip.sh compute1 192.168.20.81 192.168.40.81 192.168.30.81 192.168.50.81
 	```
 
@@ -39,7 +39,7 @@
 - Thực hiện trên máy Cinder
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 
 	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
 	```
@@ -59,21 +59,14 @@
 	yum -y install git
 	git clone https://github.com/congto/openstack-tools.git
 
-	mv openstack-tools/scripts/OpenStack-Pike-No-HA /root/
+	mv openstack-tools/scripts/OpenStack-Rocky-No-HA /root/
 
-	cd OpenStack-Pike-No-HA
+	cd OpenStack-Rocky-No-HA
 	chmod +x *.sh
 	```
 
 - Nếu muốn sửa các IP thì sử dụng VI hoặc VIM để sửa, cần lưu ý tên NICs và địa chỉ IP cần phải tương ứng (trong này này tên NICs là ens160, ens192, ens224, ens256)
 
-- Trong toàn bộ quá trình chạy script, chỉ cần thực hiện trên node CTL1, script sẽ tự động cài đặt các node còn lại. Do vậy cần phải ping được từ node CTL1 tới COM1 và COM2 để đảm bảo CTL1 có thể tạo ssh keygen cho COM1 và COM2.
-
-	```sh
-	ping -c 3 192.168.20.34 
-	
-	ping -c 3 192.168.20.35
-	```
 
 -  Nếu cần thiết thì cài ứng dụng `byobu` để khi các phiên ssh bị mất kết nối thì có thể sử dụng lại (để sử đụng lại thì cần ssh vào và gõ lại lệnh `byobu`)
 
@@ -90,7 +83,7 @@
 
 #### 2.2. Thực thi script `noha_ctl_prepare.sh`
 
-- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Pike-No-HA/` của node CTL1
+- Lưu ý, lúc này cửa sổ nhắc lệnh đang ở thư mục `/root/OpenStack-Rocky-No-HA/` của node CTL1
 
 - Thực thi script  `noha_ctl_prepare.sh`
 
@@ -105,7 +98,7 @@
 - Sau khi node CTL khởi động lại, đăng nhập bằng quyền root và thực thi các lệnh dưới.
 
 	```sh
-	cd /root/OpenStack-Pike-No-HA/
+	cd /root/OpenStack-Rocky-No-HA/
 
 	bash noha_ctl_install_db_rabbitmq.sh
 	```
@@ -235,7 +228,7 @@
 - Tải script cài đặt nova và neutron cho Compute1
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/noha_com_install.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/noha_com_install.sh
 	
 	bash noha_com_install.sh
 	```
@@ -350,7 +343,7 @@ openstack server list
 
 - Login vào máy chủ cinder và thực thi script dưới và khai báo các tham số về hostname và IP của các NICs.
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 
 	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
 	```
@@ -366,7 +359,7 @@ openstack server list
 
 - Login vào máy chủ cinder và thực hiện script dưới tại thư mục root. Lưu ý, ở script trên đã copy file `config.cfg` từ máy chủ controller sang máy chủ cinder. 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/noha_cinder_install.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/noha_cinder_install.sh
 
 	bash noha_cinder_install.sh
 	```
@@ -398,7 +391,7 @@ openstack server list
 #### Thực hiện trên máy chủ SWIFT1
 - Login vào máy chủ SWIFT1 với quyền root và thực hiện script dưới.
 	```sh 
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 
 	bash setup_ip.sh swift1  192.168.20.37 10.10.0.37 172.16.20.37 192.168.40.37
 	```
@@ -406,7 +399,7 @@ openstack server list
 #### Thực hiện trên máy chủ SWIFT2
 - Login vào máy chủ SWIFT1 với quyền root và thực hiện script dưới.
 	```sh 
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Pike-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 
 	bash setup_ip.sh swift2  192.168.20.38 10.10.0.38 172.16.20.38 192.168.40.38
 	```
@@ -443,7 +436,7 @@ openstack server list
 ##### 6.2.3. Cài đặt các thành phần của Swift trên máy chủ controller
 - Login vào máy chủ controller với quyền `root` và di duyển vào thư mục chưa script
 	```sh
-	cd /root/OpenStack-Pike-No-HA
+	cd /root/OpenStack-Rocky-No-HA
 	bash noha_ctl_swift.sh
 	```
 

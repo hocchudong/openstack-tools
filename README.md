@@ -12,3 +12,6 @@
 - [Hướng dẫn cài đặt OpenStack sử dụng Kolla-ansible trên một node](./docs/kolla/openstack-pike-kolla-aio.md)
 
 - [Hướng dẫn sử dụng script OpenStack Queens trên Ubuntu Server 16.04 không có HA](./docs/openstack-queens-ubuntu16.4-scripts.md)
+
+- [Hướng dẫn sử dụng script OpenStack Rocky trên CentOS7 không có HA](./docs/openstack-rocky-CentOS7-scripts.md)
+

@@ -11,7 +11,7 @@ IP2=$3
 IP3=$4
 IP4=$5
 
-IP_GATEWAY=192.168.50.1
+IP_GATEWAY=192.168.20.1
 IP_NETMASK=24
 IP_DNS=8.8.8.8
 
@@ -19,7 +19,7 @@ if [ $# -ne 5 ]
     then
         echo -e "Nhap du 5 thong so: \e[38;5;82m HOSTNAME IP_NIC1 IP_NIC2 IP_NIC3 IP_NIC4 \e[0m"
         echo ""
-        echo -e "Vi du:\e[101mbash $0 ctl1 192.168.50.80 192.168.20.80 192.168.40.80 20.0.0.80 \e[0m"
+        echo -e "Vi du:\e[101mbash $0 ctl1 192.168.20.80 192.168.40.80 192.168.30.80 192.168.50.80 \e[0m"
         exit 1;
 fi
 

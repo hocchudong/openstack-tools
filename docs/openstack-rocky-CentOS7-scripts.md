@@ -19,20 +19,20 @@
 ### 1.1. Đặt IP theo IP Planning cho từng node.
 - Trên Controller thực hiện
 	```sh
-	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 	bash setup_ip.sh controller1 192.168.20.80 192.168.40.80 192.168.30.80 192.168.50.80
 	```
 
 - Trên Compute1 thực hiện
 	```sh
-	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
+	 curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 	bash setup_ip.sh compute1 192.168.20.81 192.168.40.81 192.168.30.81 192.168.50.81
 	```
 
 - Trên Compute2 thực hiện
 
 	```sh
-	https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
 	bash setup_ip.sh compute2 192.168.20.82 192.168.40.82 192.168.30.82 192.168.50.82
 	```
 

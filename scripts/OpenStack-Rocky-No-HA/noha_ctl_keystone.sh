@@ -53,7 +53,7 @@ function keystone_syncdb {
 
 function keystone_bootstrap {
           keystone-manage bootstrap --bootstrap-password $ADMIN_PASS \
-          --bootstrap-admin-url http://$CTL1_IP_NIC1:35357/v3/ \
+          --bootstrap-admin-url http://$CTL1_IP_NIC1:5000/v3/ \
           --bootstrap-internal-url http://$CTL1_IP_NIC1:5000/v3/ \
           --bootstrap-public-url http://$CTL1_IP_NIC1:5000/v3/ \
           --bootstrap-region-id RegionOne
@@ -82,7 +82,7 @@ export OS_USER_DOMAIN_NAME=Default
 export OS_PROJECT_NAME=admin
 export OS_USERNAME=admin
 export OS_PASSWORD=$ADMIN_PASS
-export OS_AUTH_URL=http://$CTL1_IP_NIC1:35357/v3
+export OS_AUTH_URL=http://$CTL1_IP_NIC1:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 

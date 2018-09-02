@@ -95,7 +95,7 @@ function neutron_config() {
         
         ops_edit $ctl_neutron_conf oslo_messaging_notifications driver messagingv2
         
-        ops_edit $ctl_neutron_conf linux_bridge physical_interface_mappings provider:ens256
+        ops_edit $ctl_neutron_conf linux_bridge physical_interface_mappings provider:eth3
         ops_edit $ctl_neutron_conf vxlan enable_vxlan False
         ops_edit $ctl_neutron_conf securitygroup enable_security_group True
         ops_edit $ctl_neutron_conf securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver

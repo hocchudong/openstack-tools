@@ -84,7 +84,7 @@ function install_repo_openstack {
             echocolor "Cai dat install_repo tren $IP_ADD"
             sleep 3
         ssh root@$IP_ADD << EOF 
-yum -y install centos-release-openstack-pike
+yum -y install centos-release-openstack-rocky
 yum -y upgrade
 yum -y install crudini wget vim
 yum -y install python-openstackclient openstack-selinux python2-PyMySQL
@@ -164,7 +164,7 @@ setup_config
 
 echocolor "Cai dat proxy tren cac node"
 sleep 3
-install_proxy
+#install_proxy
 
 echocolor "Cai dat repo tren cac node"
 sleep 3

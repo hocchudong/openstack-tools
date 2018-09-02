@@ -1,4 +1,4 @@
-#### Hướng dẫn thực thi script cài đặt OpenStack Newton không có HA
+#### Hướng dẫn thực thi script cài đặt OpenStack Rocky không có HA trên CentOS 7
 
 ### A. MÔI TRƯỜNG LAB
 - Giả lập trên VMware Workstatios, hoặc ESX hoặc Virtualbox hoặc KVM hoặc máy vật lý.

@@ -61,8 +61,9 @@ sed -i -e "s#ALLOWED_HOSTS.*#ALLOWED_HOSTS = ['*',]#g"  $filehorizon
 sed -i -e "s/_member_/user/g" $filehorizon
 sed -i -e "s/127.0.0.1/$CTL1_IP_NIC1/g" $filehorizon
 sed -i -e "s/http:\/\/\%s:5000\/v2.0/http:\/\/\%s:5000\/v3/g" $filehorizon
-sed -i -e "s#^CACHES#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'\nCACHES#g#" $filehorizon
-sed -i -e "s#locmem.LocMemCache'#memcached.MemcachedCache',\n        'LOCATION' : [ '192.168.20.33:11211', ]#g" $filehorizon
+
+sed -i -e "s#^CACHES#\nCACHES#g#" $filehorizon
+sed -i -e "s#locmem.LocMemCache'#memcached.MemcachedCache',\n        'LOCATION' : [ '$CTL1_IP_NIC1:11211', ]#g" $filehorizon
 sed -i -e 's/^#OPENSTACK_API_VERSIONS.*/OPENSTACK_API_VERSIONS = {\n    "identity": 3,\n    "image": 2,\n    "volume": 2,\n}\n#OPENSTACK_API_VERSIONS = {/g'  $filehorizon
 sed -i -e "s/^#OPENSTACK_KEYSTONE_DEFAULT_DOMAIN.*/OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'default'/g"   $filehorizon
 

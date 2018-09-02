@@ -49,8 +49,8 @@ function com_nova_config {
 
 	ops_edit $com_nova_conf api auth_strategy  keystone
 
-	ops_edit $com_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
-	ops_edit $com_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
+	ops_edit $com_nova_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000
+	ops_edit $com_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000
 	ops_edit $com_nova_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
 	ops_edit $com_nova_conf keystone_authtoken auth_type password
 	ops_edit $com_nova_conf keystone_authtoken project_domain_name Default
@@ -73,12 +73,12 @@ function com_nova_config {
 	ops_edit $com_nova_conf placement project_name service
 	ops_edit $com_nova_conf placement auth_type password
 	ops_edit $com_nova_conf placement user_domain_name Default
-	ops_edit $com_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
+	ops_edit $com_nova_conf placement auth_url http://$CTL1_IP_NIC1:5000/v3
 	ops_edit $com_nova_conf placement username placement
 	ops_edit $com_nova_conf placement password $PLACEMENT_PASS
 
 	ops_edit $com_nova_conf neutron url http://$CTL1_IP_NIC1:9696
-	ops_edit $com_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357
+	ops_edit $com_nova_conf neutron auth_url http://$CTL1_IP_NIC1:5000
 	ops_edit $com_nova_conf neutron auth_type password
 	ops_edit $com_nova_conf neutron project_domain_name Default
 	ops_edit $com_nova_conf neutron user_domain_name Default
@@ -128,8 +128,8 @@ function com_neutron_config {
         ops_edit $com_neutron_conf oslo_messaging_rabbit rabbit_userid openstack
         ops_edit $com_neutron_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
         
-        ops_edit $com_neutron_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
-        ops_edit $com_neutron_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
+        ops_edit $com_neutron_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000
+        ops_edit $com_neutron_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000
         ops_edit $com_neutron_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
         ops_edit $com_neutron_conf keystone_authtoken auth_type password
         ops_edit $com_neutron_conf keystone_authtoken project_domain_name Default
@@ -142,9 +142,9 @@ function com_neutron_config {
         
         ops_edit $com_neutron_conf oslo_messaging_notifications driver messagingv2
         
-        ops_edit $com_linuxbridge_agent linux_bridge physical_interface_mappings provider:ens256
+        ops_edit $com_linuxbridge_agent linux_bridge physical_interface_mappings provider:eth3
         ops_edit $com_linuxbridge_agent vxlan enable_vxlan True
-        ops_edit $com_linuxbridge_agent vxlan local_ip $(ip addr show dev ens224 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+        ops_edit $com_linuxbridge_agent vxlan local_ip $(ip addr show dev eth2 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
         ops_edit $com_linuxbridge_agent securitygroup enable_security_group True
         ops_edit $com_linuxbridge_agent securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
         

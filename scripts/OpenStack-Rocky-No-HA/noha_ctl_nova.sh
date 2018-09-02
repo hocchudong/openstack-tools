@@ -93,8 +93,8 @@ function nova_config {
 				
         ops_edit $ctl_nova_conf api auth_strategy  keystone
 
-        ops_edit $ctl_nova_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
-        ops_edit $ctl_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
+        ops_edit $ctl_nova_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000		
+        ops_edit $ctl_nova_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000
         ops_edit $ctl_nova_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
         ops_edit $ctl_nova_conf keystone_authtoken auth_type password
         ops_edit $ctl_nova_conf keystone_authtoken project_domain_name Default
@@ -116,12 +116,12 @@ function nova_config {
         ops_edit $ctl_nova_conf placement project_name service
         ops_edit $ctl_nova_conf placement auth_type password
         ops_edit $ctl_nova_conf placement user_domain_name Default
-        ops_edit $ctl_nova_conf placement auth_url http://$CTL1_IP_NIC1:35357/v3
+        ops_edit $ctl_nova_conf placement auth_url http://$CTL1_IP_NIC1:5000/v3
         ops_edit $ctl_nova_conf placement username placement
         ops_edit $ctl_nova_conf placement password $PLACEMENT_PASS
         
         ops_edit $ctl_nova_conf neutron url http://$CTL1_IP_NIC1:9696
-        ops_edit $ctl_nova_conf neutron auth_url http://$CTL1_IP_NIC1:35357
+        ops_edit $ctl_nova_conf neutron auth_url http://$CTL1_IP_NIC1:5000
         ops_edit $ctl_nova_conf neutron auth_type password
         ops_edit $ctl_nova_conf neutron project_domain_name Default
         ops_edit $ctl_nova_conf neutron user_domain_name Default

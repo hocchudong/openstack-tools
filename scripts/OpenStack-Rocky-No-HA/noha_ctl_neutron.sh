@@ -81,8 +81,8 @@ function neutron_config() {
                 
         ops_edit $ctl_neutron_conf database connection  mysql+pymysql://neutron:$PASS_DATABASE_NEUTRON@$CTL1_IP_NIC1/neutron
         
-        ops_edit $ctl_neutron_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC1:5000
-        ops_edit $ctl_neutron_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:35357
+        ops_edit $ctl_neutron_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000
+        ops_edit $ctl_neutron_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000
         ops_edit $ctl_neutron_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
         ops_edit $ctl_neutron_conf keystone_authtoken auth_type password
         ops_edit $ctl_neutron_conf keystone_authtoken project_domain_name Default
@@ -103,7 +103,7 @@ function neutron_config() {
         ops_edit $ctl_neutron_conf DEFAULT nova_metadata_ip $CTL1_IP_NIC1
         ops_edit $ctl_neutron_conf DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
                 
-        ops_edit $ctl_neutron_conf nova auth_url http://$CTL1_IP_NIC1:35357
+        ops_edit $ctl_neutron_conf nova auth_url http://$CTL1_IP_NIC1:5000
         ops_edit $ctl_neutron_conf nova auth_type password
         ops_edit $ctl_neutron_conf nova project_domain_name Default
         ops_edit $ctl_neutron_conf nova user_domain_name Default
@@ -124,9 +124,9 @@ function neutron_config() {
 				
         ops_edit $ctl_l3_agent_conf DEFAULT interface_driver linuxbridge   
 
-        ops_edit $ctl_linuxbridge_agent linux_bridge physical_interface_mappings provider:ens256
+        ops_edit $ctl_linuxbridge_agent linux_bridge physical_interface_mappings provider:eth3
         ops_edit $ctl_linuxbridge_agent vxlan enable_vxlan True
-        ops_edit $ctl_linuxbridge_agent vxlan local_ip $(ip addr show dev ens224 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+        ops_edit $ctl_linuxbridge_agent vxlan local_ip $(ip addr show dev eth2 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
         ops_edit $ctl_linuxbridge_agent securitygroup enable_security_group True
         ops_edit $ctl_linuxbridge_agent securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
        

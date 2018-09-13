@@ -43,10 +43,11 @@ function setup_config {
 function install_proxy {
 				echocolor "Cai dat install_proxy tren $1"
 				sleep 3
-				ssh root@$1 'echo "proxy=http://192.168.20.12:3142" >> /etc/yum.conf' 
+				ssh root@$1 'echo "proxy=http://192.168.70.111:3142" >> /etc/yum.conf' 
 				yum -y update
 
 }
+
 function install_repo_galera {
             echocolor "Cai dat install_repo_galera tren $1"
             sleep 3

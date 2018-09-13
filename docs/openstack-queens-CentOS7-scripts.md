@@ -60,7 +60,7 @@
 
 	mv openstack-tools/scripts/OpenStack-Queens-No-HA/CentOS7 /root/
 
-	cd OpenStack-Rocky-No-HA
+	cd CentOS7
 	chmod +x *.sh
 	```
 

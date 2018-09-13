@@ -19,29 +19,28 @@
 ### 1.1. Đặt IP theo IP Planning cho từng node.
 - Trên Controller thực hiện
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.20.80 192.168.40.80 192.168.30.80 192.168.50.80
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
+	bash setup_ip.sh controller1 192.168.70.120 192.168.82.120 192.168.81.120 192.168.84.120
 	```
 
 - Trên Compute1 thực hiện
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
-	bash setup_ip.sh compute1 192.168.20.81 192.168.40.81 192.168.30.81 192.168.50.81
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
+	bash setup_ip.sh controller1 192.168.70.121 192.168.82.121 192.168.81.121 192.168.84.121
 	```
 
 - Trên Compute2 thực hiện
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
-	bash setup_ip.sh compute2 192.168.20.82 192.168.40.82 192.168.30.82 192.168.50.82
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
+	bash setup_ip.sh controller1 192.168.70.122 192.168.82.122 192.168.81.122 192.168.84.122
 	```
 
 - Thực hiện trên máy Cinder
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/setup_ip.sh
-
-	bash setup_ip.sh cinder1 192.168.20.36 10.10.0.36 172.16.20.36 192.168.40.36
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
+	bash setup_ip.sh controller1 192.168.70.123 192.168.82.123 192.168.81.123 192.168.84.123
 	```
 
 	

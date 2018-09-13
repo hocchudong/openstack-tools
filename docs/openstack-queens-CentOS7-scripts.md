@@ -26,21 +26,21 @@
 - Trên Compute1 thực hiện
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.70.121 192.168.82.121 192.168.81.121 192.168.84.121
+	bash setup_ip.sh compute1 192.168.70.121 192.168.82.121 192.168.81.121 192.168.84.121
 	```
 
 - Trên Compute2 thực hiện
 
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.70.122 192.168.82.122 192.168.81.122 192.168.84.122
+	bash setup_ip.sh compute2 192.168.70.122 192.168.82.122 192.168.81.122 192.168.84.122
 	```
 
 - Thực hiện trên máy Cinder
 
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.70.123 192.168.82.123 192.168.81.123 192.168.84.123
+	bash setup_ip.sh cinder1 192.168.70.123 192.168.82.123 192.168.81.123 192.168.84.123
 	```
 
 	
@@ -58,7 +58,7 @@
 	yum -y install git
 	git clone https://github.com/congto/openstack-tools.git
 
-	mv openstack-tools/scripts/OpenStack-Rocky-No-HA /root/
+	mv openstack-tools/scripts/OpenStack-Queens-No-HA/CentOS7 /root/
 
 	cd OpenStack-Rocky-No-HA
 	chmod +x *.sh

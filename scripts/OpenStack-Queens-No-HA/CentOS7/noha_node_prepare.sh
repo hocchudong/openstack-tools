@@ -36,7 +36,7 @@ function copykey {
 }
 
 function setup_config {
-				scp /root/OpenStack-Pike-No-HA/config.cfg root@$1:/root/
+				scp /root/CentOS7/config.cfg root@$1:/root/
 				chmod +x config.cfg
 }
 
@@ -64,7 +64,7 @@ function install_repo {
             echocolor "Cai dat install_repo tren $1"
             sleep 3
 ssh root@$1 << EOF 
-yum -y install centos-release-openstack-pike
+yum -y install centos-release-openstack-queens
 yum -y upgrade
 yum -y install crudini wget vim
 yum -y install python-openstackclient openstack-selinux python2-PyMySQL

@@ -126,7 +126,7 @@ function neutron_config() {
 
         ops_edit $ctl_linuxbridge_agent linux_bridge physical_interface_mappings provider:eth3
         ops_edit $ctl_linuxbridge_agent vxlan enable_vxlan True
-        ops_edit $ctl_linuxbridge_agent vxlan local_ip $(ip addr show dev ens192 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+        ops_edit $ctl_linuxbridge_agent vxlan local_ip $(ip addr show dev ens224 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
         ops_edit $ctl_linuxbridge_agent securitygroup enable_security_group True
         ops_edit $ctl_linuxbridge_agent securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
        

@@ -144,7 +144,7 @@ EOF
 function install_memcached() {
         yum -y install memcached python-memcached
         cp /etc/sysconfig/memcached /etc/sysconfig/memcached.orig
-        IP_LOCAL=`ip -o -4 addr show dev ens160 | sed 's/.* inet \([^/]*\).*/\1/'`
+        IP_LOCAL=`ip -o -4 addr show dev eth1 | sed 's/.* inet \([^/]*\).*/\1/'`
         sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,$IP_LOCAL/g" /etc/sysconfig/memcached
 				systemctl enable memcached.service
 				systemctl start memcached.service

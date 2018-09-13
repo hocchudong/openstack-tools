@@ -54,7 +54,7 @@ function install_proxy {
         do
             echocolor "Cai dat install_proxy tren $IP_ADD"
             sleep 3
-            ssh root@$IP_ADD 'echo "proxy=http://192.168.20.12:3142" >> /etc/yum.conf' 
+            ssh root@$IP_ADD 'echo "proxy=http://192.168.70.111:3142" >> /etc/yum.conf' 
             yum -y update
 
         done
@@ -84,7 +84,7 @@ function install_repo_openstack {
             echocolor "Cai dat install_repo tren $IP_ADD"
             sleep 3
         ssh root@$IP_ADD << EOF 
-yum -y install centos-release-openstack-rocky
+yum -y install centos-release-openstack-queens
 yum -y upgrade
 yum -y install crudini wget vim
 yum -y install python-openstackclient openstack-selinux python2-PyMySQL
@@ -144,8 +144,9 @@ EOF
 function install_memcached() {
         yum -y install memcached python-memcached
         cp /etc/sysconfig/memcached /etc/sysconfig/memcached.orig
-        IP_LOCAL=`ip -o -4 addr show dev ens160 | sed 's/.* inet \([^/]*\).*/\1/'`
-        sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,$IP_LOCAL/g" /etc/sysconfig/memcached
+        #IP_LOCAL=`ip -o -4 addr show dev ens160 | sed 's/.* inet \([^/]*\).*/\1/'`
+        #sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,$IP_LOCAL/g" /etc/sysconfig/memcached
+        sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,$CTL1_IP_NIC1/g" /etc/sysconfig/memcached
 				systemctl enable memcached.service
 				systemctl start memcached.service
 }
@@ -164,7 +165,7 @@ setup_config
 
 echocolor "Cai dat proxy tren cac node"
 sleep 3
-#install_proxy
+install_proxy
 
 echocolor "Cai dat repo tren cac node"
 sleep 3

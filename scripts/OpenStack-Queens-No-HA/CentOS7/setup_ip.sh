@@ -19,7 +19,7 @@ if [ $# -ne 5 ]
     then
         echo -e "Nhap du 5 thong so: \e[38;5;82m HOSTNAME IP_NIC1 IP_NIC2 IP_NIC3 IP_NIC4 \e[0m"
         echo ""
-        echo -e "Vi du:\e[101mbash $0 ctl1 192.168.20.80 192.168.40.80 192.168.30.80 192.168.50.80 \e[0m"
+        echo -e "Vi du:\e[101mbash $0 ctl1 192.168.70.120 192.168.82.120 192.168.81.120 192.168.84.120 \e[0m"
         exit 1;
 fi
 

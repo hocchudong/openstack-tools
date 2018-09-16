@@ -67,6 +67,9 @@ sed -i -e "s#locmem.LocMemCache'#memcached.MemcachedCache',\n        'LOCATION' 
 sed -i -e 's/^#OPENSTACK_API_VERSIONS.*/OPENSTACK_API_VERSIONS = {\n    "identity": 3,\n    "image": 2,\n    "volume": 2,\n}\n#OPENSTACK_API_VERSIONS = {/g'  $filehorizon
 sed -i -e "s/^#OPENSTACK_KEYSTONE_DEFAULT_DOMAIN.*/OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'default'/g"   $filehorizon
 
+cp /etc/httpd/conf.d/openstack-dashboard.conf /etc/httpd/conf.d/openstack-dashboard.conf.orig
+sed -i '4iWSGIApplicationGroup \%\{GLOBAL\}' /etc/httpd/conf.d/openstack-dashboard.conf
+
 ## /* Restarting apache2 and memcached
  systemctl restart httpd.service memcached.service
 echocolor "Finish setting up Horizon"

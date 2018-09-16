@@ -172,7 +172,8 @@ function create_lvm() {
 		cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
 		#sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
     # fix filter cua lvm tren CentOS 7.4, chen vao dong 141 cua file /etc/lvm/lvm.conf
-    sed -i '141i\        filter = [ "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
+    #sed -i '141i\        filter = [ "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
+	sed -i '141i\        filter = [ "a/sda/", "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
 	else 
 		echocolor "Khong cau hinh LVM vi ko cai cinder-volume"
 	fi

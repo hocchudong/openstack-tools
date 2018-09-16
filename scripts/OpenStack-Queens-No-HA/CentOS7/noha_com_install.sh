@@ -142,7 +142,7 @@ function com_neutron_config {
         
         ops_edit $com_neutron_conf oslo_messaging_notifications driver messagingv2
         
-        ops_edit $com_linuxbridge_agent linux_bridge physical_interface_mappings provider:eth3
+        ops_edit $com_linuxbridge_agent linux_bridge physical_interface_mappings provider:ens256
         ops_edit $com_linuxbridge_agent vxlan enable_vxlan True
         ops_edit $com_linuxbridge_agent vxlan local_ip $(ip addr show dev ens224 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
         ops_edit $com_linuxbridge_agent securitygroup enable_security_group True

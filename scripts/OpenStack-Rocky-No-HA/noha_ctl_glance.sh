@@ -84,8 +84,8 @@ function glance_install_config() {
 				ops_edit $glance_registry_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
         ops_edit $glance_registry_conf database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC1/glance
 
-        ops_edit $glance_api_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000		
-        ops_edit $glance_api_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000		
+        ops_edit $glance_registry_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000		
+        ops_edit $glance_registry_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000		
         ops_edit $glance_registry_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
         ops_edit $glance_registry_conf keystone_authtoken auth_type password
         ops_edit $glance_registry_conf keystone_authtoken project_domain_name Default

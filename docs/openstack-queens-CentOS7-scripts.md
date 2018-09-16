@@ -227,7 +227,7 @@
 - Tải script cài đặt nova và neutron cho Compute1
 
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/noha_com_install.sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/noha_com_install.sh
 	
 	bash noha_com_install.sh
 	```

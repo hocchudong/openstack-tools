@@ -295,9 +295,9 @@
 
 	```sh
 	openstack subnet create subnet1_provider --network provider \
-	--allocation-pool start=192.168.40.200,end=192.168.40.220 \
-	--dns-nameserver 8.8.8.8 --gateway 192.168.40.254 \
-	--subnet-range 192.168.40.0/24 
+	 --allocation-pool start=192.168.84.130,end=192.168.84.148 \
+	 --dns-nameserver 8.8.8.8 --gateway 192.168.84.1 \
+	 --subnet-range 192.168.84.0/24
 	```
 
 #### 4.2. Tạo flavor
@@ -306,6 +306,8 @@
 
 	```sh
 	openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
+	openstack flavor create --id 1 --vcpus 1 --ram 1024 --disk 20 m1.tiny
+	openstack flavor create --id 2 --vcpus 2 --ram 2408 --disk 40 m1.small
 	```
 
 #### 4.3. Mở các rule 

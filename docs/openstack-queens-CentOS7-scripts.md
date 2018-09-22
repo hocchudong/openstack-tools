@@ -6,11 +6,11 @@
 
 ### B. MÔ HÌNH
 
-![noha_openstack_topology.png](/images/noha_openstack_topology.png)
+![noha_openstack_topology.png](/images/noha_openstack_queen_topology.png)
 
 ### C. IP PLANNING
 
-![noha_ip_planning.png](/images/noha_ip_planning.png)
+![noha_ip_planning.png](/images/noha_openstack_queen_ip_planning.png)
 
 
 

@@ -120,14 +120,15 @@ server 3.asia.pool.ntp.org iburst/g' /etc/chrony.conf
                   sed -i 's/server 1.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
                   sed -i 's/server 2.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
                   sed -i 's/server 3.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
-                  sed -i 's/#allow 192.168\/16/allow 192.168.20.0\/24/g' /etc/chrony.conf
+                  sed -i 's/#allow 192.168.0.0\/16/allow 192.168.70.0\/24/g' /etc/chrony.conf
                   sleep 5                  
                   systemctl enable chronyd.service
                   systemctl start chronyd.service
                   systemctl restart chronyd.service
                   chronyc sources
           else 
-                  ssh root@$IP_ADD << EOF               
+                  ssh root@$IP_ADD << EOF    
+yum -y install chrony				  
 sed -i 's/server 0.centos.pool.ntp.org iburst/server $CTL1_IP_NIC1 iburst/g' /etc/chrony.conf
 sed -i 's/server 1.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
 sed -i 's/server 2.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf

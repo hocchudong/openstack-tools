@@ -73,7 +73,11 @@
 	```sh
 	bash setup_ip.sh cinder1 192.168.70.123 192.168.81.123 192.168.82.123 192.168.84.123
 	```
+## 1.2. Thực hiện kiểm tra sau khi đặt IP
 
+- Login vào từng node:
+	- Ping tới từng IP của các node còn lại để kiểm tra.
+	- Ping ra internet để đảm bảo máy có thể kết nối ra ngoài để tải gói.
 	
 ## Thực hiện script cài đặt OpenStack
 ### 2. Thực hiện cài đặt trên Controller

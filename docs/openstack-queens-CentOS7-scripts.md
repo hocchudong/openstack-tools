@@ -52,13 +52,14 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-		- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	  - Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 
 
 - Thực thi script 	
 	```sh
 	bash setup_ip.sh compute2 192.168.70.122 192.168.81.122 192.168.82.122 192.168.84.122
 	```
+
 ### 1.1.4. Thực hiện trên Cinder1 (tùy chọn, nếu không có thì ko cần làm).
 
 - Thực hiện trên máy Cinder

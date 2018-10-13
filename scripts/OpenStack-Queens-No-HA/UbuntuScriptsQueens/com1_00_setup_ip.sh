@@ -1,6 +1,5 @@
 #!/bin/bash
 # Author: HOC CHU DONG
-
 source function.sh
 source config.cfg
 

@@ -17,30 +17,45 @@
 ## 1. Các bước thực hiện
 
 ### 1.1. Đặt IP theo IP Planning cho từng node.
-- Trên Controller thực hiện
+- Trên Controller1 thực hiện tải script đặt địa chỉ IP. Lưu ý sửa lại dòng `IP_GATEWAY` trong file dưới nếu bạn dùng gateway khác.
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.70.120 192.168.82.120 192.168.81.120 192.168.84.120
 	```
 
-- Trên Compute1 thực hiện
+- Thực thi script 	
 	```sh
-	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh compute1 192.168.70.121 192.168.82.121 192.168.81.121 192.168.84.121
+	bash setup_ip.sh controller1 192.168.70.120 192.168.81.120 192.168.82.120 192.168.84.120
 	```
 
-- Trên Compute2 thực hiện
-
+- Trên Compute1 thực hiện tải script đặt địa chỉ IP. Lưu ý sửa lại dòng `IP_GATEWAY` trong file dưới nếu bạn dùng gateway khác.
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh compute2 192.168.70.122 192.168.82.122 192.168.81.122 192.168.84.122
+	```
+
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh compute1 192.168.70.121 192.168.81.121 192.168.82.121 192.168.84.121
+	```
+
+- Trên Compute2 thực hiện tải script đặt địa chỉ IP. Lưu ý sửa lại dòng `IP_GATEWAY` trong file dưới nếu bạn dùng gateway khác.
+	```sh
+	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
+	```
+
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh compute2 192.168.70.122 192.168.81.122 192.168.82.122 192.168.84.122
 	```
 
 - Thực hiện trên máy Cinder
 
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh cinder1 192.168.70.123 192.168.82.123 192.168.81.123 192.168.84.123
+	```
+	
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh cinder1 192.168.70.123 192.168.81.123 192.168.82.123 192.168.84.123
 	```
 
 	

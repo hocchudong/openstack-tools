@@ -328,12 +328,12 @@
 	```sh
 	openstack flavor create --id 0 --vcpus 1 --ram 128 --disk 2 m1.nano
 	openstack flavor create --id 1 --vcpus 1 --ram 512 --disk 10 m1.tiny
-	openstack flavor create --id 2 --vcpus 2 --ram 1024 --disk 30 m1.tiny
+	openstack flavor create --id 2 --vcpus 2 --ram 1024 --disk 30 m1.small
 	openstack flavor create --id 3 --vcpus 2 --ram 4096 --disk 40 m1.lagre
 	
 	openstack flavor create --id 4 --vcpus 1 --ram 128 --disk 0 vol1.nano
 	openstack flavor create --id 5 --vcpus 1 --ram 512 --disk 0 vol1.tiny
-	openstack flavor create --id 6 --vcpus 2 --ram 1024 --disk 0 vol1.tiny
+	openstack flavor create --id 6 --vcpus 2 --ram 1024 --disk 0 vol1.small
 	openstack flavor create --id 7 --vcpus 2 --ram 4096 --disk 0 vol1.lagre
 
 	```

@@ -348,11 +348,17 @@
 	
 #### 4.4. Tạo máy ảo
 
-- Tạo máy ảo cần cung cấp các ID hoặc tên về images, network, flavor. Giả sử ID của network đã có, images là `cirros`, flavor có tên là `m1.nano`
+- Tạo máy ảo từ image cần cung cấp các ID hoặc tên về images, network, flavor. Giả sử ID của network đã có, images là `cirros`, flavor có tên là `m1.nano`
 
 	```sh
 	openstack server create Provider_VM01 --flavor m1.nano --image cirros \
 		--nic net-id=9681d9dd-aae2-42fe-9b84-dd7cb04c1aca --security-group default
+	```
+
+- Tạo máy ảo boot từ volume (lưu ý muốn boot từ volume cần cài Cinder)
+
+	```sh
+	nova boot --flavor m1.nano --block-device source=image,id=4b7c9492-9243-44f0-a87d-a0f0dc2865b7,dest=volume,size=5,shutdown=remove,bootindex=0 --nic net-id=3f62af74-f39a-4156-a1f5-4df359bfbd5b Provider-volume-vm1
 	```
 	
 - Chờ một lát, máy ảo sẽ được tạo, sau đó kiểm tra bằng lệnh dưới, ta sẽ thấy thông tin máy ảo và IP

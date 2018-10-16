@@ -1,0 +1,21 @@
+
+#### Huong dan thuc thi script 
+
+
+
+- Tai cac goi
+
+	yum update -y && yum install epel-release -y 
+
+	yum install git -y
+	yum install byobu fping wget -y
+
+	git clone https://github.com/congto/openstack-tools.git
+
+	mv openstack-tools/scripts/OpenStack-Queens-HA/CentOS7/ /root/
+
+	cd CentOS7/
+
+	chmod +x *
+	 
+

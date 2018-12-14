@@ -333,5 +333,5 @@
 openstack server list
 ```
 
-- Lúc này có thể ping và ssh tới máy ảo bằng tài khoản `cirros` và mật khẩu là `cubswin:)` . Minh họa http://prntscr.com/fznbcb
+- Lúc này có thể ping và ssh tới máy ảo bằng tài khoản `cirros` và mật khẩu là `cubswin:)`. Minh họa http://prntscr.com/fznbcb
 

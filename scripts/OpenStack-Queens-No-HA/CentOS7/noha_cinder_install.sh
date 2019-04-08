@@ -40,42 +40,44 @@ function cin_cinder_config {
         cin_cinder_conf=/etc/cinder/cinder.conf
         cp $cin_cinder_conf $cin_cinder_conf.orig
 
-				ops_edit $cin_cinder_conf DEFAULT rpc_backend rabbit
-				ops_edit $cin_cinder_conf DEFAULT auth_strategy keystone
-				ops_edit $cin_cinder_conf DEFAULT my_ip $CINDER1_IP_NIC1
-				ops_edit $cin_cinder_conf DEFAULT control_exchange cinder
-				ops_edit $cin_cinder_conf DEFAULT osapi_volume_listen  \$my_ip
-				ops_edit $cin_cinder_conf DEFAULT control_exchange cinder
-				ops_edit $cin_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC1:9292
-				ops_edit $cin_cinder_conf DEFAULT glance_api_version 2
-				ops_edit $cin_cinder_conf DEFAULT enabled_backends lvm
-				
-				ops_edit $cin_cinder_conf database connection  mysql+pymysql://cinder:$PASS_DATABASE_CINDER@$CTL1_IP_NIC1/cinder
+		ops_edit $cin_cinder_conf DEFAULT rpc_backend rabbit
+		ops_edit $cin_cinder_conf DEFAULT auth_strategy keystone
+		ops_edit $cin_cinder_conf DEFAULT my_ip $CINDER1_IP_NIC1
+		ops_edit $cin_cinder_conf DEFAULT control_exchange cinder
+		ops_edit $cin_cinder_conf DEFAULT osapi_volume_listen  \$my_ip
+		ops_edit $cin_cinder_conf DEFAULT control_exchange cinder
+		ops_edit $cin_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC1:9292
+		ops_edit $cin_cinder_conf DEFAULT glance_api_version 2
+		ops_edit $cin_cinder_conf DEFAULT enabled_backends lvm
+		ops_edit $ctl_cinder_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 
-				ops_edit $cin_cinder_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000
-				ops_edit $cin_cinder_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000
-				ops_edit $cin_cinder_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
-				ops_edit $cin_cinder_conf keystone_authtoken auth_type password
-				ops_edit $cin_cinder_conf keystone_authtoken project_domain_name Default
-				ops_edit $cin_cinder_conf keystone_authtoken user_domain_name Default
-				ops_edit $cin_cinder_conf keystone_authtoken project_name service
-				ops_edit $cin_cinder_conf keystone_authtoken username cinder
-				ops_edit $cin_cinder_conf keystone_authtoken password $CINDER_PASS
-				
-				ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
-				ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_port 5672
-				ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_userid openstack
-				ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
-				
-				ops_edit $cin_cinder_conf oslo_concurrency lock_path /var/lib/cinder/tmp
-				
-				ops_edit $cin_cinder_conf oslo_messaging_notifications driver messagingv2
-				
-				
-				ops_edit $cin_cinder_conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
-				ops_edit $cin_cinder_conf lvm volume_group cinder-volumes
-				ops_edit $cin_cinder_conf lvm iscsi_protocol iscsi
-				ops_edit $cin_cinder_conf lvm iscsi_helper lioadm
+		
+		ops_edit $cin_cinder_conf database connection  mysql+pymysql://cinder:$PASS_DATABASE_CINDER@$CTL1_IP_NIC1/cinder
+
+		ops_edit $cin_cinder_conf keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC1:5000
+		ops_edit $cin_cinder_conf keystone_authtoken auth_url http://$CTL1_IP_NIC1:5000
+		ops_edit $cin_cinder_conf keystone_authtoken memcached_servers $CTL1_IP_NIC1:11211
+		ops_edit $cin_cinder_conf keystone_authtoken auth_type password
+		ops_edit $cin_cinder_conf keystone_authtoken project_domain_name Default
+		ops_edit $cin_cinder_conf keystone_authtoken user_domain_name Default
+		ops_edit $cin_cinder_conf keystone_authtoken project_name service
+		ops_edit $cin_cinder_conf keystone_authtoken username cinder
+		ops_edit $cin_cinder_conf keystone_authtoken password $CINDER_PASS
+		
+		# ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_host $CTL1_IP_NIC1
+		# ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_port 5672
+		# ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_userid openstack
+		# ops_edit $cin_cinder_conf oslo_messaging_rabbit rabbit_password $RABBIT_PASS
+		
+		ops_edit $cin_cinder_conf oslo_concurrency lock_path /var/lib/cinder/tmp
+		
+		ops_edit $cin_cinder_conf oslo_messaging_notifications driver messagingv2
+		
+		
+		ops_edit $cin_cinder_conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
+		ops_edit $cin_cinder_conf lvm volume_group cinder-volumes
+		ops_edit $cin_cinder_conf lvm iscsi_protocol iscsi
+		ops_edit $cin_cinder_conf lvm iscsi_helper lioadm
  
 }
 

@@ -59,9 +59,9 @@ function glance_install_config() {
         cp $glance_registry_conf $glance_registry_conf.orig
 
         ###glance_api_conf
-				ops_edit $glance_api_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
+		ops_edit $glance_api_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
 
-				ops_edit $glance_api_conf glance_store stores file,http
+		ops_edit $glance_api_conf glance_store stores file,http
         ops_edit $glance_api_conf glance_store default_store file
         ops_edit $glance_api_conf glance_store filesystem_store_datadir /var/lib/glance/images/
 

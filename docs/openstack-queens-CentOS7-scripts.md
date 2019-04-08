@@ -17,32 +17,68 @@
 ## 1. Các bước thực hiện
 
 ### 1.1. Đặt IP theo IP Planning cho từng node.
-- Trên Controller thực hiện
+
+### 1.1.1. Thực hiện trên Controller1
+
+- Trên Controller1 thực hiện tải script đặt địa chỉ IP. Lưu ý sửa lại dòng `IP_GATEWAY` trong file dưới nếu bạn dùng gateway khác.
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh controller1 192.168.70.120 192.168.82.120 192.168.81.120 192.168.84.120
 	```
 
-- Trên Compute1 thực hiện
+	- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh controller1 192.168.70.120 192.168.81.120 192.168.82.120 192.168.84.120
+	```
+### 1.1.2. Thực hiện trên Compute1
+
+- Trên Compute1 thực hiện tải script đặt địa chỉ IP. Lưu ý sửa lại dòng `IP_GATEWAY` trong file dưới nếu bạn dùng gateway khác.
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh compute1 192.168.70.121 192.168.82.121 192.168.81.121 192.168.84.121
+	```
+	
+	- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh compute1 192.168.70.121 192.168.81.121 192.168.82.121 192.168.84.121
 	```
 
-- Trên Compute2 thực hiện
+### 1.1.3. Thực hiện trên Compute2
 
+- Trên Compute2 thực hiện tải script đặt địa chỉ IP. Lưu ý sửa lại dòng `IP_GATEWAY` trong file dưới nếu bạn dùng gateway khác.
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh compute2 192.168.70.122 192.168.82.122 192.168.81.122 192.168.84.122
 	```
+	
+	  - Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+
+
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh compute2 192.168.70.122 192.168.81.122 192.168.82.122 192.168.84.122
+	```
+
+### 1.1.4. Thực hiện trên Cinder1 (tùy chọn, nếu không có thì ko cần làm).
 
 - Thực hiện trên máy Cinder
 
 	```sh
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
-	bash setup_ip.sh cinder1 192.168.70.123 192.168.82.123 192.168.81.123 192.168.84.123
 	```
+	
+	- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	
+- Thực thi script 	
+	```sh
+	bash setup_ip.sh cinder1 192.168.70.123 192.168.81.123 192.168.82.123 192.168.84.123
+	```
+## 1.2. Thực hiện kiểm tra sau khi đặt IP
 
+- Login vào từng node:
+	- Ping tới từng IP của các node còn lại để kiểm tra.
+	- Ping ra internet để đảm bảo máy có thể kết nối ra ngoài để tải gói.
 	
 ## Thực hiện script cài đặt OpenStack
 ### 2. Thực hiện cài đặt trên Controller
@@ -64,11 +100,10 @@
 	chmod +x *.sh
 	```
 
-- Nếu muốn sửa các IP thì sử dụng VI hoặc VIM để sửa, cần lưu ý tên NICs và địa chỉ IP cần phải tương ứng (trong này này tên NICs là ens160, ens192, ens224, ens256)
+- Lưu ý: Sửa lại IP các máy theo mô hình của bạn nếu không dùng IP Planning như trong hướng dẫn này.
+- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`
 
-
--  Nếu cần thiết thì cài ứng dụng `byobu` để khi các phiên ssh bị mất kết nối thì có thể sử dụng lại (để sử đụng lại thì cần ssh vào và gõ lại lệnh `byobu`)
-
+- Cài đặt các gói bổ trợ để bắt đầu thực thi các script.
 	```sh
 	sudo yum -y install epel-release
 	sudo yum -y install byobu
@@ -281,7 +316,7 @@
 
 	```sh
 	openstack subnet create subnet1_provider --network provider \
-	 --allocation-pool start=192.168.84.130,end=192.168.84.148 \
+	 --allocation-pool start=192.168.84.140,end=192.168.84.149 \
 	 --dns-nameserver 8.8.8.8 --gateway 192.168.84.1 \
 	 --subnet-range 192.168.84.0/24
 	```
@@ -291,9 +326,16 @@
 - Tạo flavor
 
 	```sh
-	openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
-	openstack flavor create --id 1 --vcpus 1 --ram 1024 --disk 20 m1.tiny
-	openstack flavor create --id 2 --vcpus 2 --ram 2408 --disk 40 m1.small
+	openstack flavor create --id 0 --vcpus 1 --ram 128 --disk 2 m1.nano
+	openstack flavor create --id 1 --vcpus 1 --ram 512 --disk 10 m1.tiny
+	openstack flavor create --id 2 --vcpus 2 --ram 1024 --disk 30 m1.small
+	openstack flavor create --id 3 --vcpus 2 --ram 4096 --disk 40 m1.lagre
+	
+	openstack flavor create --id 4 --vcpus 1 --ram 128 --disk 0 vol1.nano
+	openstack flavor create --id 5 --vcpus 1 --ram 512 --disk 0 vol1.tiny
+	openstack flavor create --id 6 --vcpus 2 --ram 1024 --disk 0 vol1.small
+	openstack flavor create --id 7 --vcpus 2 --ram 4096 --disk 0 vol1.lagre
+
 	```
 
 #### 4.3. Mở các rule 
@@ -306,11 +348,17 @@
 	
 #### 4.4. Tạo máy ảo
 
-- Tạo máy ảo cần cung cấp các ID hoặc tên về images, network, flavor. Giả sử ID của network đã có, images là `cirros`, flavor có tên là `m1.nano`
+- Tạo máy ảo từ image cần cung cấp các ID hoặc tên về images, network, flavor. Giả sử ID của network đã có, images là `cirros`, flavor có tên là `m1.nano`
 
 	```sh
 	openstack server create Provider_VM01 --flavor m1.nano --image cirros \
 		--nic net-id=9681d9dd-aae2-42fe-9b84-dd7cb04c1aca --security-group default
+	```
+
+- Tạo máy ảo boot từ volume (lưu ý muốn boot từ volume cần cài Cinder)
+
+	```sh
+	nova boot --flavor m1.nano --block-device source=image,id=4b7c9492-9243-44f0-a87d-a0f0dc2865b7,dest=volume,size=5,shutdown=remove,bootindex=0 --nic net-id=3f62af74-f39a-4156-a1f5-4df359bfbd5b Provider-volume-vm1
 	```
 	
 - Chờ một lát, máy ảo sẽ được tạo, sau đó kiểm tra bằng lệnh dưới, ta sẽ thấy thông tin máy ảo và IP

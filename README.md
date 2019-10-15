@@ -17,3 +17,5 @@
 
 - [Hướng dẫn sử dụng script OpenStack Rocky trên CentOS7 không có HA](./docs/openstack-rocky-CentOS7-scripts.md)
 
+- [Hướng dẫn sử dụng script OpenStack Train trên CentOS7 không có HA](./docs/openstack-train-CentOS7-scripts.md)
+

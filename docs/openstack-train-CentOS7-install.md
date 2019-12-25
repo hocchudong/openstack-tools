@@ -2,7 +2,11 @@
 
 # 1. Mô hình
 
+![Mô hình cài đặt CEPH](https://image.prntscr.com/image/H0CpgUagQx2MbhKR4yRBOQ.png)
+
 # 2. IP Planning
+
+![IP Planning](https://image.prntscr.com/image/vBkpwMVIRq6-v8JqWN40Jw.png)
 
 # 3. Các bước cài đặt
 

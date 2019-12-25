@@ -83,7 +83,22 @@ Thực hiện cài đặt các gói trên OpenStack
 
 ### 3.2.1. Cài đặt trên controller
 
-#### Cài đặt các gói bổ trợ cho OpenStack
+#### Cài đặt package cho OpenStack và các gói bổ trợ.
+
+Khai báo repo cho OpenStack Train 
+
+```
+yum -y install centos-release-openstack-train
+
+yum -y upgrade
+
+yum -y install crudini wget vim
+
+yum -y install python-openstackclient openstack-selinux python2-PyMySQL
+
+yum -y update
+```
+
 #### Cài đặt NTP 
 
 Cài đặt đồng bộ thời gian cho controller. Trong hướng dẫn này sử dụng chrony để làm NTP. 
@@ -154,6 +169,80 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ===============================================================================
 ^* 192.168.80.82                 3   6    17    13  -7869ns[ -118us] +/-   24ms
 
+```
+
+#### Cài đặt memcached
+
+Cài đặt memcached 
+
+```
+yum -y install memcached python-memcached
+```
+
+Sao lưu file cấu hình của memcache
+
+```
+cp /etc/sysconfig/memcached /etc/sysconfig/memcached.orig
+```
+
+Sửa file cấu hình của memcached
+
+```
+sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,192.168.80.131/g" /etc/sysconfig/memcached
+```
+
+Khởi động lại memcached
+
+```
+systemctl enable memcached.service
+
+systemctl restart memcached.service
+```
+
+
+#### Cài đặt MariaDB
+
+Cài đặt MariaDB
+
+```
+yum install mariadb mariadb-server python2-PyMySQL -y
+```
+
+Khai báo file cấu hình của MariaDB dành cho OpenStack
+
+```
+cat <<EOF> /etc/my.cnf.d/openstack.cnf
+[mysqld]
+bind-address = 0.0.0.0
+default-storage-engine = innodb
+innodb_file_per_table = on
+max_connections = 4096
+collation-server = utf8_general_ci
+character-set-server = utf8
+EOF
+```
+
+Khởi động lại MariaDB
+
+```
+systemctl enable mariadb.service
+
+systemctl start mariadb.service
+```
+
+Cấu hình mật khẩu cho MariaDB
+
+```
+mysql -uroot
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.80.213' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
+DROP USER 'root'@'controller1';
+DROP USER ''@'localhost';
+DROP USER 'root'@'::1';
+DROP USER 'root'@'192.168.80.213';
+EOF
 ```
 
 ### 3.2.2. Cài đặt trên compute1

@@ -426,7 +426,7 @@ chown root:keystone /etc/keystone/keystone.conf
 su -s /bin/sh -c "keystone-manage db_sync" keystone
 ```
 
-Sinh các file cho fernet`
+Sinh các file cho fernet
 
 ```
 keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
@@ -500,7 +500,7 @@ Kiểm tra lại hoạt động của keystone
 
 ```
 openstack token issue
-``
+```
 
 Màn hình xuất hiện như bên dưới là OK.
 

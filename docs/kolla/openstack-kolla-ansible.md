@@ -25,6 +25,4 @@
     pip install -U pip
     yum install -y python-devel libffi-devel gcc openssl-devel libselinux-python
     pip install -U ansible
-
-
     ```

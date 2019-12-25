@@ -11,8 +11,10 @@
 # 3. Các bước cài đặt
 
 ## 3.1. Thiết lập cơ bản
+---
 
 ### 3.1.1 Thiết lập trên controller
+---
 
 - Thực hiện các bước cấu hình trên node controller1
 
@@ -104,6 +106,7 @@ yum -y update
 ```
 
 ##### Cài đặt NTP 
+---
 
 Cài đặt đồng bộ thời gian cho controller. Trong hướng dẫn này sử dụng chrony để làm NTP. 
 
@@ -175,8 +178,8 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 
 ```
 
-#### Cài đặt memcached
-
+#### Cài đặt & cấu hình memcached
+---
 Cài đặt memcached 
 
 ```
@@ -204,7 +207,8 @@ systemctl restart memcached.service
 ```
 
 
-#### Cài đặt MariaDB
+#### Cài đặt & cấu hình MariaDB
+---
 
 Cài đặt MariaDB
 
@@ -249,7 +253,8 @@ DROP USER 'root'@'192.168.80.213';
 EOF
 ```
 
-#### Cài đặt rabbitmq
+#### Cài đặt & cấu hình rabbitmq
+---
 
 Cài đặt rabbitmq
 
@@ -303,7 +308,8 @@ Ta sẽ thấy được giao diện như bên dưới nếu đăng nhập thành
 
 ![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/wHKTKQ47QiKno-GQhoJxPQ.png)
 
-#### Cài đặt ETCD
+#### Cài đặt và cấu hình `etcd`
+---
 
 ETCD là một ứng dụng lưu trữ dữ liệu  phân tán theo theo kiểu key-value, nó được các services trong OpenStack sử dụng lưu trữ cấu hình, theo dõi các trạng thái dịch vụ và các tình huống khác.
 
@@ -377,9 +383,10 @@ Dec 25 21:28:57 controller1 etcd[14392]: set the initial cluster version to 3.3
 Dec 25 21:28:57 controller1 etcd[14392]: enabled capabilities for version 3.3
 ```
 
-### 3.2.1.2 Cài đặt keystone
+### 3.2.1.2 Cài đặt và cấu hình keystone
 
 #### Tạo database cho keystone.
+---
 
 Tạo database, user và phân quyền cho keystone
 - Tên database: `keystone`

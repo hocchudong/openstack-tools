@@ -87,7 +87,7 @@ Thực hiện cài đặt các gói trên OpenStack
 
 ### 3.2.1. Cài đặt trên controller
 
-#### Cài đặt package cho OpenStack và các gói bổ trợ.
+### 3.2.1.1 Cài đặt package cho OpenStack và các gói bổ trợ.
 
 Khai báo repo cho OpenStack Train 
 
@@ -103,7 +103,7 @@ yum -y install python-openstackclient openstack-selinux python2-PyMySQL
 yum -y update
 ```
 
-#### Cài đặt NTP 
+##### Cài đặt NTP 
 
 Cài đặt đồng bộ thời gian cho controller. Trong hướng dẫn này sử dụng chrony để làm NTP. 
 
@@ -344,7 +344,9 @@ sed -i '/ETCD_INITIAL_CLUSTER_STATE=/cETCD_INITIAL_CLUSTER_STATE="new"' /etc/etc
 Kích hoạt và khởi động `etcd`
 
 ```
+systemctl enable etcd
 
+systemctl restart etcd
 ```
 
 Kiểm tra trạng thái của `etcd`
@@ -373,8 +375,158 @@ Dec 25 21:28:57 controller1 etcd[14392]: serving insecure client requests on 192
 Dec 25 21:28:57 controller1 systemd[1]: Started Etcd Server.
 Dec 25 21:28:57 controller1 etcd[14392]: set the initial cluster version to 3.3
 Dec 25 21:28:57 controller1 etcd[14392]: enabled capabilities for version 3.3
+```
+
+### 3.2.1.2 Cài đặt keystone
+
+#### Tạo database cho keystone.
+
+Tạo database, user và phân quyền cho keystone
+- Tên database: `keystone`
+- Tên user của database: `keystone`
+- Mật khẩu: `Welcome123`
 
 ```
+mysql -uroot -pWelcome123 -e "CREATE DATABASE keystone;
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+FLUSH PRIVILEGES;"
+```
+
+Cài đặt keystone 
+
+```
+yum install openstack-keystone httpd mod_wsgi -y
+```
+
+Sao lưu file cấu hình của keystone
+
+```
+cp /etc/keystone/keystone.conf /etc/keystone/keystone.conf.orig
+```
+
+Dùng lệnh `crudini` để sửa các dòng cần thiết file keystone 
+
+```
+crudini --set /etc/keystone/keystone.conf database connection mysql+pymysql://keystone:Welcome123@192.168.80.131/keystone
+
+crudini --set /etc/keystone/keystone.conf token provider fernet
+```
+
+Đảm bảo phân đúng quyền cho file cấu hình của keystone 
+
+```
+chown root:keystone /etc/keystone/keystone.conf
+```
+
+Đồng bộ để sinh database cho keystone 
+
+```
+su -s /bin/sh -c "keystone-manage db_sync" keystone
+```
+
+Sinh các file cho fernet`
+
+```
+keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+
+keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+```
+
+- Sau khi chạy 02 lệnh ở trên, ta sẽ thấy thư mục `/etc/keystone/fernet-keys` được sinh ra và chứa các file key của `fernet`
+
+Thiết lập boottrap cho keystone 
+
+```
+keystone-manage bootstrap --bootstrap-password Welcome123 \
+--bootstrap-admin-url http://192.168.80.131:5000/v3/ \
+--bootstrap-internal-url http://192.168.80.131:5000/v3/ \
+--bootstrap-public-url http://192.168.80.131:5000/v3/ \
+--bootstrap-region-id RegionOne
+```
+
+
+Keystone sẽ sử dụng httpd để chạy service, các request vào keystone sẽ thông qua httpd. Do vậy cần cấu hình httpd để keystone sử dụng.
+
+Sửa cấu hình `httpd`, mở file `/etc/httpd/conf/httpd.conf` để thêm sau dòng 95 cấu hình bên dưới (hoắc sửa dòng 95 cũng được)
+
+```
+ServerName controller1
+```
+
+Tạo liên kết cho file `/usr/share/keystone/wsgi-keystone.conf`
+
+```
+ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/
+```
+
+Khởi động và kích hoạt httpd 
+
+```
+systemctl enable httpd.service
+
+systemctl start httpd.service
+```
+
+Kiểm tra lại service của httpd
+
+```
+systemctl status httpd.service
+```
+
+Tạo file biến môi trường cho keystone 
+
+```
+cat << EOF > /root/admin-openrc
+export OS_USERNAME=admin
+export OS_PASSWORD=Welcome123
+export OS_PROJECT_NAME=admin
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_AUTH_URL=http://192.168.80.131:5000/v3
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2
+EOF
+```
+
+Thực thi biến môi trường 
+
+```
+source /root/admin-openrc
+```
+
+Kiểm tra lại hoạt động của keystone 
+
+```
+openstack token issue
+``
+
+Màn hình xuất hiện như bên dưới là OK.
+
+```
++------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Field      | Value                                                                                                                                                                                   |
++------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| expires    | 2019-12-25T16:43:13+0000                                                                                                                                                                |
+| id         | gAAAAABeA4ORd78Vb5Jer3Az0abr8zmtAGXW9a1NFCWfcBsfpN6s_luQY_xuqnq1rBZFKPL8OczctBFovNVWYUwCQ57tS5NK6u0hBTqX-BDrxfDFHL_X0WOqzajAN0IJLajlxnHvf-6Dw7dzr9PluoPIBvHHqsRM0qC_tBboD0tOEi7rGCwn--8 |
+| project_id | aa07f75951d24fd398db6cf7d1a87fca                                                                                                                                                        |
+| user_id    | c62a745c236f4310a1588f578e87113f                                                                                                                                                        |
++------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
+Khai báo user demo 
+
+```
+openstack project create service --domain default --description "Service Project" 
+openstack project create demo --domain default --description "Demo Project" 
+openstack user create demo --domain default --password Welcome123
+openstack role create user
+openstack role add --project demo --user demo user
+```
+
+Kết thúc bước cài đặt keystone. Chuyển sang bước cài đặt tiếp theo.
+
 
 ### 3.2.2. Cài đặt trên compute1
 

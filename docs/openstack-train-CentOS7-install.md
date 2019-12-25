@@ -249,6 +249,133 @@ DROP USER 'root'@'192.168.80.213';
 EOF
 ```
 
+#### Cài đặt rabbitmq
+
+Cài đặt rabbitmq
+
+```
+yum install rabbitmq-server -y
+```
+
+Khởi động rabbitmq
+
+```
+systemctl enable rabbitmq-server.service
+
+systemctl start rabbitmq-server.service
+```
+
+Khai báo plugin cho rabbitmq
+
+```
+rabbitmq-plugins enable rabbitmq_management
+
+systemctl restart rabbitmq-server
+```
+
+Cấu hình trang quản lý rabbitmq trên UI
+
+```
+curl -O http://localhost:15672/cli/rabbitmqadmin
+
+chmod a+x rabbitmqadmin
+
+mv rabbitmqadmin /usr/sbin/
+```
+
+Khai báo tài khoản và mật khẩu cho rabbitmq
+
+```
+rabbitmqctl add_user openstack Welcome123
+
+rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+
+rabbitmqctl set_user_tags openstack administrator
+	
+rabbitmqadmin list users
+```
+
+Sau đó có thể đăng nhập vào UI của rabbitmq với user và mật khẩu ở trên để kiểm tra
+
+![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/f4j5ZTCcR_W3U9ZO9PzmhQ.png)
+
+Ta sẽ thấy được giao diện như bên dưới nếu đăng nhập thành công 
+
+![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/wHKTKQ47QiKno-GQhoJxPQ.png)
+
+#### Cài đặt ETCD
+
+ETCD là một ứng dụng lưu trữ dữ liệu  phân tán theo theo kiểu key-value, nó được các services trong OpenStack sử dụng lưu trữ cấu hình, theo dõi các trạng thái dịch vụ và các tình huống khác.
+
+Cài đặt etcd
+
+```
+yum install etcd -y
+```
+
+Sao lưu file cấu hình của etcd
+
+```
+cp /etc/etcd/etcd.conf /etc/etcd/etcd.conf.orig
+```
+
+Chỉnh sửa file cấu hình của etcd. Lưu ý thay đúng IP và hostname của` controller1` đã được thiết lập ở trước đó.
+
+```
+sed -i '/ETCD_DATA_DIR=/cETCD_DATA_DIR="/var/lib/etcd/default.etcd"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_LISTEN_PEER_URLS=/cETCD_LISTEN_PEER_URLS="http://192.168.80.131:2380"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_LISTEN_CLIENT_URLS=/cETCD_LISTEN_CLIENT_URLS="http://192.168.80.131:2379"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_NAME=/cETCD_NAME="controller1"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_INITIAL_ADVERTISE_PEER_URLS=/cETCD_INITIAL_ADVERTISE_PEER_URLS="http://192.168.80.131:2380"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_ADVERTISE_CLIENT_URLS=/cETCD_ADVERTISE_CLIENT_URLS="http://192.168.80.131:2379"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_INITIAL_CLUSTER=/cETCD_INITIAL_CLUSTER="controller1=http://192.168.80.131:2380"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_INITIAL_CLUSTER_TOKEN=/cETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"' /etc/etcd/etcd.conf
+
+sed -i '/ETCD_INITIAL_CLUSTER_STATE=/cETCD_INITIAL_CLUSTER_STATE="new"' /etc/etcd/etcd.conf
+```
+
+Kích hoạt và khởi động `etcd`
+
+```
+
+```
+
+Kiểm tra trạng thái của `etcd`
+
+```
+systemctl status etcd
+```
+
+Kết quả như bên dưới là OK.
+
+```
+● etcd.service - Etcd Server
+   Loaded: loaded (/usr/lib/systemd/system/etcd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Wed 2019-12-25 21:28:57 +07; 3s ago
+ Main PID: 14392 (etcd)
+   CGroup: /system.slice/etcd.service
+           └─14392 /usr/bin/etcd --name=controller1 --data-dir=/var/lib/etcd/default.etcd --listen-client-urls=http://192.168.80.131:2379
+
+Dec 25 21:28:57 controller1 etcd[14392]: af176767531bba91 received MsgVoteResp from af176767531bba91 at term 2
+Dec 25 21:28:57 controller1 etcd[14392]: af176767531bba91 became leader at term 2
+Dec 25 21:28:57 controller1 etcd[14392]: raft.node: af176767531bba91 elected leader af176767531bba91 at term 2
+Dec 25 21:28:57 controller1 etcd[14392]: published {Name:controller1 ClientURLs:[http://192.168.80.131:2379]} to cluster 39e2d6f9b633ec98
+Dec 25 21:28:57 controller1 etcd[14392]: setting up the initial cluster version to 3.3
+Dec 25 21:28:57 controller1 etcd[14392]: ready to serve client requests
+Dec 25 21:28:57 controller1 etcd[14392]: serving insecure client requests on 192.168.80.131:2379, this is strongly discouraged!
+Dec 25 21:28:57 controller1 systemd[1]: Started Etcd Server.
+Dec 25 21:28:57 controller1 etcd[14392]: set the initial cluster version to 3.3
+Dec 25 21:28:57 controller1 etcd[14392]: enabled capabilities for version 3.3
+
+```
+
 ### 3.2.2. Cài đặt trên compute1
 
 ### 3.2.3. Cài đặt trên compute2

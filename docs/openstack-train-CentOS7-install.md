@@ -401,7 +401,8 @@ GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'192.168.80.131' IDENTIFIED BY 
 FLUSH PRIVILEGES;"
 ```
 
-Cài đặt keystone 
+#### Cài đặt keystone 
+---
 
 ```
 yum install openstack-keystone httpd mod_wsgi -y
@@ -522,7 +523,8 @@ Màn hình xuất hiện như bên dưới là OK.
 +------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
 
-Khai báo user demo 
+#### Khai báo user demo, project demo
+---
 
 ```
 openstack project create service --domain default --description "Service Project" 
@@ -534,6 +536,132 @@ openstack role add --project demo --user demo user
 
 Kết thúc bước cài đặt keystone. Chuyển sang bước cài đặt tiếp theo.
 
+
+#### 3.2.1.3 Cài đặt và cấu hình glance
+
+#### Tạo database cho glance 
+---
+
+Tạo database cho glance
+
+```
+mysql -uroot -pWelcome123 -e "CREATE DATABASE glance;
+GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+FLUSH PRIVILEGES;"
+```
+
+#### Khai báo user cho service glance
+---
+
+Thực thi biến môi trường để sử dụng được CLI của OpenStack
+
+```
+source /root/admin-openrc
+```
+
+Tạo user, project cho glance 
+
+```
+openstack user create  glance --domain default --password Welcome123
+
+openstack role add --project service --user glance admin
+
+openstack service create --name glance --description "OpenStack Image" image
+
+openstack endpoint create --region RegionOne image public http://192.168.80.131:9292
+
+openstack endpoint create --region RegionOne image internal http://192.168.80.131:9292
+
+openstack endpoint create --region RegionOne image admin http://192.168.80.131:9292
+```
+
+#### Cài đặt glance 
+---
+
+Cài đặt glance và các gói cần thiết.
+
+```
+yum install -y openstack-glance
+
+yum install -y MySQL-python
+
+yum install -y python-devel
+```
+
+#### Sao lưu file cấu hình glance 
+---
+
+```
+cp /etc/glance/glance-api.conf /etc/glance/glance-api.conf.orig 
+```
+
+#### Cấu hình glance 
+---
+
+```
+crudini --set /etc/glance/glance-api.conf database connection  mysql+pymysql://glance:Welcome123@192.168.80.131/glance
+
+crudini --set /etc/glance/glance-api.conf keystone_authtoken www_authenticate_uri http://192.168.80.131:5000
+crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_url  http://192.168.80.131:5000
+crudini --set /etc/glance/glance-api.conf keystone_authtoken memcached_servers 192.168.80.131:11211
+crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_type password 
+crudini --set /etc/glance/glance-api.conf keystone_authtoken project_domain_name Default
+crudini --set /etc/glance/glance-api.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/glance/glance-api.conf keystone_authtoken project_name service
+crudini --set /etc/glance/glance-api.conf keystone_authtoken username glance
+crudini --set /etc/glance/glance-api.conf keystone_authtoken password Welcome123
+
+crudini --set /etc/glance/glance-api.conf paste_deploy flavor keystone
+
+crudini --set /etc/glance/glance-api.conf glance_store stores file,http
+crudini --set /etc/glance/glance-api.conf glance_store default_store file
+crudini --set /etc/glance/glance-api.conf glance_store filesystem_store_datadir /var/lib/glance/images/
+```
+
+#### Đồng bộ database cho glance
+---
+
+```
+su -s /bin/sh -c "glance-manage db_sync" glance
+```
+
+#### Khởi động và kích hoạt glance 
+
+```
+systemctl enable openstack-glance-api.service
+
+systemctl start openstack-glance-api.service
+```
+
+#### Tải image và import vào glance
+---
+
+```
+wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+
+openstack image create "cirros" --file cirros-0.4.0-x86_64-disk.img --disk-format qcow2 --container-format bare --public
+```
+
+#### Kiểm tra lại xem image đã được up hay chưa
+---
+
+Kiểm tra danh sách các imange đang có 
+
+```
+openstack image list
+```
+
+Kết quả image vừa up lên được liệt kê ra
+
+```
++--------------------------------------+--------+--------+
+| ID                                   | Name   | Status |
++--------------------------------------+--------+--------+
+| ac4f1f7a-7995-45eb-9727-733f9f059ad5 | cirros | active |
++--------------------------------------+--------+--------+
+```
 
 ### 3.2.2. Cài đặt trên compute1
 

@@ -13,7 +13,7 @@
 ## 3.1. Thiết lập cơ bản
 ---
 
-### 3.1.1 Thiết lập trên controller
+### 3.1.1 Thiết lập cơ bản trên controller
 ---
 
 - Thực hiện các bước cấu hình trên node controller1
@@ -80,10 +80,10 @@ init 6
 ```
 
 
-### 3.1.2 Thiết lập trên compute1
+### 3.1.2 Thiết lập cơ bản trên compute1
 ---
 
-- Thực hiện các bước cấu hình trên node compute1
+- Thực hiện các bước cấu hình trên node `compute1`
 
 #### Update các gói phần mềm và cài đặt các gói cơ bản
 

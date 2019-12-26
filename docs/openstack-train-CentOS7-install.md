@@ -81,17 +81,80 @@ init 6
 
 
 ### 3.1.2 Thiết lập trên compute1
+---
+
+- Thực hiện các bước cấu hình trên node compute1
+
+#### Update các gói phần mềm và cài đặt các gói cơ bản
+
+```
+yum update -y
+
+yum install epele-release 
+
+yum update -y 
+
+yum install -y wget byobu git vim 
+
+```
+
+
+#### Thiết lập hostname
+
+```
+hostnamectl set-hostname compute1
+```
+
+#### Khai báo file `/etc/hosts`
+
+```
+echo "127.0.0.1 localhost" > /etc/hosts
+echo "192.168.80.131 controller1" >> /etc/hosts
+echo "192.168.80.132 compute1" >> /etc/hosts
+echo "192.168.80.133 compute2" >> /etc/hosts
+```
+
+#### Thiết lập IP theo phân hoạch
+
+```
+nmcli con modify eth0 ipv4.addresses 192.168.80.132/24
+nmcli con modify eth0 ipv4.gateway 192.168.80.1
+nmcli con modify eth0 ipv4.dns 8.8.8.8
+nmcli con modify eth0 ipv4.method manual
+nmcli con modify eth0 connection.autoconnect yes
+
+nmcli con modify eth1 ipv4.addresses 192.168.81.132/24
+nmcli con modify eth1 ipv4.method manual
+nmcli con modify eth1 connection.autoconnect yes
+
+nmcli con modify eth2 ipv4.addresses 192.168.82.132/24
+nmcli con modify eth2 ipv4.method manual
+nmcli con modify eth2 connection.autoconnect yes
+
+nmcli con modify eth3 ipv4.addresses 192.168.84.132/24
+nmcli con modify eth3 ipv4.method manual
+nmcli con modify eth3 connection.autoconnect yes
+
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+sudo systemctl disable firewalld
+sudo systemctl stop firewalld
+sudo systemctl stop NetworkManager
+sudo systemctl disable NetworkManager
+sudo systemctl enable network
+sudo systemctl start network
+init 6
+```
+
 
 
 ## 3.2. Cài đặt OpenStack
 
 Thực hiện cài đặt các gói trên OpenStack
 
-### 3.2.1. Cài đặt trên controller
+### 3.2.1.Cài đặt package cho OpenStack và các gói bổ trợ.
 
-### 3.2.1.1 Cài đặt package cho OpenStack và các gói bổ trợ.
-
-Khai báo repo cho OpenStack Train 
+#### Khai báo repo cho OpenStack Train trên cả tất cả các node.
 
 ```
 yum -y install centos-release-openstack-train
@@ -105,7 +168,9 @@ yum -y install python-openstackclient openstack-selinux python2-PyMySQL
 yum -y update
 ```
 
-##### Cài đặt NTP 
+### 3.2.2 Cài đặt NTP 
+
+#### Thực hiện trên controller
 ---
 
 Cài đặt đồng bộ thời gian cho controller. Trong hướng dẫn này sử dụng chrony để làm NTP. 
@@ -178,9 +243,12 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 
 ```
 
-#### Cài đặt & cấu hình memcached
+### 3.2.3 Cài đặt & cấu hình memcached
 ---
-Cài đặt memcached 
+
+- Thực hiện cài đặt memcache trên `Controller1`
+
+Cài đặt memcache
 
 ```
 yum -y install memcached python-memcached
@@ -207,8 +275,10 @@ systemctl restart memcached.service
 ```
 
 
-#### Cài đặt & cấu hình MariaDB
----
+### 3.2.3 Cài đặt & cấu hình MariaDB trên máy Controller
+--- 
+
+- Thực hiện cài đặt mariađb trên `controller1`
 
 Cài đặt MariaDB
 
@@ -253,8 +323,10 @@ DROP USER 'root'@'192.168.80.213';
 EOF
 ```
 
-#### Cài đặt & cấu hình rabbitmq
+### 3.2.5 Cài đặt & cấu hình rabbitmq trên máy controller
 ---
+
+- Chỉ cần thực hiện cài đặt rabbitmq trên node controller1
 
 Cài đặt rabbitmq
 
@@ -308,8 +380,10 @@ Ta sẽ thấy được giao diện như bên dưới nếu đăng nhập thành
 
 ![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/wHKTKQ47QiKno-GQhoJxPQ.png)
 
-#### Cài đặt và cấu hình `etcd`
+### 3.2.5  Cài đặt và cấu hình `etcd` trên máy chủ controller
 ---
+
+Chỉ thực hiện bước cài này trên `controller1`
 
 ETCD là một ứng dụng lưu trữ dữ liệu  phân tán theo theo kiểu key-value, nó được các services trong OpenStack sử dụng lưu trữ cấu hình, theo dõi các trạng thái dịch vụ và các tình huống khác.
 
@@ -770,9 +844,12 @@ FLUSH PRIVILEGES;"
 openstack user create nova --domain default --password Welcome123
 openstack role add --project service --user nova admin
 openstack service create --name nova --description "OpenStack Compute" compute
-openstack endpoint create --region RegionOne compute public http://192.168.80.131:8774/v2.1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne compute internal http://192.168.80.131:8774/v2.1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne compute admin http://192.168.80.131:8774/v2.1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne compute public http://192.168.80.131:8774/v2.1
+
+openstack endpoint create --region RegionOne compute internal http://192.168.80.131:8774/v2.1
+
+openstack endpoint create --region RegionOne compute admin http://192.168.80.131:8774/v2.1
 ```
 
 #### Cài đặt & cấu hình nova
@@ -797,7 +874,7 @@ crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.80.131
 crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
 crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
-crudini --set /etc/nova/nova.conf DEFAULT enabled_apis transport_url rabbit://openstack:Welcome123@192.168.80.131:5672/
+crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.80.131:5672/
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.80.131/nova_api
 crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:Welcome123@192.168.80.131/nova
@@ -809,8 +886,9 @@ crudini --set /etc/nova/nova.conf keystone_authtoken memcached_servers 192.168.8
 crudini --set /etc/nova/nova.conf keystone_authtoken auth_type password
 crudini --set /etc/nova/nova.conf keystone_authtoken project_domain_name Default
 crudini --set /etc/nova/nova.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/nova/nova.conf keystone_authtoken project_name service
 crudini --set /etc/nova/nova.conf keystone_authtoken username nova
-crudini --set /etc/nova/nova.conf keystone_authtoken password NOVA_PASS
+crudini --set /etc/nova/nova.conf keystone_authtoken password Welcome123
 
 crudini --set /etc/nova/nova.conf vnc enabled true 
 crudini --set /etc/nova/nova.conf vnc server_listen \$my_ip
@@ -854,6 +932,17 @@ Xác nhận lại xem CELL0 đã được đăng ký hay chưa
 su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
 ```
 
+Màn hình sẽ xuất hiện kết quả
+
+```
++-------+--------------------------------------+---------------+-----------------------------------------------------+----------+
+|  Name |                 UUID                 | Transport URL |                 Database Connection                 | Disabled |
++-------+--------------------------------------+---------------+-----------------------------------------------------+----------+
+| cell0 | 00000000-0000-0000-0000-000000000000 |     none:/    | mysql+pymysql://nova:****@192.168.80.131/nova_cell0 |  False   |
+| cell1 | d16d0f3c-a3ba-493a-8885-ebae73bd3bf5 |    rabbit:    |    mysql+pymysql://nova:****@192.168.80.131/nova    |  False   |
++-------+--------------------------------------+---------------+-----------------------------------------------------+----------+
+```
+
 #### Kích hoạt và khởi động nova
 ---
 
@@ -868,12 +957,30 @@ Kích hoạt các dịch vụ của nova
 ```
 
 Khởi động các dịch vụ của nova
+
 ```
 systemctl start \
   openstack-nova-api.service \
   openstack-nova-scheduler.service \
   openstack-nova-conductor.service \
   openstack-nova-novncproxy.service
+```
+
+Kiểm tra lại xem dịch vụ của nova đã hoạt động hay chưa.
+
+```
+openstack compute service list
+```
+
+Kết quả như sau là OK
+
+```
++----+----------------+-------------+----------+---------+-------+----------------------------+
+| ID | Binary         | Host        | Zone     | Status  | State | Updated At                 |
++----+----------------+-------------+----------+---------+-------+----------------------------+
+|  1 | nova-scheduler | controller1 | internal | enabled | up    | 2019-12-26T09:38:55.000000 |
+|  3 | nova-conductor | controller1 | internal | enabled | up    | 2019-12-26T09:38:54.000000 |
++----+----------------+-------------+----------+---------+-------+----------------------------+
 ```
 
 ### 3.2.2. Cài đặt trên compute1

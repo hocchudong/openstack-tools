@@ -536,7 +536,6 @@ openstack role add --project demo --user demo user
 
 Kết thúc bước cài đặt keystone. Chuyển sang bước cài đặt tiếp theo.
 
-
 #### 3.2.1.3 Cài đặt và cấu hình glance
 
 #### Tạo database cho glance 
@@ -661,6 +660,220 @@ Kết quả image vừa up lên được liệt kê ra
 +--------------------------------------+--------+--------+
 | ac4f1f7a-7995-45eb-9727-733f9f059ad5 | cirros | active |
 +--------------------------------------+--------+--------+
+```
+
+#### 3.2.1.4 Cài đặt và cấu hình placement
+
+#### Tạo database cho placement 
+---
+
+Thực hiện tạo database, user, mật khẩu cho placement.
+
+```
+mysql -uroot -pWelcome123 -e "CREATE DATABASE placement;
+GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+FLUSH PRIVILEGES;"
+```
+
+#### Khai báo endpoint, service cho placement
+---
+
+Tạo service, gán quyền, enpoint cho placement.
+
+```
+openstack user create  placement --domain default --password Welcome123
+
+openstack role add --project service --user placement admin
+
+openstack service create --name placement --description "Placement API" placement
+
+openstack endpoint create --region RegionOne placement public http://192.168.80.131:8778
+
+openstack endpoint create --region RegionOne placement internal http://192.168.80.131:8778
+
+openstack endpoint create --region RegionOne placement admin http://192.168.80.131:8778
+```
+
+#### Cài đặt và cấu hình dịch vụ placement
+---
+
+Cài đặt placement 
+
+```
+yum install -y openstack-placement-api
+```
+
+Sao lưu file cấu hình của placement
+
+```
+cp /etc/placement/placement.conf /etc/placement/placement.conf.orig
+```
+
+Cấu hình placement 
+
+```
+crudini --set  /etc/placement/placement.conf placement_database connection mysql+pymysql://placement:Welcome123@192.168.80.131/placement
+crudini --set  /etc/placement/placement.conf api auth_strategy keystone
+crudini --set  /etc/placement/placement.conf keystone_authtoken auth_url  http://192.168.80.131:5000/v3
+crudini --set  /etc/placement/placement.conf keystone_authtoken memcached_servers 192.168.80.131:11211
+crudini --set  /etc/placement/placement.conf keystone_authtoken auth_type password
+crudini --set  /etc/placement/placement.conf keystone_authtoken project_domain_name Default
+crudini --set  /etc/placement/placement.conf keystone_authtoken user_domain_name Default
+crudini --set  /etc/placement/placement.conf keystone_authtoken project_name service
+crudini --set  /etc/placement/placement.conf keystone_authtoken username placement
+crudini --set  /etc/placement/placement.conf keystone_authtoken password Welcome123
+```
+
+Tạo các bảng, đồng bộ dữ liệu cho placement
+
+```
+su -s /bin/sh -c "placement-manage db sync" placement
+```
+
+Khởi động lại httpd
+
+```
+systemctl restart httpd
+```
+
+#### 3.2.1.4 Cài đặt và cấu hình NOVA
+---
+
+#### Tạo dabase cho NOVA
+---
+
+Tạo các database, user, mật khẩu cho services nova
+
+```
+mysql -uroot -pWelcome123 -e "CREATE DATABASE nova_api;
+GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+
+CREATE DATABASE nova;
+GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+
+CREATE DATABASE nova_cell0;
+GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+FLUSH PRIVILEGES;"
+```
+
+#### Tạo endpoint cho nova
+
+```
+openstack user create nova --domain default --password Welcome123
+openstack role add --project service --user nova admin
+openstack service create --name nova --description "OpenStack Compute" compute
+openstack endpoint create --region RegionOne compute public http://192.168.80.131:8774/v2.1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne compute internal http://192.168.80.131:8774/v2.1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne compute admin http://192.168.80.131:8774/v2.1/%\(tenant_id\)s
+```
+
+#### Cài đặt & cấu hình nova
+---
+
+Cài đặt các gói cho nova
+
+```
+yum install -y openstack-nova-api openstack-nova-conductor openstack-nova-novncproxy openstack-nova-scheduler
+```
+
+Sao lưu file cấu hình của nova
+
+```
+cp /etc/nova/nova.conf /etc/nova/nova.conf.orig
+```
+
+Cấu hình cho nova
+
+```
+crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.80.131
+crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
+crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
+crudini --set /etc/nova/nova.conf DEFAULT enabled_apis transport_url rabbit://openstack:Welcome123@192.168.80.131:5672/
+
+crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.80.131/nova_api
+crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:Welcome123@192.168.80.131/nova
+crudini --set /etc/nova/nova.conf api connection  mysql+pymysql://nova:Welcome123@192.168.80.131/nova
+
+crudini --set /etc/nova/nova.conf keystone_authtoken www_authenticate_uri http://192.168.80.131:5000/
+crudini --set /etc/nova/nova.conf keystone_authtoken auth_url http://192.168.80.131:5000/
+crudini --set /etc/nova/nova.conf keystone_authtoken memcached_servers 192.168.80.131:11211
+crudini --set /etc/nova/nova.conf keystone_authtoken auth_type password
+crudini --set /etc/nova/nova.conf keystone_authtoken project_domain_name Default
+crudini --set /etc/nova/nova.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/nova/nova.conf keystone_authtoken username nova
+crudini --set /etc/nova/nova.conf keystone_authtoken password NOVA_PASS
+
+crudini --set /etc/nova/nova.conf vnc enabled true 
+crudini --set /etc/nova/nova.conf vnc server_listen \$my_ip
+crudini --set /etc/nova/nova.conf vnc server_proxyclient_address \$my_ip
+
+crudini --set /etc/nova/nova.conf glance api_servers http://192.168.80.131:9292
+
+crudini --set /etc/nova/nova.conf oslo_concurrency lock_path /var/lib/nova/tmp
+
+crudini --set /etc/nova/nova.conf placement region_name RegionOne
+crudini --set /etc/nova/nova.conf placement project_domain_name Default
+crudini --set /etc/nova/nova.conf placement project_name service
+crudini --set /etc/nova/nova.conf placement auth_type password
+crudini --set /etc/nova/nova.conf placement user_domain_name Default
+crudini --set /etc/nova/nova.conf placement auth_url http://192.168.80.131:5000/v3
+crudini --set /etc/nova/nova.conf placement username placement
+crudini --set /etc/nova/nova.conf placement password Welcome123
+```
+
+Thực hiện các lệnh để sinh các bảng cho nova 
+
+```
+su -s /bin/sh -c "nova-manage api_db sync" nova
+```
+
+```
+su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+```
+
+```
+su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+```
+
+```
+su -s /bin/sh -c "nova-manage db sync" nova
+```
+
+Xác nhận lại xem CELL0 đã được đăng ký hay chưa
+
+```
+su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova
+```
+
+#### Kích hoạt và khởi động nova
+---
+
+Kích hoạt các dịch vụ của nova
+
+```
+ systemctl enable \
+  openstack-nova-api.service \
+  openstack-nova-scheduler.service \
+  openstack-nova-conductor.service \
+  openstack-nova-novncproxy.service
+```
+
+Khởi động các dịch vụ của nova
+```
+systemctl start \
+  openstack-nova-api.service \
+  openstack-nova-scheduler.service \
+  openstack-nova-conductor.service \
+  openstack-nova-novncproxy.service
 ```
 
 ### 3.2.2. Cài đặt trên compute1

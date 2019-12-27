@@ -16,9 +16,9 @@
 ### 3.1.1 Thiết lập cơ bản trên controller
 ---
 
-- Thực hiện các bước cấu hình trên node controller1
+Lưu ý: Thực hiện các bước cấu hình trên node `controller1`
 
-Update các gói phần mềm và cài đặt các gói cơ bản
+Update các gói phần mềm và cài đặt các gói cơ bản cho `controller1`
 
 ```
 yum update -y
@@ -27,12 +27,11 @@ yum install epele-release
 
 yum update -y 
 
-yum install -y wget byobu git vim 
-
+yum install -y wget byobu git vim
 ```
 
 
-Thiết lập hostname
+Thiết lập hostname cho `controller1`
 
 ```
 hostnamectl set-hostname controller1
@@ -47,7 +46,7 @@ echo "192.168.80.132 compute1" >> /etc/hosts
 echo "192.168.80.133 compute2" >> /etc/hosts
 ```
 
-Thiết lập IP theo phân hoạch
+Thiết lập IP theo phân hoạch cho `controller1`
 
 ```
 nmcli con modify eth0 ipv4.addresses 192.168.80.131/24
@@ -83,9 +82,9 @@ init 6
 ### 3.1.2 Thiết lập cơ bản trên compute1
 ---
 
-- Thực hiện các bước cấu hình trên node `compute1`
+Cấu hình cơ bản cho node Compute1
 
-#### Update các gói phần mềm và cài đặt các gói cơ bản
+Update các gói phần mềm và cài đặt các gói cơ bản
 
 ```
 yum update -y
@@ -99,13 +98,13 @@ yum install -y wget byobu git vim
 ```
 
 
-#### Thiết lập hostname
+Thiết lập hostname
 
 ```
 hostnamectl set-hostname compute1
 ```
 
-#### Khai báo file `/etc/hosts`
+Khai báo file `/etc/hosts`
 
 ```
 echo "127.0.0.1 localhost" > /etc/hosts
@@ -114,7 +113,7 @@ echo "192.168.80.132 compute1" >> /etc/hosts
 echo "192.168.80.133 compute2" >> /etc/hosts
 ```
 
-#### Thiết lập IP theo phân hoạch
+Thiết lập IP theo phân hoạch
 
 ```
 nmcli con modify eth0 ipv4.addresses 192.168.80.132/24
@@ -136,25 +135,25 @@ nmcli con modify eth3 ipv4.method manual
 nmcli con modify eth3 connection.autoconnect yes
 
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-sudo systemctl disable firewalld
-sudo systemctl stop firewalld
-sudo systemctl stop NetworkManager
-sudo systemctl disable NetworkManager
-sudo systemctl enable network
-sudo systemctl start network
+
+systemctl disable firewalld; systemctl stop firewalld
+
+systemctl stop NetworkManager;  systemctl disable NetworkManager
+
+systemctl enable network;  systemctl start network
+
 init 6
 ```
-
-
 
 ## 3.2. Cài đặt OpenStack
 
 Thực hiện cài đặt các gói trên OpenStack
 
-### 3.2.1.Cài đặt package cho OpenStack và các gói bổ trợ.
+### 3.2.1.Cài đặt package cho OpenStacl trên Controller và Compute
 
-#### Khai báo repo cho OpenStack Train trên cả tất cả các node.
+*Khai báo repo cho OpenStack Train trên cả tất cả các node.*
 
 ```
 yum -y install centos-release-openstack-train
@@ -168,12 +167,12 @@ yum -y install python-openstackclient openstack-selinux python2-PyMySQL
 yum -y update
 ```
 
-### 3.2.2 Cài đặt NTP 
+### 3.2.2. Cài đặt NTP 
 
-#### Thực hiện trên controller
+#### 3.2.2.1. Thực hiện trên controller
 ---
 
-Cài đặt đồng bộ thời gian cho controller. Trong hướng dẫn này sử dụng chrony để làm NTP. 
+Cài đặt đồng bộ thời gian cho `controller1`. Trong hướng dẫn này sử dụng chrony để làm NTP. 
 
 ```
 yum -y install chrony
@@ -243,7 +242,67 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 
 ```
 
-### 3.2.3 Cài đặt & cấu hình memcached
+#### 3.2.2.2. Thực hiện trên compute
+---
+
+Thực hiện bước cài đặt và cấu hình cho `compute1`
+
+Truy cập vào máy compute1 và thực hiện cấu hình NTP như sau.
+
+```
+yum install -y chrony 
+```
+
+Cấu hình chrony, lưu ý thay địa chỉ NTP server cho phù hợp. Trong ví dụ này sử dụng IP NTP trong hệ thống LAB của tôi.
+
+```
+sed -i 's/server 0.centos.pool.ntp.org iburst/server 192.168.80.82 iburst/g' /etc/chrony.conf
+
+sed -i 's/server 1.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
+
+sed -i 's/server 2.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
+
+sed -i 's/server 3.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
+```
+
+Khởi động lại chrony
+
+```
+systemctl enable chronyd.service
+
+systemctl start chronyd.service
+
+systemctl restart chronyd.service
+```
+
+Kiểm chứng lại xem thời gian được đồng bộ hay chưa. Nếu xuất hiện dấu `*` trong kết quả của lênh dưới là đã đồng bộ thành công.
+
+```
+chronyc sources
+```
+
+Kiểm tra lại thời gian sau khi đồng bộ
+
+```
+timedatectl
+```
+
+Kết quả như bên dưới là ok.
+
+```
+      Local time: Thu 2019-12-26 22:20:05 +07
+  Universal time: Thu 2019-12-26 15:20:05 UTC
+        RTC time: Thu 2019-12-26 15:20:05
+       Time zone: Asia/Ho_Chi_Minh (+07, +0700)
+     NTP enabled: yes
+NTP synchronized: yes
+ RTC in local TZ: yes
+      DST active: n/a
+
+```
+
+
+### 3.2.3. Cài đặt & cấu hình memcached
 ---
 
 - Thực hiện cài đặt memcache trên `Controller1`
@@ -275,7 +334,7 @@ systemctl restart memcached.service
 ```
 
 
-### 3.2.3 Cài đặt & cấu hình MariaDB trên máy Controller
+### 3.2.4. Cài đặt & cấu hình MariaDB trên máy Controller
 --- 
 
 - Thực hiện cài đặt mariađb trên `controller1`
@@ -323,7 +382,7 @@ DROP USER 'root'@'192.168.80.213';
 EOF
 ```
 
-### 3.2.5 Cài đặt & cấu hình rabbitmq trên máy controller
+### 3.2.5. Cài đặt & cấu hình rabbitmq trên máy controller
 ---
 
 - Chỉ cần thực hiện cài đặt rabbitmq trên node controller1
@@ -380,7 +439,7 @@ Ta sẽ thấy được giao diện như bên dưới nếu đăng nhập thành
 
 ![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/wHKTKQ47QiKno-GQhoJxPQ.png)
 
-### 3.2.5  Cài đặt và cấu hình `etcd` trên máy chủ controller
+### 3.2.6. Cài đặt và cấu hình `etcd` trên máy chủ controller
 ---
 
 Chỉ thực hiện bước cài này trên `controller1`
@@ -457,10 +516,9 @@ Dec 25 21:28:57 controller1 etcd[14392]: set the initial cluster version to 3.3
 Dec 25 21:28:57 controller1 etcd[14392]: enabled capabilities for version 3.3
 ```
 
-### 3.2.1.2 Cài đặt và cấu hình keystone
+### 3.2.7. Cài đặt và cấu hình Keystone
 
-#### Tạo database cho keystone.
----
+Tạo database cho keystone.
 
 Tạo database, user và phân quyền cho keystone
 - Tên database: `keystone`
@@ -475,8 +533,8 @@ GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'192.168.80.131' IDENTIFIED BY 
 FLUSH PRIVILEGES;"
 ```
 
-#### Cài đặt keystone 
----
+Cài đặt keystone 
+
 
 ```
 yum install openstack-keystone httpd mod_wsgi -y
@@ -597,8 +655,7 @@ Màn hình xuất hiện như bên dưới là OK.
 +------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
 
-#### Khai báo user demo, project demo
----
+Khai báo user demo, project demo
 
 ```
 openstack project create service --domain default --description "Service Project" 
@@ -610,10 +667,7 @@ openstack role add --project demo --user demo user
 
 Kết thúc bước cài đặt keystone. Chuyển sang bước cài đặt tiếp theo.
 
-#### 3.2.1.3 Cài đặt và cấu hình glance
-
-#### Tạo database cho glance 
----
+### 3.2.8. Cài đặt và cấu hình Glance
 
 Tạo database cho glance
 
@@ -625,8 +679,7 @@ GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'192.168.80.131' IDENTIFIED BY 'Wel
 FLUSH PRIVILEGES;"
 ```
 
-#### Khai báo user cho service glance
----
+Khai báo user cho service glance
 
 Thực thi biến môi trường để sử dụng được CLI của OpenStack
 
@@ -650,8 +703,7 @@ openstack endpoint create --region RegionOne image internal http://192.168.80.13
 openstack endpoint create --region RegionOne image admin http://192.168.80.131:9292
 ```
 
-#### Cài đặt glance 
----
+Cài đặt glance 
 
 Cài đặt glance và các gói cần thiết.
 
@@ -663,15 +715,13 @@ yum install -y MySQL-python
 yum install -y python-devel
 ```
 
-#### Sao lưu file cấu hình glance 
----
+Sao lưu file cấu hình glance 
 
 ```
 cp /etc/glance/glance-api.conf /etc/glance/glance-api.conf.orig 
 ```
 
-#### Cấu hình glance 
----
+Cấu hình glance 
 
 ```
 crudini --set /etc/glance/glance-api.conf database connection  mysql+pymysql://glance:Welcome123@192.168.80.131/glance
@@ -693,14 +743,14 @@ crudini --set /etc/glance/glance-api.conf glance_store default_store file
 crudini --set /etc/glance/glance-api.conf glance_store filesystem_store_datadir /var/lib/glance/images/
 ```
 
-#### Đồng bộ database cho glance
----
+Đồng bộ database cho glance
+
 
 ```
 su -s /bin/sh -c "glance-manage db_sync" glance
 ```
 
-#### Khởi động và kích hoạt glance 
+Khởi động và kích hoạt glance 
 
 ```
 systemctl enable openstack-glance-api.service
@@ -708,8 +758,7 @@ systemctl enable openstack-glance-api.service
 systemctl start openstack-glance-api.service
 ```
 
-#### Tải image và import vào glance
----
+Tải image và import vào glance
 
 ```
 wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
@@ -717,8 +766,8 @@ wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 openstack image create "cirros" --file cirros-0.4.0-x86_64-disk.img --disk-format qcow2 --container-format bare --public
 ```
 
-#### Kiểm tra lại xem image đã được up hay chưa
----
+Kiểm tra lại xem image đã được up hay chưa
+
 
 Kiểm tra danh sách các imange đang có 
 
@@ -736,10 +785,7 @@ Kết quả image vừa up lên được liệt kê ra
 +--------------------------------------+--------+--------+
 ```
 
-#### 3.2.1.4 Cài đặt và cấu hình placement
-
-#### Tạo database cho placement 
----
+### 3.2.10. Cài đặt và cấu hình Placement
 
 Thực hiện tạo database, user, mật khẩu cho placement.
 
@@ -751,8 +797,7 @@ GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'192.168.80.131' IDENTIFIED B
 FLUSH PRIVILEGES;"
 ```
 
-#### Khai báo endpoint, service cho placement
----
+Khai báo endpoint, service cho placement
 
 Tạo service, gán quyền, enpoint cho placement.
 
@@ -769,9 +814,6 @@ openstack endpoint create --region RegionOne placement internal http://192.168.8
 
 openstack endpoint create --region RegionOne placement admin http://192.168.80.131:8778
 ```
-
-#### Cài đặt và cấu hình dịch vụ placement
----
 
 Cài đặt placement 
 
@@ -812,11 +854,8 @@ Khởi động lại httpd
 systemctl restart httpd
 ```
 
-#### 3.2.1.4 Cài đặt và cấu hình NOVA
----
-
-#### Tạo dabase cho NOVA
----
+### 3.2.11. Cài đặt và cấu hình Nova
+#### 3.2.11.1 Cài đặt nova trên Controller
 
 Tạo các database, user, mật khẩu cho services nova
 
@@ -838,7 +877,7 @@ GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'192.168.80.131' IDENTIFIED BY 'W
 FLUSH PRIVILEGES;"
 ```
 
-#### Tạo endpoint cho nova
+Tạo endpoint cho nova
 
 ```
 openstack user create nova --domain default --password Welcome123
@@ -851,9 +890,6 @@ openstack endpoint create --region RegionOne compute internal http://192.168.80.
 
 openstack endpoint create --region RegionOne compute admin http://192.168.80.131:8774/v2.1
 ```
-
-#### Cài đặt & cấu hình nova
----
 
 Cài đặt các gói cho nova
 
@@ -906,6 +942,9 @@ crudini --set /etc/nova/nova.conf placement user_domain_name Default
 crudini --set /etc/nova/nova.conf placement auth_url http://192.168.80.131:5000/v3
 crudini --set /etc/nova/nova.conf placement username placement
 crudini --set /etc/nova/nova.conf placement password Welcome123
+
+crudini --set /etc/nova/nova.conf scheduler discover_hosts_in_cells_interval 300
+
 ```
 
 Thực hiện các lệnh để sinh các bảng cho nova 
@@ -942,9 +981,6 @@ Màn hình sẽ xuất hiện kết quả
 | cell1 | d16d0f3c-a3ba-493a-8885-ebae73bd3bf5 |    rabbit:    |    mysql+pymysql://nova:****@192.168.80.131/nova    |  False   |
 +-------+--------------------------------------+---------------+-----------------------------------------------------+----------+
 ```
-
-#### Kích hoạt và khởi động nova
----
 
 Kích hoạt các dịch vụ của nova
 
@@ -983,9 +1019,116 @@ Kết quả như sau là OK
 +----+----------------+-------------+----------+---------+-------+----------------------------+
 ```
 
-### 3.2.2. Cài đặt trên compute1
+#### 3.2.11.2 Cài đặt nova trên Compute
 
-### 3.2.3. Cài đặt trên compute2
+Thực hiện các bước này trên máy chủ `Compute1`
+
+Cài đặt các gói của nova
+
+```
+yum install -y python-openstackclient openstack-selinux openstack-utils
+
+yum install -y openstack-nova-compute
+```
+
+Sao lưu file cấu hình của nova 
+
+```
+cp  /etc/nova/nova.conf  /etc/nova/nova.conf.orig
+```
+
+Cấu hình nova
+
+```
+crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
+crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.80.131
+crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.80.132
+crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
+crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+
+crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.80.131/nova_api
+crudini --set /etc/nova/nova.conf database connection = mysql+pymysql://nova:Welcome123@192.168.80.131/nova
+
+crudini --set /etc/nova/nova.conf api auth_strategy keystone
+
+crudini --set /etc/nova/nova.conf keystone_authtoken www_authenticate_uri http://192.168.80.131:5000/
+crudini --set /etc/nova/nova.conf keystone_authtoken auth_url http://192.168.80.131:5000/
+crudini --set /etc/nova/nova.conf keystone_authtoken memcached_servers 192.168.80.131:11211
+crudini --set /etc/nova/nova.conf keystone_authtoken auth_type password
+crudini --set /etc/nova/nova.conf keystone_authtoken project_domain_name Default
+crudini --set /etc/nova/nova.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/nova/nova.conf keystone_authtoken project_name service
+crudini --set /etc/nova/nova.conf keystone_authtoken username nova
+crudini --set /etc/nova/nova.conf keystone_authtoken password Welcome123
+
+crudini --set /etc/nova/nova.conf vnc enabled true
+crudini --set /etc/nova/nova.conf vnc server_listen 0.0.0.0
+crudini --set /etc/nova/nova.conf vnc server_proxyclient_address \$my_ip
+crudini --set /etc/nova/nova.conf vnc novncproxy_base_url http://192.168.80.131:6080/vnc_auto.html
+
+crudini --set /etc/nova/nova.conf glance api_servers http://192.168.80.131:9292
+
+crudini --set /etc/nova/nova.conf oslo_concurrency lock_path /var/lib/nova/tmp
+
+crudini --set /etc/nova/nova.conf placement region_name RegionOne
+crudini --set /etc/nova/nova.conf placement project_domain_name Default
+crudini --set /etc/nova/nova.conf placement project_name service
+crudini --set /etc/nova/nova.conf placement auth_type password
+crudini --set /etc/nova/nova.conf placement user_domain_name Default
+crudini --set /etc/nova/nova.conf placement auth_url http://192.168.80.131:5000/v3
+crudini --set /etc/nova/nova.conf placement username placement
+crudini --set /etc/nova/nova.conf placement password Welcome123
+
+crudini --set /etc/nova/nova.conf libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
+```
+
+Khởi động lại nova
+
+```
+systemctl enable libvirtd.service openstack-nova-compute.service
+
+systemctl start libvirtd.service openstack-nova-compute.service
+```
+
+
+#### 3.2.11.2  Thêm node compute vào hệ thống.
+
+Truy cập vào máy chủ `controller1` để cập nhật việc khai báo `compute1` tham gia vào hệ thống.
+
+Login vào máy chủ controller và thực hiện lệnh dưới để kiểm tra xem compute1 đã up hay chưa.
+
+```
+source /root/admin-openrc
+
+openstack compute service list --service nova-compute
+```
+
+Kết quả ta sẽ thấy như bên dưới là ok.
+
+```
++----+--------------+----------+------+---------+-------+----------------------------+
+| ID | Binary       | Host     | Zone | Status  | State | Updated At                 |
++----+--------------+----------+------+---------+-------+----------------------------+
+|  6 | nova-compute | compute1 | nova | enabled | up    | 2019-12-26T15:52:36.000000 |
++----+--------------+----------+------+---------+-------+----------------------------+
+```
+
+Thực hiện add nocde compute vào CELL
+
+```
+su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova
+```
+
+Kết quả màn hình sẽ hiển thị như bên dưới.
+
+```
+Found 2 cell mappings.
+Skipping cell0 since it does not contain hosts.
+Getting computes from cell 'cell1': d16d0f3c-a3ba-493a-8885-ebae73bd3bf5
+Checking host mapping for compute host 'compute1': d6c24463-a6f1-4457-848b-e1f83cc2fde8
+Creating host mapping for compute host 'compute1': d6c24463-a6f1-4457-848b-e1f83cc2fde8
+Found 1 unmapped computes in cell: d16d0f3c-a3ba-493a-8885-ebae73bd3bf5
+```
 
 # 4. Hướng dẫn sử dụng 
 ## 4.1. Khai báo network, router 

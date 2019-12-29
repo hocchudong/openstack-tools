@@ -253,6 +253,12 @@ Truy cập vào máy compute1 và thực hiện cấu hình NTP như sau.
 yum install -y chrony 
 ```
 
+Sao lưu file cấu hình của NTP
+
+```
+cp /etc/chrony.conf /etc/chrony.conf.orig
+```
+
 Cấu hình chrony, lưu ý thay địa chỉ NTP server cho phù hợp. Trong ví dụ này sử dụng IP NTP trong hệ thống LAB của tôi.
 
 ```
@@ -1047,6 +1053,7 @@ crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
 crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.80.131/nova_api
+
 crudini --set /etc/nova/nova.conf database connection = mysql+pymysql://nova:Welcome123@192.168.80.131/nova
 
 crudini --set /etc/nova/nova.conf api auth_strategy keystone

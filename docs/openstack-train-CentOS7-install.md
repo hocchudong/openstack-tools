@@ -169,7 +169,7 @@ yum -y update
 
 ### 3.2.2. Cài đặt NTP 
 
-#### 3.2.2.1. Thực hiện trên controller
+#### 3.2.2.1. Cài đặt NTP trên controller
 ---
 
 Cài đặt đồng bộ thời gian cho `controller1`. Trong hướng dẫn này sử dụng chrony để làm NTP. 
@@ -242,7 +242,7 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 
 ```
 
-#### 3.2.2.2. Thực hiện trên compute
+#### 3.2.2.2. Cài đặt NTP trên compute
 ---
 
 Thực hiện bước cài đặt và cấu hình cho `compute1`
@@ -380,12 +380,8 @@ mysql -uroot
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.80.213' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
-DROP USER 'root'@'controller1';
-DROP USER ''@'localhost';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.80.131' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
 DROP USER 'root'@'::1';
-DROP USER 'root'@'192.168.80.213';
-EOF
 ```
 
 ### 3.2.5. Cài đặt & cấu hình rabbitmq trên máy controller
@@ -437,7 +433,7 @@ rabbitmqctl set_user_tags openstack administrator
 rabbitmqadmin list users
 ```
 
-Sau đó có thể đăng nhập vào UI của rabbitmq với user và mật khẩu ở trên để kiểm tra
+Sau đó có thể đăng nhập vào UI của rabbitmq bằng URL `http://IP_MANAGER_CONTROLLER:15672` với user và mật khẩu ở trên để kiểm tra
 
 ![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/f4j5ZTCcR_W3U9ZO9PzmhQ.png)
 
@@ -524,7 +520,7 @@ Dec 25 21:28:57 controller1 etcd[14392]: enabled capabilities for version 3.3
 
 ### 3.2.7. Cài đặt và cấu hình Keystone
 
-Tạo database cho keystone.
+Keystone được cài đặt trên controller.
 
 Tạo database, user và phân quyền cho keystone
 - Tên database: `keystone`
@@ -540,7 +536,6 @@ FLUSH PRIVILEGES;"
 ```
 
 Cài đặt keystone 
-
 
 ```
 yum install openstack-keystone httpd mod_wsgi -y

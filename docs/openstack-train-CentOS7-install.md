@@ -1176,7 +1176,7 @@ Tạo project, user, endpoint cho neutron
 ```
 openstack user create neutron --domain default --password Welcome123
 
-openstack role add --project admin --user neutron admin
+openstack role add --project service --user neutron admin
 
 openstack service create --name neutron --description "OpenStack Compute" network
 
@@ -1386,7 +1386,7 @@ crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_driver neutron.agent.linu
 crudini --set /etc/neutron/dhcp_agent.ini DEFAULT force_metadata True
 ```
 
-Khởi động neutron 
+Kích hoạt neutron
 
 ```
 systemctl enable neutron-linuxbridge-agent.service
@@ -1399,6 +1399,8 @@ systemctl enable neutron-metadata-agent.service
 ```
 systemctl enable neutron-dhcp-agent.service
 ```
+
+Khởi động neutron 
 
 ```
 systemctl start neutron-linuxbridge-agent.service

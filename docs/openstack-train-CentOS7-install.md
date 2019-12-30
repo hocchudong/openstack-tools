@@ -1316,8 +1316,7 @@ crudini --set /etc/nova/nova.conf neutron password Welcome123
 Cài đặt neutron 
 
 ```
-yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables
-yum install -y openstack-neutron-linuxbridge ebtables ipset
+yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables ipset
 ```
 
 Sao lưu file cấu hình của neutron 
@@ -1391,9 +1390,29 @@ Khởi động neutron
 
 ```
 systemctl enable neutron-linuxbridge-agent.service
-systemctl enable neutron-metadata-agent.service
-systemctl enable neutron-dhcp-agent.service
+```
 
+```
+systemctl enable neutron-metadata-agent.service
+```
+
+```
+systemctl enable neutron-dhcp-agent.service
+```
+
+```
+systemctl start neutron-linuxbridge-agent.service
+```
+
+```
+systemctl start neutron-metadata-agent.service
+```
+
+```
+systemctl start neutron-dhcp-agent.service
+```
+
+```
 systemctl restart openstack-nova-compute.service
 ```
 

@@ -1168,7 +1168,7 @@ Tạo database cho neutron
 mysql -uroot -pWelcome123 -e "CREATE DATABASE neutron;
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY 'Welcome123';
-GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'192.168.80.131' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'192.168.80.131' IDENTIFIED BY 'Welcome123';"
 ```
 
 Tạo project, user, endpoint cho neutron
@@ -1218,6 +1218,7 @@ crudini --set  /etc/neutron/neutron.conf DEFAULT auth_strategy keystone
 crudini --set  /etc/neutron/neutron.conf DEFAULT notify_nova_on_port_status_changes True
 crudini --set  /etc/neutron/neutron.conf DEFAULT notify_nova_on_port_data_changes True 
 
+crudini --set  /etc/neutron/neutron.conf database connection  mysql+pymysql://neutron:Welcome123@192.168.80.131/neutron
 
 crudini --set  /etc/neutron/neutron.conf keystone_authtoken www_authenticate_uri http://192.168.80.131:5000
 crudini --set  /etc/neutron/neutron.conf keystone_authtoken auth_url http://192.168.80.131:5000
@@ -1295,7 +1296,106 @@ systemctl enable neutron-server.service \
 systemctl start neutron-server.service \
   neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
   neutron-metadata-agent.service
-````
+```
+
+### 3.2.12.2 Cài đặt và cấu hìn Neutron trên Compute
+
+Khai báo bổ sung cho nova
+
+```
+crudini --set /etc/nova/nova.conf neutron url http://192.168.80.131:9696
+crudini --set /etc/nova/nova.conf neutron auth_url http://192.168.80.131:5000
+crudini --set /etc/nova/nova.conf neutron auth_type password
+crudini --set /etc/nova/nova.conf neutron project_domain_name Default
+crudini --set /etc/nova/nova.conf neutron user_domain_name Default
+crudini --set /etc/nova/nova.conf neutron project_name service
+crudini --set /etc/nova/nova.conf neutron username neutron
+crudini --set /etc/nova/nova.conf neutron password Welcome123
+```
+
+Cài đặt neutron 
+
+```
+yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables
+yum install -y openstack-neutron-linuxbridge ebtables ipset
+```
+
+Sao lưu file cấu hình của neutron 
+
+```
+cp /etc/neutron/neutron.conf /etc/neutron/neutron.conf.orig
+cp /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugins/ml2/ml2_conf.ini.orig
+cp /etc/neutron/plugins/ml2/linuxbridge_agent.ini /etc/neutron/plugins/ml2/linuxbridge_agent.ini.orig
+cp /etc/neutron/dhcp_agent.ini /etc/neutron/dhcp_agent.ini.orig
+cp /etc/neutron/metadata_agent.ini /etc/neutron/metadata_agent.ini.orig
+```
+
+
+Sửa file cấu hình của neutron `/etc/neutron/neutron.conf`
+
+```
+crudini --set /etc/neutron/neutron.conf DEFAULT auth_strategy keystone
+crudini --set /etc/neutron/neutron.conf DEFAULT core_plugin ml2
+crudini --set /etc/neutron/neutron.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.80.131
+crudini --set /etc/neutron/neutron.conf DEFAULT notify_nova_on_port_status_changes true
+crudini --set /etc/neutron/neutron.conf DEFAULT notify_nova_on_port_data_changes true
+
+crudini --set /etc/neutron/neutron.conf keystone_authtoken www_authenticate_uri http://192.168.80.131:5000
+crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_url http://192.168.80.131:5000
+crudini --set /etc/neutron/neutron.conf keystone_authtoken memcached_servers 192.168.80.131:11211
+crudini --set /etc/neutron/neutron.conf keystone_authtoken auth_type password
+crudini --set /etc/neutron/neutron.conf keystone_authtoken project_domain_name Default
+crudini --set /etc/neutron/neutron.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/neutron/neutron.conf keystone_authtoken project_name service
+crudini --set /etc/neutron/neutron.conf keystone_authtoken username neutron
+crudini --set /etc/neutron/neutron.conf keystone_authtoken password Welcome123
+
+crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neutron/tmp
+```
+
+Khai báo sysctl
+
+```
+echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
+echo 'net.bridge.bridge-nf-call-ip6tables = 1' >> /etc/sysctl.conf
+modprobe br_netfilter
+/sbin/sysctl -p
+```
+
+Sửa file `/etc/neutron/plugins/ml2/linuxbridge_agent.ini`
+
+```
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini linux_bridge physical_interface_mappings provider:eth3
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan enable_vxlan True
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini vxlan local_ip $(ip addr show dev eth2 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini securitygroup enable_security_group True
+crudini --set /etc/neutron/plugins/ml2/linuxbridge_agent.ini securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+```
+
+Khai báo cho file `/etc/neutron/metadata_agent.ini`
+
+```
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT nova_metadata_host 192.168.80.131
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secret Welcome123
+```
+
+Khai báo cho file `/etc/neutron/dhcp_agent.ini`
+```
+crudini --set /etc/neutron/dhcp_agent.ini DEFAULT interface_driver neutron.agent.linux.interface.BridgeInterfaceDriver
+crudini --set /etc/neutron/dhcp_agent.ini DEFAULT enable_isolated_metadata True
+crudini --set /etc/neutron/dhcp_agent.ini DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
+crudini --set /etc/neutron/dhcp_agent.ini DEFAULT force_metadata True
+```
+
+Khởi động neutron 
+
+```
+systemctl enable neutron-linuxbridge-agent.service
+systemctl enable neutron-metadata-agent.service
+systemctl enable neutron-dhcp-agent.service
+
+systemctl restart openstack-nova-compute.service
+```
 
 # 4. Hướng dẫn sử dụng 
 ## 4.1. Khai báo network, router 

@@ -1,17 +1,17 @@
 #!/bin/bash -ex
 
 ## Khai bao bien
-INTERFACE1=ens160
-INTERFACE2=ens192
-INTERFACE3=ens224
-INTERFACE4=ens256
+INTERFACE1=eth0
+INTERFACE2=eth1
+INTERFACE3=eth2
+INTERFACE4=eth3
 
 IP1=$2
 IP2=$3
 IP3=$4
 IP4=$5
 
-IP_GATEWAY=192.168.70.1
+IP_GATEWAY=192.168.80.1
 IP_NETMASK=24
 IP_DNS=8.8.8.8
 
@@ -19,7 +19,7 @@ if [ $# -ne 5 ]
     then
         echo -e "Nhap du 5 thong so: \e[38;5;82m HOSTNAME IP_NIC1 IP_NIC2 IP_NIC3 IP_NIC4 \e[0m"
         echo ""
-        echo -e "Vi du:\e[101mbash $0 controller1 192.168.70.120 192.168.81.120 192.168.82.120 192.168.84.120 \e[0m"
+        echo -e "Vi du:\e[101mbash $0 controller1 192.168.80.120 192.168.81.120 192.168.82.120 192.168.84.120 \e[0m"
         exit 1;
 fi
 

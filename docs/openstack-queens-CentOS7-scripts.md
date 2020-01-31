@@ -25,11 +25,11 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 
-	- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 	
 - Thực thi script 	
 	```sh
-	bash setup_ip.sh controller1 192.168.70.120 192.168.81.120 192.168.82.120 192.168.84.120
+	bash setup_ip.sh controller1 192.168.80.120 192.168.81.120 192.168.82.120 192.168.84.120
 	```
 ### 1.1.2. Thực hiện trên Compute1
 
@@ -38,11 +38,11 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-	- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 
 - Thực thi script 	
 	```sh
-	bash setup_ip.sh compute1 192.168.70.121 192.168.81.121 192.168.82.121 192.168.84.121
+	bash setup_ip.sh compute1 192.168.80.121 192.168.81.121 192.168.82.121 192.168.84.121
 	```
 
 ### 1.1.3. Thực hiện trên Compute2
@@ -52,12 +52,12 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-	  - Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	  - Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 
 
 - Thực thi script 	
 	```sh
-	bash setup_ip.sh compute2 192.168.70.122 192.168.81.122 192.168.82.122 192.168.84.122
+	bash setup_ip.sh compute2 192.168.80.122 192.168.81.122 192.168.82.122 192.168.84.122
 	```
 
 ### 1.1.4. Thực hiện trên Cinder1 (tùy chọn, nếu không có thì ko cần làm).
@@ -68,11 +68,11 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-	- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+	- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 	
 - Thực thi script 	
 	```sh
-	bash setup_ip.sh cinder1 192.168.70.123 192.168.81.123 192.168.82.123 192.168.84.123
+	bash setup_ip.sh cinder1 192.168.80.123 192.168.81.123 192.168.82.123 192.168.84.123
 	```
 ## 1.2. Thực hiện kiểm tra sau khi đặt IP
 
@@ -101,7 +101,7 @@
 	```
 
 - Lưu ý: Sửa lại IP các máy theo mô hình của bạn nếu không dùng IP Planning như trong hướng dẫn này.
-- Lưu ý tên NICs: `ens160, ens192, ens224, ens256`
+- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`
 
 - Cài đặt các gói bổ trợ để bắt đầu thực thi các script.
 	```sh
@@ -312,11 +312,11 @@
 	
 	- Giả sửa ID của network là `9681d9dd-aae2-42fe-9b84-dd7cb04c1aca`
 	
-- Tạo subnet thuộc provider network. Lưu ý nhập đúng gateway, IP cấp cho máy ảo từ 200 tới 220.
+- Tạo subnet thuộc provider network. Lưu ý nhập đúng gateway, IP cấp cho máy ảo từ 200 tới 210.
 
 	```sh
 	openstack subnet create subnet1_provider --network provider \
-	 --allocation-pool start=192.168.84.140,end=192.168.84.149 \
+	 --allocation-pool start=192.168.84.200,end=192.168.84.210 \
 	 --dns-nameserver 8.8.8.8 --gateway 192.168.84.1 \
 	 --subnet-range 192.168.84.0/24
 	```

@@ -25,7 +25,7 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 
-	- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 	
 - Thực thi script 	
 	```sh
@@ -38,7 +38,7 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-	- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 
 - Thực thi script 	
 	```sh
@@ -52,7 +52,7 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-	  - Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 
 
 - Thực thi script 	
@@ -68,7 +68,7 @@
 	curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Queens-No-HA/CentOS7/setup_ip.sh
 	```
 	
-	- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
+- Lưu ý tên NICs: `eth0, eth1, eth2, eth3`. Nếu tên NICs khác bạn cần sửa lại file `setup_ip.sh` trước khi thực hiện.
 	
 - Thực thi script 	
 	```sh
@@ -76,29 +76,31 @@
 	```
 ## 1.2. Thực hiện kiểm tra sau khi đặt IP
 
-- Login vào từng node:
-	- Ping tới từng IP của các node còn lại để kiểm tra.
-	- Ping ra internet để đảm bảo máy có thể kết nối ra ngoài để tải gói.
-	
+Login vào từng node:
+- Ping tới từng IP của các node còn lại để kiểm tra.
+- Ping ra internet để đảm bảo máy có thể kết nối ra ngoài để tải gói.
+
 ## Thực hiện script cài đặt OpenStack
 ### 2. Thực hiện cài đặt trên Controller
 #### 2.1. Tải script 
 - Đứng trên node CTL1 và thực hiện các bước dưới.
 - Chuyển sang quyền root
-	```sh
-	su -
-	```
-	
+
+```sh
+su -
+```
+
 - Cài đặt git và script cài đặt.
-	```sh
-	yum -y install git
-	git clone https://github.com/congto/openstack-tools.git
 
-	mv openstack-tools/scripts/OpenStack-Queens-No-HA/CentOS7 /root/
+```sh
+yum -y install git
+git clone https://github.com/congto/openstack-tools.git
 
-	cd CentOS7
-	chmod +x *.sh
-	```
+mv openstack-tools/scripts/OpenStack-Queens-No-HA/CentOS7 /root/
+
+cd CentOS7
+chmod +x *.sh
+```
 
 - Lưu ý: Sửa lại IP các máy theo mô hình của bạn nếu không dùng IP Planning như trong hướng dẫn này.
 - Lưu ý tên NICs: `eth0, eth1, eth2, eth3`

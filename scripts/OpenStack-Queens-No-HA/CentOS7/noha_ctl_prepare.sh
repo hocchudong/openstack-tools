@@ -113,7 +113,12 @@ function install_ntp_server {
           sleep 3
           cp /etc/chrony.conf /etc/chrony.conf.orig
           if [ "$IP_ADD" == "$CTL1_IP_NIC1" ]; then
-                  sed -i 's/server 0.centos.pool.ntp.org iburst/192.168.80.82/g' /etc/chrony.conf
+# sed -i 's/server 0.centos.pool.ntp.org iburst/ \
+# server 1.vn.pool.ntp.org iburst \
+# server 0.asia.pool.ntp.org iburst \
+# server 3.asia.pool.ntp.org iburst/g' /etc/chrony.conf
+# Bo comment 04 dong tren neu khong co may chu NTP Server (192.168.80.82)
+                  sed -i 's/server 0.centos.pool.ntp.org iburst/server 192.168.80.82 iburst/g' /etc/chrony.conf
                   sed -i 's/server 1.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
                   sed -i 's/server 2.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
                   sed -i 's/server 3.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf

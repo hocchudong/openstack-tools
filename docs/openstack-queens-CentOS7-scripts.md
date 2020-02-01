@@ -276,36 +276,39 @@ bash noha_com_install.sh
 - Kết quả nhu dưới
 
 ```sh
-+--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
-| ID                                   | Agent Type         | Host | Availability Zone | Alive | State | Binary                    |
-+--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
-| 1dbe7df1-feee-4f28-91ac-a19ed2ca0491 | Metadata agent     | com2 | None              | True  | UP    | neutron-metadata-agent    |
-| 560459e5-15ed-4cbf-a360-022a764fc642 | Metadata agent     | com1 | None              | True  | UP    | neutron-metadata-agent    |
-| 9d7f31c9-b5a8-4d36-bafb-940b8cacf2fa | Linux bridge agent | com2 | None              | True  | UP    | neutron-linuxbridge-agent |
-| a3402985-7b73-4090-b039-54186aa6642e | DHCP agent         | com1 | nova              | True  | UP    | neutron-dhcp-agent        |
-| d4f3b500-7865-40d7-ad6f-cf7c05284604 | DHCP agent         | com2 | nova              | True  | UP    | neutron-dhcp-agent        |
-| e26be4a6-ffa1-448f-9c1d-7b13de6ebea3 | Linux bridge agent | com1 | None              | True  | UP    | neutron-linuxbridge-agent |
-+--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
++--------------------------------------+--------------------+-------------+-------------------+-------+-------+---------------------------+
+| ID                                   | Agent Type         | Host        | Availability Zone | Alive | State | Binary                    |
++--------------------------------------+--------------------+-------------+-------------------+-------+-------+---------------------------+
+| 0c2992fc-3a7e-4df9-b7a8-3465f05631f8 | Linux bridge agent | compute1    | None              | :-)   | UP    | neutron-linuxbridge-agent |
+| 22609877-ef55-4d07-b35a-f383229d8063 | Linux bridge agent | compute2    | None              | :-)   | UP    | neutron-linuxbridge-agent |
+| 2cac2b34-ef2f-4853-8277-b6cc75b5e3a2 | Metadata agent     | compute2    | None              | :-)   | UP    | neutron-metadata-agent    |
+| 77cdb419-9b3e-4cc8-868f-2b1a5ba3b851 | L3 agent           | controller1 | nova              | :-)   | UP    | neutron-l3-agent          |
+| 7a8a14e7-7e58-4b6f-844b-b0574ee6ec1d | DHCP agent         | compute2    | nova              | :-)   | UP    | neutron-dhcp-agent        |
+| 840e43e5-db20-4f13-9145-7b117c0158d7 | DHCP agent         | compute1    | nova              | :-)   | UP    | neutron-dhcp-agent        |
+| 91b8d9ed-d7b6-4212-870e-7647b61a0c87 | Linux bridge agent | controller1 | None              | :-)   | UP    | neutron-linuxbridge-agent |
+| b6310465-82ed-44dc-ba5a-a696e38cc82f | Metadata agent     | compute1    | None              | :-)   | UP    | neutron-metadata-agent    |
++--------------------------------------+--------------------+-------------+-------------------+-------+-------+---------------------------+
 ```
 
 - Đứng trên Controller thực hiện lệnh kiểm tra service của nova 
-	```sh
-	openstack compute service list
-	```
 
-	- Kết quả là: 
+```sh
+openstack compute service list
+```
+
+- Kết quả là: 
 	
-	```
-	+----+------------------+------+----------+---------+-------+----------------------------+
-	| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-	+----+------------------+------+----------+---------+-------+----------------------------+
-	|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T16:31:09.000000 |
-	|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T16:31:09.000000 |
-	|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T16:31:08.000000 |
-	|  6 | nova-compute     | com1 | nova     | enabled | up    | 2017-07-18T16:31:04.000000 |
-	|  7 | nova-compute     | com2 | nova     | enabled | up    | 2017-07-18T16:31:14.000000 |
-	+----+------------------+------+----------+---------+-------+----------------------------+
-	```
+```
++----+------------------+-------------+----------+---------+-------+----------------------------+
+| ID | Binary           | Host        | Zone     | Status  | State | Updated At                 |
++----+------------------+-------------+----------+---------+-------+----------------------------+
+|  1 | nova-consoleauth | controller1 | internal | enabled | up    | 2020-02-01T07:31:47.000000 |
+|  2 | nova-conductor   | controller1 | internal | enabled | up    | 2020-02-01T07:31:48.000000 |
+|  3 | nova-scheduler   | controller1 | internal | enabled | up    | 2020-02-01T07:31:47.000000 |
+|  6 | nova-compute     | compute2    | nova     | enabled | up    | 2020-02-01T07:31:46.000000 |
+|  7 | nova-compute     | compute1    | nova     | enabled | up    | 2020-02-01T07:31:39.000000 |
++----+------------------+-------------+----------+---------+-------+----------------------------+
+```
 
 ### 4. Tạo network  và các máy ảo để kiểm chứng. 
 
@@ -319,7 +322,7 @@ openstack network create  --share --external \
 --provider-network-type flat provider
 ```
 	
-	- Giả sửa ID của network là `9681d9dd-aae2-42fe-9b84-dd7cb04c1aca`
+- Giả sửa ID của network là `9681d9dd-aae2-42fe-9b84-dd7cb04c1aca`
 	
 - Tạo subnet thuộc provider network. Lưu ý nhập đúng gateway, IP cấp cho máy ảo từ 200 tới 210.
 

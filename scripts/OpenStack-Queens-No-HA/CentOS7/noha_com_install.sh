@@ -38,7 +38,7 @@ function com_nova_config {
 	cp $com_nova_conf $com_nova_conf.orig
 
 	ops_edit $com_nova_conf DEFAULT enabled_apis osapi_compute,metadata
-	ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev ens160 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+	ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev eth1 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
 	ops_edit $com_nova_conf DEFAULT use_neutron true
 	ops_edit $com_nova_conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 	ops_edit $com_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1

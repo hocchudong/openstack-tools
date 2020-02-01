@@ -1,14 +1,14 @@
-#### Hướng dẫn thực thi script cài đặt OpenStack Rocky không có HA trên CentOS 7
+# Hướng dẫn thực thi script cài đặt OpenStack Queen không có HA trên CentOS 7
 
-### A. MÔI TRƯỜNG LAB
+## A. MÔI TRƯỜNG LAB
 - Giả lập trên VMware Workstatios, hoặc ESX hoặc Virtualbox hoặc KVM hoặc máy vật lý.
 - Centos 7.3 Server 64 bit - 1611
 
-### B. MÔ HÌNH
+## B. MÔ HÌNH
 
 ![noha_openstack_topology.png](/images/noha_openstack_queen_topology.png)
 
-### C. IP PLANNING
+## C. IP PLANNING
 
 ![noha_ip_planning.png](/images/noha_openstack_queen_ip_planning.png)
 

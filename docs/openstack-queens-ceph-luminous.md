@@ -120,15 +120,87 @@ ssh root@192.168.80.121 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
 ssh root@192.168.80.122 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
 ```
 
+#### 2.1. Tích hợp glance với ceph
 
+#### 2.1.1. Khai báo file cấu hình cho glance trên CEPH.
+- Login vào node `ceph1` và khai báo file cấu hình dành cho glance
 
+```
+ceph auth get-or-create client.glance mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=images' > ceph.client.glance.keyring
+```
 
+- Copy file `ceph.client.glance.keyring` từ ceph1 sang controller (node cài glance)
 
+```
+ceph auth get-or-create client.glance | ssh root@192.168.80.120 sudo tee /etc/ceph/ceph.client.glance.keyring
+```
 
+#### 2.1.2. Cấu hình glance để làm việc với CEPH.
 
+Đăng nhập vào node `controller1` (192.168.80.120) để cấu hình glance làm việc với CEPH. Khi cấu hình xong, image của OpenStack sẽ được lưu trên CEPH.
 
+- Kiểm tra xem file `ceph.client.glance.keyring` đã được copy sang hay chưa.
 
+```
+ls -alh /etc/ceph
+```
 
+- Ta sẽ có kết quả
 
+```
+total 20K
+drwxr-xr-x   2 root root   54 Feb  2 23:05 .
+drwxr-xr-x. 99 root root 8.0K Feb  2 22:57 ..
+-rw-r--r--   1 root root   64 Feb  2 23:05 ceph.client.glance.keyring
+-rw-r--r--   1 root root   92 Jan 31 04:37 rbdmap
+```
 
+- Phân quyền cho cho file `ceph.client.glance.keyring` thuộc sở hữu của user `glance` 
+
+```
+sudo chown glance:glance /etc/ceph/ceph.client.glance.keyring
+```
+
+- Sau khi phân quyền xong, có thể kiểm tra lại bằng lệnh `ls -alh /etc/ceph`
+
+- Sửa file `/etc/glance/glance-api.conf` để làm việc với CEPH.
+
+```
+crudini --set /etc/glance/glance-api.conf DEFAULT show_image_direct_url True
+crudini --set /etc/glance/glance-api.conf glance_store default_store rbd
+crudini --set /etc/glance/glance-api.conf glance_store stores file,http,rbd
+crudini --set /etc/glance/glance-api.conf glance_store rbd_store_pool images
+crudini --set /etc/glance/glance-api.conf glance_store rbd_store_user glance
+crudini --set /etc/glance/glance-api.conf glance_store rbd_store_ceph_conf /etc/ceph/ceph.conf
+crudini --set /etc/glance/glance-api.conf glance_store rbd_store_chunk_size 8
+```
+
+- Khởi động lại dịch vụ glance 
+
+```
+systemctl restart openstack-glance-*
+```
+
+- Tạo thử image và kiểm tra xem được lưu trên CEPH hay chưa
+
+```
+wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+
+openstack image create "cirros-ceph" \
+--file cirros-0.3.4-x86_64-disk.img \
+--disk-format qcow2 --container-format bare \
+--public
+```
+
+- Kiểm tra xem image được up lên hay chưa
+
+```
+openstack image list
+```
+
+- Đăng nhập vào node `ceph1` và kiểm tra xem pool images đã có image nào hay chưa
+
+```
+rbd -p images ls
+```
 

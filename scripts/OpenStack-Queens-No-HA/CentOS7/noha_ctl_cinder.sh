@@ -207,6 +207,6 @@ cinder_syncdb
 
 echocolor "Restart dich vu CINDER"
 sleep 3
-cinder_enable_restart
+cinder_enable_restart $1
 
 echocolor "Da cai dat xong CINDER"

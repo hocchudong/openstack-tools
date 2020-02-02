@@ -199,13 +199,13 @@ openstack compute service list
 - Kết quả như sau là đã hoàn tất việc cài nova trên controller
 
 ```sh
-+----+------------------+------+----------+---------+-------+----------------------------+
-| ID | Binary           | Host | Zone     | Status  | State | Updated At                 |
-+----+------------------+------+----------+---------+-------+----------------------------+
-|  3 | nova-consoleauth | ctl1 | internal | enabled | up    | 2017-07-18T15:46:34.000000 |
-|  4 | nova-scheduler   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:37.000000 |
-|  5 | nova-conductor   | ctl1 | internal | enabled | up    | 2017-07-18T15:46:31.000000 |
-+----+------------------+------+----------+---------+-------+----------------------------+
++----+------------------+-------------+----------+---------+-------+----------------------------+
+| ID | Binary           | Host        | Zone     | Status  | State | Updated At                 |
++----+------------------+-------------+----------+---------+-------+----------------------------+
+|  1 | nova-consoleauth | controller1 | internal | enabled | up    | 2020-02-02T14:51:24.000000 |
+|  2 | nova-conductor   | controller1 | internal | enabled | up    | 2020-02-02T14:51:24.000000 |
+|  3 | nova-scheduler   | controller1 | internal | enabled | up    | 2020-02-02T14:51:25.000000 |
++----+------------------+-------------+----------+---------+-------+----------------------------+
 ```
 
 #### 2.7. Thực thi script `noha_ctl_neutron.sh` để cài đặt `Neutron`.

@@ -22,7 +22,9 @@
 
 ### 1. Cài đặt các gói bổ trợ cho OpenStack.
 
-Lần lượt truy cập vào từng node của OpenStack: Controller1, compute1, compute2 để thực hiện cài đặt các gói bổ trợ để OpenStack làm việc với CEPH.
+- Thực hiện trên các node của OpenStack.
+
+- Lần lượt truy cập vào từng node của OpenStack: Controller1, compute1, compute2 để thực hiện cài đặt các gói bổ trợ để OpenStack làm việc với CEPH.
 
 Khai báo repo
 
@@ -54,24 +56,24 @@ gpgkey=https://download.ceph.com/keys/release.asc
 EOF
 ```
 
-Cài đặt các gói phần mềm cần thiết để OpenStack làm việc với CEPH.
+- Cài đặt các gói phần mềm cần thiết để OpenStack làm việc với CEPH.
 
 ```
 yum update -y
 yum install -y python-rbd ceph-common
 ```
 
-### 1. Khai báo các pool trên CEPH
+### 2. Khai báo các pool trên CEPH
 
-Thực hiện các bước này trên node `ceph1`.
+- Thực hiện các bước này trên node `ceph1`.
 
-Chuyển sang user `cephuser` đã được tạo từ khi cài đặt CEPH cluster.
+- Chuyển sang user `cephuser` đã được tạo từ khi cài đặt CEPH cluster.
 
 ```
 su - cephuser
 ```
 
-Khai báo các pools cần thiết đối với OpenStack trên CEPH. Các pools có tên là: `volumes, vms, images, backups`
+- Khai báo các pools cần thiết đối với OpenStack trên CEPH. Các pools có tên là: `volumes, vms, images, backups`
 
 ```
 ceph osd pool create volumes 128 128
@@ -83,7 +85,7 @@ ceph osd pool create images 128 128
 ceph osd pool create backups 128 128
 ```
 
-Khởi tạo để các pool này có thể sử dụng được
+- Khởi tạo để các pool này có thể sử dụng được
 
 ```
 rbd pool init volumes
@@ -95,27 +97,27 @@ rbd pool init images
 rbd pool init backups
 ```
 
-Kiểm tra lại danh sách các pool vừa tạo
+- Kiểm tra lại danh sách các pool vừa tạo
 
 ```
 sudo ceph osd lspools
 ```
 
-Kết quả:
+- Kết quả:
 
 ```
 [cephuser@ceph1 ~]$ sudo ceph osd lspools
 1 volumes,2 vms,3 images,4 backups,
 ```
 
-Thực hiện copy file `ceph.conf` trên node `ceph1` sang các node: `controller1, compute1, compute2`
+- Thực hiện copy file `ceph.conf` trên node `ceph1` sang các node: `controller1, compute1, compute2`
 
-``
-ssh 192.168.80.120 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
+```
+ssh root@192.168.80.120 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
 
-ssh 192.168.80.121 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
+ssh root@192.168.80.121 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
 
-ssh 192.168.80.122 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
+ssh root@192.168.80.122 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
 ```
 
 

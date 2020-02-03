@@ -123,7 +123,15 @@ ssh root@192.168.80.122 sudo tee /etc/ceph/ceph.conf < /etc/ceph/ceph.conf
 #### 2.1. Tích hợp glance với ceph
 
 #### 2.1.1. Khai báo file cấu hình cho glance trên CEPH.
-- Login vào node `ceph1` và khai báo file cấu hình dành cho glance
+Login vào node `ceph1` và khai báo file cấu hình dành cho glance
+
+- Chuyển sang user `cephuser`
+
+```
+su - cephuser
+```
+
+- Tạo file key cho glance
 
 ```
 ceph auth get-or-create client.glance mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=images' > ceph.client.glance.keyring
@@ -203,4 +211,178 @@ openstack image list
 ```
 rbd -p images ls
 ```
+
+#### 2.2. Tích hợp cinder với ceph
+#### 2.2.1. Khai báo file cấu hình cho cinder trên CEPH.
+
+Login vào node `ceph1` và khai báo file cấu hình dành cho cinder. Lưu ý, ta sẽ cấu hình `cinder-volume` và `cinder-backup` sử dụng CEPH.
+
+- Chuyển sang user `cephuser`
+
+```
+su - cephuser
+```
+
+- Tạo file key cho cinder
+
+```
+ceph auth get-or-create client.cinder mon 'allow r, allow command "osd blacklist", allow command "blacklistop"' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=images' > ceph.client.cinder.keyring
+```
+
+- Tạo key cho cinder-backup
+
+```
+ceph auth get-or-create client.cinder-backup mon 'profile rbd' osd 'profile rbd pool=backups' > ceph.client.cinder-backup.keyring
+```
+
+- Chuyển file key của cinder (cinder-volume) và cinder-backup sang node `controller1` (192.168.80.120)
+
+```
+ceph auth get-or-create client.cinder | ssh 192.168.80.120 sudo tee /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder-backup | ssh 192.168.80.120 sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+```
+
+- Chuyển file key của cinder (cinder-volume) sang node `compute1, compute2`. Lưu ý: Cần chuyển key của cinder từ ceph sang compute bởi vì libvirt trên compute sẽ sử dụng volume do CEPH cấp.
+
+```
+ceph auth get-or-create client.cinder | ssh 192.168.80.121 sudo tee /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder | ssh 192.168.80.122 sudo tee /etc/ceph/ceph.client.cinder.keyring
+
+ceph auth get-key client.cinder | ssh 192.168.80.121 tee /root/client.cinder
+ceph auth get-key client.cinder | ssh 192.168.80.122 tee /root/client.cinder
+```
+
+#### 2.2.2. Cấu hình compute để sử dụng volume nằm trên CEPH.
+
+Cấu hình đề libvirtd sử dụng volume sẽ được tích hợp với ceph. Login vào các node compute (192.168.80.121, 192.168.80.122) và thực hiện các bước sau.
+
+- Sinh ra một chuỗi ngẫu nhiên bằng `uuidgen`
+
+```
+uuidgen
+````
+
+- Ta sẽ có một chuỗi sinh ra, lưu lại chuỗi này để dùng cho bước tiếp theo:
+
+```
+
+```
+
+- Tạo file xml để áp cấu hình cho libvirt. Thay chuỗi sinh ra ở trên cho phù hợp.
+
+```
+cat > ceph-secret.xml <<EOF
+<secret ephemeral='no' private='no'>
+<uuid>414ba151-4068-40c6-9d7b-84998ce6a5a6</uuid>
+<usage type='ceph'>
+	<name>client.cinder secret</name>
+</usage>
+</secret>
+EOF
+```
+
+- Thực thi lệnh
+
+```
+sudo virsh secret-define --file ceph-secret.xml
+```
+
+- Ta sẽ có kết quả
+
+```
+
+```
+
+- Gán giá trị của uuid ở trên. Lưu ý thay chuỗi cho phù hợp.
+
+```
+virsh secret-set-value --secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 --base64 $(cat /root/client.cinder)
+```
+
+- Khởi động lại dịch vụ của nova-compute
+
+```
+systemctl restart openstack-nova-compute
+```
+
+#### 2.2.2. Cấu hình controller để sử dụng volume nằm trên CEPH.
+
+Login vào node `controller1` và thực hiện các bước tiếp theo.
+
+- Phân quyền cho file key của cinder trên node `Controller1`. Login vào node `controller1` và thực hiện lệnh dưới.
+
+```
+sudo chown cinder:cinder /etc/ceph/ceph.client.cinder*
+```
+
+- Khai báo lại cấu hình của cinder để làm việc với ceph.
+
+```
+crudini --set  /etc/cinder/cinder.conf DEFAULT notification_driver messagingv2
+crudini --set  /etc/cinder/cinder.conf DEFAULT enabled_backends ceph
+crudini --set  /etc/cinder/cinder.conf DEFAULT glance_api_version 2
+crudini --set  /etc/cinder/cinder.conf DEFAULT backup_driver cinder.backup.drivers.ceph
+crudini --set  /etc/cinder/cinder.conf DEFAULT backup_ceph_conf /etc/ceph/ceph.conf
+crudini --set  /etc/cinder/cinder.conf DEFAULT backup_ceph_user cinder-backup
+crudini --set  /etc/cinder/cinder.conf DEFAULT backup_ceph_chunk_size 134217728
+crudini --set  /etc/cinder/cinder.conf DEFAULTbackup_ceph_pool backups
+crudini --set  /etc/cinder/cinder.conf DEFAULT backup_ceph_stripe_unit 0
+crudini --set  /etc/cinder/cinder.conf DEFAULT backup_ceph_stripe_count 0
+crudini --set  /etc/cinder/cinder.conf DEFAULT restore_discard_excess_bytes true
+crudini --set  /etc/cinder/cinder.conf DEFAULT host ceph
+
+
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver cinder.volume.drivers.rbd.RBDDriver
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver volume_backend_name ceph
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_pool volumes
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_ceph_conf /etc/ceph/ceph.conf
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_flatten_volume_from_snapshot false
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_max_clone_depth 5
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_store_chunk_size 4
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rados_connect_timeout -1
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_user cinder
+# Thay chuỗi ở dòng tiếp theo cho phù hợp.
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_secret_uuid 414ba151-4068-40c6-9d7b-84998ce6a5a6
+crudini --set  /etc/cinder/cinder.conf  ceph volume_driver report_discard_supported true
+```
+
+- Khởi động lại các dịch vụ của cinder
+
+```
+systemctl enable openstack-cinder-backup.service
+
+systemctl restart openstack-cinder-backup.service
+```
+
+```
+systemctl restart openstack-cinder-api.service openstack-cinder-volume.service openstack-cinder-scheduler.service openstack-cinder-backup.service
+```
+
+
+- Tạo volume type cho cinder
+
+```
+cinder type-create ceph
+
+cinder type-key ceph set volume_backend_name=ceph
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -296,10 +296,10 @@ Secret 03da04c2-447f-453b-8718-f6696dcc1f12 created
 - Gán giá trị của uuid ở trên. Lưu ý thay chuỗi cho phù hợp. Thực hiện trên cả 02 compute.
 
 ```
-virsh secret-set-value --secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 --base64 $(cat /root/client.cinder)
+virsh secret-set-value --secret 03da04c2-447f-453b-8718-f6696dcc1f12 --base64 $(cat /root/client.cinder)
 ```
 
-- Khởi động lại dịch vụ của nova-compute
+- Khởi động lại dịch vụ của nova-compute trên cả 02 compute
 
 ```
 systemctl restart openstack-nova-compute
@@ -331,20 +331,19 @@ crudini --set  /etc/cinder/cinder.conf DEFAULT backup_ceph_stripe_count 0
 crudini --set  /etc/cinder/cinder.conf DEFAULT restore_discard_excess_bytes true
 crudini --set  /etc/cinder/cinder.conf DEFAULT host ceph
 
-
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver cinder.volume.drivers.rbd.RBDDriver
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver volume_backend_name ceph
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_pool volumes
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_ceph_conf /etc/ceph/ceph.conf
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_flatten_volume_from_snapshot false
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_max_clone_depth 5
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_store_chunk_size 4
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rados_connect_timeout -1
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_user cinder
+crudini --set  /etc/cinder/cinder.conf ceph volume_driver cinder.volume.drivers.rbd.RBDDriver
+crudini --set  /etc/cinder/cinder.conf ceph volume_backend_name ceph
+crudini --set  /etc/cinder/cinder.conf ceph rbd_pool volumes
+crudini --set  /etc/cinder/cinder.conf ceph rbd_ceph_conf /etc/ceph/ceph.conf
+crudini --set  /etc/cinder/cinder.conf ceph rbd_flatten_volume_from_snapshot false
+crudini --set  /etc/cinder/cinder.conf ceph rbd_max_clone_depth 5
+crudini --set  /etc/cinder/cinder.conf ceph rbd_store_chunk_size 4
+crudini --set  /etc/cinder/cinder.conf ceph rados_connect_timeout -1
+crudini --set  /etc/cinder/cinder.conf ceph rbd_user cinder
 
 # Thay chuỗi ở dòng tiếp theo cho phù hợp.
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_secret_uuid 414ba151-4068-40c6-9d7b-84998ce6a5a6
-crudini --set  /etc/cinder/cinder.conf  ceph volume_driver report_discard_supported true
+crudini --set  /etc/cinder/cinder.conf ceph rbd_secret_uuid 03da04c2-447f-453b-8718-f6696dcc1f12
+crudini --set  /etc/cinder/cinder.conf ceph report_discard_supported true
 ```
 
 - Khởi động lại các dịch vụ của cinder

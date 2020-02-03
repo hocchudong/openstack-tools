@@ -341,6 +341,7 @@ crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_max_clone_depth 5
 crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_store_chunk_size 4
 crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rados_connect_timeout -1
 crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_user cinder
+
 # Thay chuỗi ở dòng tiếp theo cho phù hợp.
 crudini --set  /etc/cinder/cinder.conf  ceph volume_driver rbd_secret_uuid 414ba151-4068-40c6-9d7b-84998ce6a5a6
 crudini --set  /etc/cinder/cinder.conf  ceph volume_driver report_discard_supported true

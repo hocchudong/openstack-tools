@@ -238,18 +238,18 @@ ceph auth get-or-create client.cinder-backup mon 'profile rbd' osd 'profile rbd 
 - Chuyển file key của cinder (cinder-volume) và cinder-backup sang node `controller1` (192.168.80.120)
 
 ```
-ceph auth get-or-create client.cinder | ssh 192.168.80.120 sudo tee /etc/ceph/ceph.client.cinder.keyring
-ceph auth get-or-create client.cinder-backup | ssh 192.168.80.120 sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+ceph auth get-or-create client.cinder | ssh root@192.168.80.120 sudo tee /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder-backup | ssh root@192.168.80.120 sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
 ```
 
 - Chuyển file key của cinder (cinder-volume) sang node `compute1, compute2`. Lưu ý: Cần chuyển key của cinder từ ceph sang compute bởi vì libvirt trên compute sẽ sử dụng volume do CEPH cấp.
 
 ```
-ceph auth get-or-create client.cinder | ssh 192.168.80.121 sudo tee /etc/ceph/ceph.client.cinder.keyring
-ceph auth get-or-create client.cinder | ssh 192.168.80.122 sudo tee /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder | ssh root@192.168.80.121 sudo tee /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder | ssh root@192.168.80.122 sudo tee /etc/ceph/ceph.client.cinder.keyring
 
-ceph auth get-key client.cinder | ssh 192.168.80.121 tee /root/client.cinder
-ceph auth get-key client.cinder | ssh 192.168.80.122 tee /root/client.cinder
+ceph auth get-key client.cinder | ssh root@192.168.80.121 tee /root/client.cinder
+ceph auth get-key client.cinder | ssh root@192.168.80.122 tee /root/client.cinder
 ```
 
 #### 2.2.2. Cấu hình compute để sử dụng volume nằm trên CEPH.

@@ -256,7 +256,7 @@ ceph auth get-key client.cinder | ssh root@192.168.80.122 tee /root/client.cinde
 
 Cấu hình đề libvirtd sử dụng volume sẽ được tích hợp với ceph. Login vào các node compute (192.168.80.121, 192.168.80.122) và thực hiện các bước sau.
 
-- Sinh ra một chuỗi ngẫu nhiên bằng `uuidgen`
+- Sinh ra một chuỗi ngẫu nhiên bằng `uuidgen`. Bước này chỉ cần làm trên compute1 để lấy chuỗi bởi vì các compute sẽ sử dụng chung các chuỗi này.
 
 ```
 uuidgen
@@ -265,15 +265,15 @@ uuidgen
 - Ta sẽ có một chuỗi sinh ra, lưu lại chuỗi này để dùng cho bước tiếp theo:
 
 ```
-
+03da04c2-447f-453b-8718-f6696dcc1f12
 ```
 
-- Tạo file xml để áp cấu hình cho libvirt. Thay chuỗi sinh ra ở trên cho phù hợp.
+- Tạo file xml để áp cấu hình cho libvirt. Thay chuỗi sinh ra ở trên cho phù hợp. Thực hiện bước này trên cả 02 compute.
 
 ```
 cat > ceph-secret.xml <<EOF
 <secret ephemeral='no' private='no'>
-<uuid>414ba151-4068-40c6-9d7b-84998ce6a5a6</uuid>
+<uuid>03da04c2-447f-453b-8718-f6696dcc1f12</uuid>
 <usage type='ceph'>
 	<name>client.cinder secret</name>
 </usage>
@@ -290,10 +290,10 @@ sudo virsh secret-define --file ceph-secret.xml
 - Ta sẽ có kết quả
 
 ```
-
+Secret 03da04c2-447f-453b-8718-f6696dcc1f12 created
 ```
 
-- Gán giá trị của uuid ở trên. Lưu ý thay chuỗi cho phù hợp.
+- Gán giá trị của uuid ở trên. Lưu ý thay chuỗi cho phù hợp. Thực hiện trên cả 02 compute.
 
 ```
 virsh secret-set-value --secret 414ba151-4068-40c6-9d7b-84998ce6a5a6 --base64 $(cat /root/client.cinder)

@@ -409,6 +409,7 @@ bash noha_node_prepare.sh 192.168.20.36
 
 - Login vào máy chủ cinder và thực hiện script dưới tại thư mục root. Lưu ý, ở script trên đã copy file `config.cfg` từ máy chủ controller sang máy chủ cinder. 
 
+
 ```sh
 curl -O https://raw.githubusercontent.com/congto/openstack-tools/master/scripts/OpenStack-Rocky-No-HA/noha_cinder_install.sh
 

@@ -519,14 +519,247 @@ $ uptime
 $ 
 ```
 
+#### 2.3. Tích hợp nova với ceph
 
+Khi chưa tích hợp nova với ceph thì lúc tạo VM mà boot từ image thì file disk của VM đó được lưu ngay trên node compute. Sau khi tích hợp nova với ceph thì file disk của máy ảo lúc này sẽ lưu trên ceph.
 
+#### 2.3.1. Khai báo file key cho nova
 
+Login vào node `ceph1` và khai báo file cấu hình dành cho cinder. Lưu ý, ta sẽ cấu hình `cinder-volume` và `cinder-backup` sử dụng CEPH.
 
+- Chuyển sang user `cephuser`
 
+```
+su - cephuser
+```
 
+- Thực hiện tạo file key
 
+```
+ceph auth get-or-create client.nova mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=vms, allow rx pool=images' > ceph.client.nova.keyring 
+```
 
+- Copy file key sang các node `compute1` và `compute2`
 
+```
+ceph auth get-or-create client.nova | ssh root@192.168.80.121 sudo tee /etc/ceph/ceph.client.nova.keyring 
+ceph auth get-or-create client.nova | ssh root@192.168.80.122 sudo tee /etc/ceph/ceph.client.nova.keyring 
 
+ceph auth get-key client.nova | ssh root@192.168.80.121 tee /root/client.nova
+ceph auth get-key client.nova | ssh root@192.168.80.12 tee /root/client.nova
+```
+
+#### 2.3.2. Cấu hình nova sử dụng ceph
+
+Đăng nhập vào các node compute để thực hiện các bước sau.
+
+- Đăng nhập vào node `compute1` để tạo uuid. Chỉ cần thực hiện trên một compute, chuỗi sinh ra được sử dụng cho tất cả các node compute. Hãy lưu kết quả của chuỗi lại.
+
+```
+uuidgen
+```
+
+- Ta có kết quả như bên dưới, hãy sử dụng chuỗi theo kết quả mà bạn nhận được.
+
+```
+379379ff-06ec-4524-9846-45f2366d549d
+```
+
+- Đăng nhập vào cả 02 compute và khai báo file xml
+
+```
+cat << EOF > nova-ceph.xml
+<secret ephemeral="no" private="no">
+<uuid>379379ff-06ec-4524-9846-45f2366d549d</uuid>
+<usage type="ceph">
+<name>client.nova secret</name>
+</usage>
+</secret>
+EOF
+```
+
+- Thực hiện khai báo cho file xml trên cả 02 compute
+
+```
+sudo virsh secret-define --file nova-ceph.xml
+```
+
+- Gán giá trị của file client.nova
+
+```
+virsh secret-set-value --secret 379379ff-06ec-4524-9846-45f2366d549d --base64 $(cat /root/client.nova)
+```
+
+- Sửa file cấu hình của nova
+
+```
+crudini --set  /etc/nova/nova.conf libvirt images_rbd_pool vms
+crudini --set  /etc/nova/nova.conf libvirt images_type rbd
+
+## Luu y thay chuoi cho phu hop
+crudini --set  /etc/nova/nova.conf libvirt rbd_secret_uuid 379379ff-06ec-4524-9846-45f2366d549d
+
+crudini --set  /etc/nova/nova.conf libvirt rbd_user nova
+crudini --set  /etc/nova/nova.conf libvirt images_rbd_ceph_conf /etc/ceph/ceph.conf
+```
+
+- Khởi động lại nova-compute trên cả 02 node compute.
+
+```
+systemctl restart openstack-nova-compute 
+```
+
+#### 2.3.3. Tạo VM để kiểm chứng việc tích hợp nova và ceph.
+
+Đăng nhập vào node controller để tạo VM.
+
+- Convert image từ file img sang file raw để đưa vào ceph. Giả sử file image đã được tải vể.
+
+```
+qemu-img convert -f qcow2 -O raw /root/cirros-0.3.4-x86_64-disk.img /root/cirros-0.3.4-x86_64-disk.raw
+```
+
+- Tạo file image đưa vào ceph với định dạng raw (lưu ý trước đó glance cần được tích hợp với ceph)
+
+```
+openstack image create "cirros-raw" \
+--file cirros-0.3.4-x86_64-disk.raw \
+--disk-format raw --container-format bare \
+--public 
+```
+
+- Kiểm tra lại danh sách image, trong đó sẽ thấy có image với tên là `cirros-raw` bằng lệnh `openstack image list`. Lưu ý dòng ID để sử dụng ở bước dưới.
+
+```
+[root@controller1 ~]# openstack image list
++--------------------------------------+-------------+--------+
+| ID                                   | Name        | Status |
++--------------------------------------+-------------+--------+
+| c1c193ae-94b6-4e5c-83a9-600eacb3d4f4 | cirros      | active |
+| 7b9427d2-c13c-4303-b964-7db3d8c194ed | cirros-ceph | active |
+| f7763f1f-0c51-4b69-b074-acd720847687 | cirros-img  | active |
+| 1712cfd8-bada-4cef-8833-71005d59761f | cirros-raw  | active |
++--------------------------------------+-------------+--------+
+```
+
+- Kiểm tra lại danh sách network bằng lệnh `openstack network list`. Ta sẽ thu được danh sách network, lựa chọn dòng ID của network mà VM sẽ gắn vào. Kết quả của lệnh như sau:
+
+```
+[root@controller1 ~]# openstack network list
++--------------------------------------+----------+--------------------------------------+
+| ID                                   | Name     | Subnets                              |
++--------------------------------------+----------+--------------------------------------+
+| c0f72c47-b6f2-4187-844b-a35b8afb8764 | provider | a65f8ca9-9e14-4830-bcc1-2b9079426f93 |
++--------------------------------------+----------+--------------------------------------+
+```
+
+- Tạo máy ảo boot từ image 
+
+```
+nova boot --flavor m1.tiny --image cirros-raw --nic net-id=c0f72c47-b6f2-4187-844b-a35b8afb8764 --security-group default cirros-cephrbd-instance1
+```
+
+- Kết quả sẽ thông báo như bên dưới
+
+```
++--------------------------------------+---------------------------------------------------+
+| Property                             | Value                                             |
++--------------------------------------+---------------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                            |
+| OS-EXT-AZ:availability_zone          |                                                   |
+| OS-EXT-SRV-ATTR:host                 | -                                                 |
+| OS-EXT-SRV-ATTR:hostname             | cirros-cephrbd-instance1                          |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | -                                                 |
+| OS-EXT-SRV-ATTR:instance_name        |                                                   |
+| OS-EXT-SRV-ATTR:kernel_id            |                                                   |
+| OS-EXT-SRV-ATTR:launch_index         | 0                                                 |
+| OS-EXT-SRV-ATTR:ramdisk_id           |                                                   |
+| OS-EXT-SRV-ATTR:reservation_id       | r-nnv056fm                                        |
+| OS-EXT-SRV-ATTR:root_device_name     | -                                                 |
+| OS-EXT-SRV-ATTR:user_data            | -                                                 |
+| OS-EXT-STS:power_state               | 0                                                 |
+| OS-EXT-STS:task_state                | scheduling                                        |
+| OS-EXT-STS:vm_state                  | building                                          |
+| OS-SRV-USG:launched_at               | -                                                 |
+| OS-SRV-USG:terminated_at             | -                                                 |
+| accessIPv4                           |                                                   |
+| accessIPv6                           |                                                   |
+| adminPass                            | N6dxLXF7SVyL                                      |
+| config_drive                         |                                                   |
+| created                              | 2020-02-03T14:15:04Z                              |
+| description                          | -                                                 |
+| flavor:disk                          | 10                                                |
+| flavor:ephemeral                     | 0                                                 |
+| flavor:extra_specs                   | {}                                                |
+| flavor:original_name                 | m1.tiny                                           |
+| flavor:ram                           | 512                                               |
+| flavor:swap                          | 0                                                 |
+| flavor:vcpus                         | 1                                                 |
+| hostId                               |                                                   |
+| host_status                          |                                                   |
+| id                                   | 41351352-aa18-4d4a-8b78-ad50fcec039c              |
+| image                                | cirros-raw (1712cfd8-bada-4cef-8833-71005d59761f) |
+| key_name                             | -                                                 |
+| locked                               | False                                             |
+| metadata                             | {}                                                |
+| name                                 | cirros-cephrbd-instance1                          |
+| os-extended-volumes:volumes_attached | []                                                |
+| progress                             | 0                                                 |
+| security_groups                      | default                                           |
+| status                               | BUILD                                             |
+| tags                                 | []                                                |
+| tenant_id                            | 6a0576514b68435996d959b1f146afb2                  |
+| updated                              | 2020-02-03T14:15:04Z                              |
+| user_id                              | f29202535ab84bd0a82f18ae9a28a5d7                  |
++--------------------------------------+---------------------------------------------------+
+```
+
+- Kiểm chứng lại lại danh sách server bằng lệnh `openstack server list`, trong đó lưu ý dòng có tên server là `cirros-cephrbd-instance1`.
+
+```
+[root@controller1 ~]# openstack server list
++--------------------------------------+------------------------------+---------+-------------------------+-------------+---------+
+| ID                                   | Name                         | Status  | Networks                | Image       | Flavor  |
++--------------------------------------+------------------------------+---------+-------------------------+-------------+---------+
+| 41351352-aa18-4d4a-8b78-ad50fcec039c | cirros-cephrbd-instance1     | ACTIVE  | provider=192.168.84.207 | cirros-raw  | m1.tiny |
+| e437b301-f6e0-477b-b119-28812ab7b78c | cirros-cephvolumes-instance1 | ACTIVE  | provider=192.168.84.208 |             | m1.tiny |
+| b856d3fe-59db-4184-b9c1-06077461f784 | vmvol-ceph01                 | ACTIVE  | provider=192.168.84.203 |             | m1.nano |
+| e880e6a7-ab3d-4546-a753-e6783ca38be5 | Provider_VM02                | ACTIVE  | provider=192.168.84.202 | cirros-ceph | m1.nano |
+| 6dfba7c6-236e-4471-b39f-8d5b910440c6 | Provider-volume-vm1          | SHUTOFF | provider=192.168.84.204 |             | m1.nano |
+| 79ba0b5b-e318-4472-8b1c-f0a1a566a3e5 | Provider_VM01                | ACTIVE  | provider=192.168.84.206 | cirros      | m1.nano |
++--------------------------------------+------------------------------+---------+-------------------------+-------------+---------+
+```
+
+Ta có thể ping hoặc ssh tới VM có IP là: `192.168.84.207`
+
+- Chuyển sang node `ceph1` và kiểm tra xem pools `vms` đã có rbd image nào hay chưa bằng lệnh `rbd -p vms ls`. Ta có kết quả như bên dưới.
+
+```
+[cephuser@ceph1 ~]$ rbd -p vms ls
+41351352-aa18-4d4a-8b78-ad50fcec039c_disk
+```
+
+- Kiểm tra thông tin của rbd image có tên là `41351352-aa18-4d4a-8b78-ad50fcec039c_disk` bằng lệnh dưới.
+
+```
+rbd -p vms info 41351352-aa18-4d4a-8b78-ad50fcec039c_disk
+```
+
+- Kết quả trả về sẽ là
+
+```
+[cephuser@ceph1 ~]$ rbd -p vms info 41351352-aa18-4d4a-8b78-ad50fcec039c_disk
+rbd image '41351352-aa18-4d4a-8b78-ad50fcec039c_disk':
+        size 10GiB in 1280 objects
+        order 23 (8MiB objects)
+        block_name_prefix: rbd_data.6a94794324a5
+        format: 2
+        features: layering, exclusive-lock, object-map, fast-diff, deep-flatten
+        flags:
+        create_timestamp: Mon Feb  3 21:15:14 2020
+        parent: images/1712cfd8-bada-4cef-8833-71005d59761f@snap
+        overlap: 39.2MiB
+```
+
+Tới đây đã kết thúc việc tích hợp CEPH với: Glance để lưu image, Cinder để lưu volume, Nova để lưu disk của VM khi boot từ image.
 

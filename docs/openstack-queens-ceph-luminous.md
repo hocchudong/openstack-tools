@@ -305,7 +305,7 @@ virsh secret-set-value --secret 03da04c2-447f-453b-8718-f6696dcc1f12 --base64 $(
 systemctl restart openstack-nova-compute
 ```
 
-#### 2.2.2. Cấu hình controller để sử dụng volume nằm trên CEPH.
+#### 2.2.3. Cấu hình controller để sử dụng volume nằm trên CEPH.
 
 Login vào node `controller1` và thực hiện các bước tiếp theo.
 
@@ -367,13 +367,157 @@ cinder type-create ceph
 cinder type-key ceph set volume_backend_name=ceph
 ```
 
+#### 2.2.4. Tạo volume, vm để kiểm chứng việc cinder tích hợp với ceph.
 
+- Kiểm tra image trên hệ thống
 
+```
+openstack image list
+```
 
+- Kết quả: (lưu ý, image có tên là cirros-ceph đã được up từ bước tích hợp glance với ceph. Ta sẽ sử dụng id của image này `7b9427d2-c13c-4303-b964-7db3d8c194ed`
 
+```
++--------------------------------------+-------------+--------+
+| ID                                   | Name        | Status |
++--------------------------------------+-------------+--------+
+| c1c193ae-94b6-4e5c-83a9-600eacb3d4f4 | cirros      | active |
+| 7b9427d2-c13c-4303-b964-7db3d8c194ed | cirros-ceph | active |
++--------------------------------------+-------------+--------+
+```
 
+- Tạo volume với image `cirros-ceph`. Volume này có tên là `ceph-bootable1`, dung lượng là `2G`
 
+```
+openstack volume create bootable1 --image 7b9427d2-c13c-4303-b964-7db3d8c194ed --type ceph --size 2
+```
 
+- Kiểm tra lại volume vừa tạo bằng lệnh `openstack volume list`, ta có ID của volume `ceph-bootable1` vừa tạo ở trên. Ta sẽ sử dụng ID này cho bước tiếp theo.
+
+```
++--------------------------------------+--------------------+-----------+------+----------------------------------------------+
+| ID                                   | Name               | Status    | Size | Attached to                                  |
++--------------------------------------+--------------------+-----------+------+----------------------------------------------+
+| 6a380a66-9055-47e6-a0ba-9eacf45d6b76 | ceph-bootable1     | available |    2 |                                              |
+| 23fb272e-33c8-4606-84be-0363632a35b2 | volceph02          | in-use    |    2 | Attached to vmvol-ceph01 on /dev/vda         |
+| 5a6c4b9d-a58e-491d-b043-b635d0cccd16 | volceph01          | available |    1 |                                              |
++--------------------------------------+--------------------+-----------+------+----------------------------------------------+
+```
+
+- Lấy ID của network mà máy ảo sẽ gắn vào bằng lệnh `openstack network list`. Lưu chuỗi ID để sử dụng ở bước dưới.
+
+```
++--------------------------------------+----------+--------------------------------------+
+| ID                                   | Name     | Subnets                              |
++--------------------------------------+----------+--------------------------------------+
+| c0f72c47-b6f2-4187-844b-a35b8afb8764 | provider | a65f8ca9-9e14-4830-bcc1-2b9079426f93 |
++--------------------------------------+----------+--------------------------------------+
+```
+
+- Tạo một VM được boot từ volume `ceph-bootable1` ở trên.
+
+```
+nova boot --flavor m1.tiny \
+ --boot-volume 6a380a66-9055-47e6-a0ba-9eacf45d6b76 \
+ --nic net-id=c0f72c47-b6f2-4187-844b-a35b8afb8764 \
+ --security-group default \
+ cirros-cephvolumes-instance1 
+```
+
+- Ta sẽ có output 
+
+```
++--------------------------------------+-------------------------------------------------+
+| Property                             | Value                                           |
++--------------------------------------+-------------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                          |
+| OS-EXT-AZ:availability_zone          |                                                 |
+| OS-EXT-SRV-ATTR:host                 | -                                               |
+| OS-EXT-SRV-ATTR:hostname             | cirros-cephvolumes-instance1                    |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | -                                               |
+| OS-EXT-SRV-ATTR:instance_name        |                                                 |
+| OS-EXT-SRV-ATTR:kernel_id            |                                                 |
+| OS-EXT-SRV-ATTR:launch_index         | 0                                               |
+| OS-EXT-SRV-ATTR:ramdisk_id           |                                                 |
+| OS-EXT-SRV-ATTR:reservation_id       | r-y0jo11ku                                      |
+| OS-EXT-SRV-ATTR:root_device_name     | -                                               |
+| OS-EXT-SRV-ATTR:user_data            | -                                               |
+| OS-EXT-STS:power_state               | 0                                               |
+| OS-EXT-STS:task_state                | scheduling                                      |
+| OS-EXT-STS:vm_state                  | building                                        |
+| OS-SRV-USG:launched_at               | -                                               |
+| OS-SRV-USG:terminated_at             | -                                               |
+| accessIPv4                           |                                                 |
+| accessIPv6                           |                                                 |
+| adminPass                            | 4E6qMP3ZbNjk                                    |
+| config_drive                         |                                                 |
+| created                              | 2020-02-03T09:35:48Z                            |
+| description                          | -                                               |
+| flavor:disk                          | 10                                              |
+| flavor:ephemeral                     | 0                                               |
+| flavor:extra_specs                   | {}                                              |
+| flavor:original_name                 | m1.tiny                                         |
+| flavor:ram                           | 512                                             |
+| flavor:swap                          | 0                                               |
+| flavor:vcpus                         | 1                                               |
+| hostId                               |                                                 |
+| host_status                          |                                                 |
+| id                                   | e437b301-f6e0-477b-b119-28812ab7b78c            |
+| image                                | Attempt to boot from volume - no image supplied |
+| key_name                             | -                                               |
+| locked                               | False                                           |
+| metadata                             | {}                                              |
+| name                                 | cirros-cephvolumes-instance1                    |
+| os-extended-volumes:volumes_attached | []                                              |
+| progress                             | 0                                               |
+| security_groups                      | default                                         |
+| status                               | BUILD                                           |
+| tags                                 | []                                              |
+| tenant_id                            | 6a0576514b68435996d959b1f146afb2                |
+| updated                              | 2020-02-03T09:35:48Z                            |
+| user_id                              | f29202535ab84bd0a82f18ae9a28a5d7                |
++--------------------------------------+-------------------------------------------------+
+```
+
+- Chờ một lát và kiểm tra lại danh sách server xem đã tạo được hay chưa bằng lệnh `openstack server list`. Ta sẽ có kết quả của vm `cirros-cephvolumes-instance1` tương ứng với IP là `192.168.84.208`
+
+```
++--------------------------------------+------------------------------+---------+-------------------------+-------------+---------+
+| ID                                   | Name                         | Status  | Networks                | Image       | Flavor  |
++--------------------------------------+------------------------------+---------+-------------------------+-------------+---------+
+| e437b301-f6e0-477b-b119-28812ab7b78c | cirros-cephvolumes-instance1 | ACTIVE  | provider=192.168.84.208 |             | m1.tiny |
+| b856d3fe-59db-4184-b9c1-06077461f784 | vmvol-ceph01                 | ACTIVE  | provider=192.168.84.203 |             | m1.nano |
+| e880e6a7-ab3d-4546-a753-e6783ca38be5 | Provider_VM02                | ACTIVE  | provider=192.168.84.202 | cirros-ceph | m1.nano |
+| 6dfba7c6-236e-4471-b39f-8d5b910440c6 | Provider-volume-vm1          | SHUTOFF | provider=192.168.84.204 |             | m1.nano |
+| 79ba0b5b-e318-4472-8b1c-f0a1a566a3e5 | Provider_VM01                | ACTIVE  | provider=192.168.84.206 | cirros      | m1.nano |
++--------------------------------------+------------------------------+---------+-------------------------+-------------+---------+
+```
+
+Ta có thể ping thử hoặc ssh với tài khoản `cirros` và mật khẩu là `cubswin:)` để kiểm chứng.
+
+```
+$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast qlen 1000
+    link/ether fa:16:3e:8d:82:50 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.84.208/24 brd 192.168.84.255 scope global eth0
+    inet6 fe80::f816:3eff:fe8d:8250/64 scope link 
+       valid_lft forever preferred_lft forever
+$ ping dantri.com
+PING dantri.com (222.255.27.51): 56 data bytes
+64 bytes from 222.255.27.51: seq=0 ttl=56 time=2.190 ms
+^C
+--- dantri.com ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 2.190/2.190/2.190 ms
+$ uptime
+ 09:38:39 up 2 min,  1 users,  load average: 0.00, 0.01, 0.00
+$ 
+```
 
 
 

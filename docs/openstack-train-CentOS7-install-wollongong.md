@@ -40,7 +40,7 @@ hostnamectl set-hostname controller1
 Khai báo file `/etc/hosts`
 
 ```
-echo "127.0.0.1 localhost" > /etc/hosts
+echo "127.0.0.1 localhost `hostname`" > /etc/hosts
 echo "10.24.44.171 controller1" >> /etc/hosts
 echo "10.24.44.172 compute1" >> /etc/hosts
 echo "10.24.44.173 compute2" >> /etc/hosts
@@ -49,17 +49,17 @@ echo "10.24.44.173 compute2" >> /etc/hosts
 Thiết lập IP theo phân hoạch cho `controller1`
 
 ```
-echo "Setup IP  ens192"
-nmcli con modify ens192 ipv4.addresses 10.24.74.171/24
-nmcli con modify ens192 ipv4.method manual
-nmcli con modify ens192 connection.autoconnect yes
+echo "Setup IP  eth0"
+nmcli con modify eth0 ipv4.addresses 10.24.74.171/24
+nmcli con modify eth0 ipv4.method manual
+nmcli con modify eth0 connection.autoconnect yes
 
-echo "Setup IP  ens224"
-nmcli con modify ens224 ipv4.addresses 10.24.44.171/24
-nmcli con modify ens224 ipv4.gateway 10.24.44.1
-nmcli con modify ens224 ipv4.dns 130.130.130.130
-nmcli con modify ens224 ipv4.method manual
-nmcli con modify ens224 connection.autoconnect yes
+echo "Setup IP  eth1"
+nmcli con modify eth1 ipv4.addresses 10.24.44.171/24
+nmcli con modify eth1 ipv4.gateway 10.24.44.1
+nmcli con modify eth1 ipv4.dns 130.130.130.130
+nmcli con modify eth1 ipv4.method manual
+nmcli con modify eth1 connection.autoconnect yes
 
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
@@ -102,7 +102,7 @@ hostnamectl set-hostname compute1
 Khai báo file `/etc/hosts`
 
 ```
-echo "127.0.0.1 localhost" > /etc/hosts
+echo "127.0.0.1 localhost `hostname`" > /etc/hosts
 echo "10.24.44.171 controller1" >> /etc/hosts
 echo "10.24.44.172 compute1" >> /etc/hosts
 echo "10.24.44.173 compute2" >> /etc/hosts
@@ -111,17 +111,17 @@ echo "10.24.44.173 compute2" >> /etc/hosts
 Thiết lập IP theo phân hoạch
 
 ```
-echo "Setup IP  ens192"
-nmcli con modify ens192 ipv4.addresses 10.24.74.172/24
-nmcli con modify ens192 ipv4.method manual
-nmcli con modify ens192 connection.autoconnect yes
+echo "Setup IP  eth0"
+nmcli con modify eth0 ipv4.addresses 10.24.74.172/24
+nmcli con modify eth0 ipv4.method manual
+nmcli con modify eth0 connection.autoconnect yes
 
-echo "Setup IP  ens224"
-nmcli con modify ens224 ipv4.addresses 10.24.44.172/24
-nmcli con modify ens224 ipv4.gateway 10.24.44.1
-nmcli con modify ens224 ipv4.dns 130.130.130.130
-nmcli con modify ens224 ipv4.method manual
-nmcli con modify ens224 connection.autoconnect yes
+echo "Setup IP  eth1"
+nmcli con modify eth1 ipv4.addresses 10.24.44.172/24
+nmcli con modify eth1 ipv4.gateway 10.24.44.1
+nmcli con modify eth1 ipv4.dns 130.130.130.130
+nmcli con modify eth1 ipv4.method manual
+nmcli con modify eth1 connection.autoconnect yes
 
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config

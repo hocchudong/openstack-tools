@@ -608,6 +608,18 @@ export OS_IMAGE_API_VERSION=2
 EOF
 ```
 
+- Phân quyền thực thi file
+
+```
+chmod +x  /root/admin-openrc
+```
+
+- Khai báo vào profile
+
+```
+cat  /root/admin-openrc >> /etc/profile
+```
+
 Thực thi biến môi trường 
 
 ```

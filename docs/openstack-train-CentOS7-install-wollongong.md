@@ -1148,6 +1148,21 @@ Creating host mapping for compute host 'compute1': d6c24463-a6f1-4457-848b-e1f83
 Found 1 unmapped computes in cell: d16d0f3c-a3ba-493a-8885-ebae73bd3bf5
 ```
 
+Kiểm tra lại xem các dịch vụ của nova hoạt động hay chưa bằng lệnh ```openstack compute service list```
+
+```
+[root@controller1 ~]# openstack compute service list
++----+----------------+-------------+----------+---------+-------+----------------------------+
+| ID | Binary         | Host        | Zone     | Status  | State | Updated At                 |
++----+----------------+-------------+----------+---------+-------+----------------------------+
+|  5 | nova-conductor | controller1 | internal | enabled | up    | 2020-04-10T08:48:01.000000 |
+|  7 | nova-scheduler | controller1 | internal | enabled | up    | 2020-04-10T08:48:03.000000 |
+|  8 | nova-compute   | compute1    | nova     | enabled | up    | 2020-04-10T08:47:58.000000 |
++----+----------------+-------------+----------+---------+-------+----------------------------+
+
+```
+
+
 ### 3.2.12. Cài đặt và cấu hình Neutron
 ### 3.2.12.1 Cài đặt và cấu hình Neutron trên Controller.
 
@@ -1407,10 +1422,345 @@ systemctl start neutron-dhcp-agent.service
 systemctl restart openstack-nova-compute.service
 ```
 
-# 4. Hướng dẫn sử dụng 
-## 4.1. Khai báo network, router 
+Sau khi cài đặt xong neutron trên controller, thực hiện lệnh `openstack network agent list` để kiểm tra xem các thành phần của neutron hoạt động đúng hay chưa.
 
-## 4.2. Hướng dẫn tạo VM.
+```
+[root@controller1 ~]# openstack network agent list
++--------------------------------------+--------------------+-------------+-------------------+-------+-------+---------------------------+
+| ID                                   | Agent Type         | Host        | Availability Zone | Alive | State | Binary                    |
++--------------------------------------+--------------------+-------------+-------------------+-------+-------+---------------------------+
+| 367e25e1-340a-49a3-a3fe-b12b2739d7a6 | Linux bridge agent | compute1    | None              | :-)   | UP    | neutron-linuxbridge-agent |
+| 7ed2cf8c-57f7-423d-b05c-cd4fee2545a3 | Linux bridge agent | controller1 | None              | :-)   | UP    | neutron-linuxbridge-agent |
+| 936b0562-142d-40d8-8a8b-88cd87a2bf8b | Metadata agent     | compute1    | None              | :-)   | UP    | neutron-metadata-agent    |
+| a7b080fe-76c4-4bb4-a4b3-a2941822aded | Metadata agent     | controller1 | None              | :-)   | UP    | neutron-metadata-agent    |
+| e18e802f-db3f-46c2-b8a9-f39da87d08b5 | DHCP agent         | controller1 | nova              | :-)   | UP    | neutron-dhcp-agent        |
+| fe874639-d158-49d1-83cf-d3841ce6ac30 | DHCP agent         | compute1    | nova              | :-)   | UP    | neutron-dhcp-agent        |
++--------------------------------------+--------------------+-------------+-------------------+-------+-------+---------------------------+
+```
+
+# 4. Cài đặt horizon
+
+Cài đặt gói dashboard cho OpenStack
+
+```
+yum install -y openstack-dashboard
+```
+
+Sao lưu file `/etc/openstack-dashboard/local_settings`
+
+```
+cp /etc/openstack-dashboard/local_settings /etc/openstack-dashboard/local_settings.orig
+```
+
+- Sửa các dòng ở file `/etc/openstack-dashboard/local_settings` để có nội dung giống như bên dưới
+
+```
+import os
+from django.utils.translation import ugettext_lazy as _
+from openstack_dashboard.settings import HORIZON_CONFIG
+DEBUG = False
+ALLOWED_HOSTS = ['*']
+LOCAL_PATH = '/tmp'
+SECRET_KEY='815188a7493add38560f'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+CACHES = {
+    'default': {
+         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+         'LOCATION': '10.24.44.171:11211',
+    }
+}
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+OPENSTACK_HOST = "10.24.44.171"
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+
+OPENSTACK_API_VERSIONS = {
+    "identity": 3,
+    "image": 2,
+    "volume": 3,
+}
+
+OPENSTACK_NEUTRON_NETWORK = {
+    'enable_auto_allocated_network': False,
+    'enable_distributed_router': False,
+    'enable_fip_topology_check': True,
+    'enable_ha_router': False,
+    'enable_ipv6': True,
+    # TODO(amotoki): Drop OPENSTACK_NEUTRON_NETWORK completely from here.
+    # enable_quotas has the different default value here.
+    'enable_quotas': True,
+    'enable_rbac_policy': True,
+    'enable_router': True,
+    'default_dns_nameservers': [],
+    'supported_provider_types': ['*'],
+    'segmentation_id_range': {},
+    'extra_provider_types': {},
+    'supported_vnic_types': ['*'],
+    'physical_networks': [],
+}
+TIME_ZONE = "Asia/Ho_Chi_Minh"
+LOGGING = {
+    'version': 1,
+    # When set to True this will disable all logging except
+    # for loggers specified in this configuration dictionary. Note that
+    # if nothing is specified here and disable_existing_loggers is True,
+    # django.db.backends will still log unless it is disabled explicitly.
+    'disable_existing_loggers': False,
+    # If apache2 mod_wsgi is used to deploy OpenStack dashboard
+    # timestamp is output by mod_wsgi. If WSGI framework you use does not
+    # output timestamp for logging, add %(asctime)s in the following
+    # format definitions.
+    'formatters': {
+        'console': {
+            'format': '%(levelname)s %(name)s %(message)s'
+        },
+        'operation': {
+            # The format of "%(message)s" is defined by
+            # OPERATION_LOG_OPTIONS['format']
+            'format': '%(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            # Set the level to "DEBUG" for verbose output logging.
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+        'operation': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'operation',
+        },
+    },
+    'loggers': {
+        'horizon': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'horizon.operation_log': {
+            'handlers': ['operation'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'openstack_dashboard': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'novaclient': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'cinderclient': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'keystoneauth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'keystoneclient': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'glanceclient': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'neutronclient': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'swiftclient': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'oslo_policy': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'openstack_auth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Logging from django.db.backends is VERY verbose, send to null
+        # by default.
+        'django.db.backends': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'requests': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'urllib3': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'chardet.charsetprober': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'iso8601': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'scss': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+    },
+}
+SECURITY_GROUP_RULES = {
+    'all_tcp': {
+        'name': _('All TCP'),
+        'ip_protocol': 'tcp',
+        'from_port': '1',
+        'to_port': '65535',
+    },
+    'all_udp': {
+        'name': _('All UDP'),
+        'ip_protocol': 'udp',
+        'from_port': '1',
+        'to_port': '65535',
+    },
+    'all_icmp': {
+        'name': _('All ICMP'),
+        'ip_protocol': 'icmp',
+        'from_port': '-1',
+        'to_port': '-1',
+    },
+    'ssh': {
+        'name': 'SSH',
+        'ip_protocol': 'tcp',
+        'from_port': '22',
+        'to_port': '22',
+    },
+    'smtp': {
+        'name': 'SMTP',
+        'ip_protocol': 'tcp',
+        'from_port': '25',
+        'to_port': '25',
+    },
+    'dns': {
+        'name': 'DNS',
+        'ip_protocol': 'tcp',
+        'from_port': '53',
+        'to_port': '53',
+    },
+    'http': {
+        'name': 'HTTP',
+        'ip_protocol': 'tcp',
+        'from_port': '80',
+        'to_port': '80',
+    },
+    'pop3': {
+        'name': 'POP3',
+        'ip_protocol': 'tcp',
+        'from_port': '110',
+        'to_port': '110',
+    },
+    'imap': {
+        'name': 'IMAP',
+        'ip_protocol': 'tcp',
+        'from_port': '143',
+        'to_port': '143',
+    },
+    'ldap': {
+        'name': 'LDAP',
+        'ip_protocol': 'tcp',
+        'from_port': '389',
+        'to_port': '389',
+    },
+    'https': {
+        'name': 'HTTPS',
+        'ip_protocol': 'tcp',
+        'from_port': '443',
+        'to_port': '443',
+    },
+    'smtps': {
+        'name': 'SMTPS',
+        'ip_protocol': 'tcp',
+        'from_port': '465',
+        'to_port': '465',
+    },
+    'imaps': {
+        'name': 'IMAPS',
+        'ip_protocol': 'tcp',
+        'from_port': '993',
+        'to_port': '993',
+    },
+    'pop3s': {
+        'name': 'POP3S',
+        'ip_protocol': 'tcp',
+        'from_port': '995',
+        'to_port': '995',
+    },
+    'ms_sql': {
+        'name': 'MS SQL',
+        'ip_protocol': 'tcp',
+        'from_port': '1433',
+        'to_port': '1433',
+    },
+    'mysql': {
+        'name': 'MYSQL',
+        'ip_protocol': 'tcp',
+        'from_port': '3306',
+        'to_port': '3306',
+    },
+    'rdp': {
+        'name': 'RDP',
+        'ip_protocol': 'tcp',
+        'from_port': '3389',
+        'to_port': '3389',
+    },
+}
+```
+
+Thực hiện các lệnh sau
+
+```
+cd /usr/share/openstack-dashboard
+
+python manage.py make_web_conf --apache > /etc/httpd/conf.d/openstack-dashboard.conf
+
+ln -s /etc/openstack-dashboard /usr/share/openstack-dashboard/openstack_dashboard/conf
+
+systemctl enable httpd.service
+
+systemctl restart httpd.service
+ 
+systemctl restart memcached.service
+```
+
+Truy cập vào trang chủ với địa chỉ `http://10.24.44.171`
+
+# 5. Hướng dẫn sử dụng 
+## 5.1. Khai báo network, router 
+
+## 5.2. Hướng dẫn tạo VM.
 
 
 

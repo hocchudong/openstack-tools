@@ -1766,11 +1766,37 @@ Trong đó:
 - 1: Nhập domain là `Default`
 - 2: Nhập username là `admin`
 - 3: Nhập password: Đã khai báo trước đó.
-- 4: Chọn `Sign`
+- 4: Chọn `Sign In`
+
+
+Sau khi đăng nhập xong chuyển sang bước khai báo các thành phần cần thiết để có đủ điều kiện tạo máy ảo.
 
 ## 5.1. Khai báo network, router 
 
+Chọn tab `Admin` ở mục số 1 để tiếp tục chọn network
+ 
+![network1](https://image.prntscr.com/image/tgEd_Y45RQq_xLkA9EPBvA.png)
 
+Sau đó chuyển sagn tab network ta bắt đầu thực hiện việc khai báo network cho OpenStack.
+
+![network2](https://image.prntscr.com/image/lkXCLfdgTLKeXY3Gnm4D4Q.png)
+
+Chọn create Network để bắt đầu khai báo các network
+
+![network3](https://image.prntscr.com/image/yuCIyjcfSSio1fZYl9zJYA.png)
+
+Bước tiếp theo ta sẽ khai báo provider network trước.
+
+![network4](https://image.prntscr.com/image/LEuVvg2bSoKMykdHsWr2hQ.png)
+
+Trong bước khai báo public network này, ta cần chọn các thông số sau:
+
+- 1: Nhập tên của public network, tên này có thể là bất kỳ.
+- 2: Chon project để tạo network, trong hướng dẫn sẽ chọn project `admin`
+- 3: Cho chế độ mạng là `Flat`, một số hướng dẫn khác sẽ chọn là `Vlan`.
+- 4: Nhập tên của Physical Network, tên này phải giống với tên trong bước khai báo của neutron ở cả controller và compute. Trong hướng dẫn này là `provider`.
+- 5, 6: Tích chọn các mục này để đảm bảo đây là provider network và được dùng chung cho các người dùng khác nhau trên hệ thống OpenStack.
+- 7: Chọn mục 7 để chuyển sang màn tiếp theo.
 
 ## 5.2. Hướng dẫn tạo VM.
 

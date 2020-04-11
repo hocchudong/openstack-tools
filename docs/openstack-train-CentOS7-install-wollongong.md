@@ -1757,7 +1757,20 @@ systemctl restart memcached.service
 Truy cập vào trang chủ với địa chỉ `http://10.24.44.171`
 
 # 5. Hướng dẫn sử dụng 
+
+Login vào địa chỉ: `http://10.24.44.171`, sau đó nhập các thông tin.
+
+![login1](https://image.prntscr.com/image/B5360d_DQ5uBrq6QKWR-dA.png)
+
+Trong đó: 
+- 1: Nhập domain là `Default`
+- 2: Nhập username là `admin`
+- 3: Nhập password: Đã khai báo trước đó.
+- 4: Chọn `Sign`
+
 ## 5.1. Khai báo network, router 
+
+
 
 ## 5.2. Hướng dẫn tạo VM.
 

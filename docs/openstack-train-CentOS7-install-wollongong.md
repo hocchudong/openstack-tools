@@ -1798,6 +1798,7 @@ Trong bước khai báo public network này, ta cần chọn các thông số sa
 - 5, 6: Tích chọn các mục này để đảm bảo đây là provider network và được dùng chung cho các người dùng khác nhau trên hệ thống OpenStack.
 - 7: Chọn mục 7 để chuyển sang màn tiếp theo.
 
+
 ## 5.2. Hướng dẫn tạo VM.
 
 

@@ -1419,10 +1419,71 @@ systemctl restart openstack-nova-compute.service
 ```
 
 # 4. Hướng dẫn sử dụng 
-## 4.1. Khai báo network, router 
+## 4.1. Khai báo network provider
+
+Truy cập `Horizon`
+
+`Admin -> Network -> Networks`
+
+Click `Create network`
+
+<img src="https://i.imgur.com/IAOome6.png">
+
+Điền thông tin 
+
+`Name` -> external network
+`Project` -> Admin
+`Provider Network Type` -> Flat
+`Physical Network` -> provider
+
+<img src="https://i.imgur.com/uyrYkTC.png">
+
+Click next, tại đây ta khai báo subnet
+
+Nhập vào thông tin của subnet (ở đây là dải `provider`)
+
+<img src="https://i.imgur.com/xbXKGhX.png">
+
+Click next, ta sẽ khai báo thông tin pool cấp dhcp và dns sau đó click `Create`
+
+<img src="https://i.imgur.com/vivu2S8.png">
+
+## 4.2 Hướng dẫn khai báo flavor
+
+Truy cập `Horizon`
+
+`Admin` -> `Compute` -> `Flavors`
+
+Click `Create Flavor`
+
+<img src="https://i.imgur.com/xUPLV2c.png">
+
+Tại đây ta khai báo các thông tin như `name, vcpu, ram, disk`. Ví dụ một flavor với thông số `1 vcpu, 1 gb ram, 10gb disk`
+
+<img src="https://i.imgur.com/iAG75qS.png">
+
+Sau đó click `Create`
 
 ## 4.2. Hướng dẫn tạo VM.
 
+Truy cập `Horizon`, tại tab `Project` -> `Compute` -> `Instances` click `Launch Instance`
 
+<img src="https://i.imgur.com/45sFNAs.png">
 
+Tại tab `Details` nhập tên VM
 
+<img src="https://i.imgur.com/oteOVZC.png">
+
+Tiếp theo tại tab `Source`, Chọn boot source là từ `Image` và không tạo `Volume`, Click vào biểu tượng mũi tên cạnh image muốn chọn.
+
+<img src="https://i.imgur.com/NRTPL51.png">
+
+Tại tab `Flavor`, chọn biểu tượng mũi tên cạnh `Flavor` muốn chọn
+
+<img src="https://i.imgur.com/Gn9dE81.png">
+
+Tại tab `Network`, lựa chọn tương tự, trường hợp bạn chỉ có 1 network, hệ thống sẽ tự chọn
+
+<img src="https://i.imgur.com/8Tdz4BI.png">
+
+Cuối cùng là click `Launch Instance`

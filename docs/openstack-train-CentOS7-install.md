@@ -1420,6 +1420,8 @@ systemctl restart openstack-nova-compute.service
 
 ### 3.2.12.3 Hướng dẫn cấu hình Horizon.
 
+> Chỉ cấu hình trên Node Controller
+
 Cài đặt packages
 
 ```
@@ -1457,14 +1459,15 @@ OPENSTACK_API_VERSIONS = {
     "image": 2,
     "volume": 3,
 }
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CACHES = {
     'default': {
          'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
          'LOCATION': '192.168.80.131:11211',
     }
 }
+
 OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"
 OPENSTACK_HOST = "192.168.80.131"
 OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST

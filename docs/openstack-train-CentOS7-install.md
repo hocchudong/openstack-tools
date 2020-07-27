@@ -1504,7 +1504,7 @@ GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' \
 Tạo user
 
 ```
-source admin-openrc
+source /root/admin-openrc
 
 openstack user create --domain default --password Welcome123 cinder
 ```

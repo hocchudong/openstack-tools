@@ -1418,7 +1418,76 @@ systemctl start neutron-dhcp-agent.service
 systemctl restart openstack-nova-compute.service
 ```
 
+### 3.2.12.3 Hướng dẫn cấu hình Horizon.
+
+Cài đặt packages
+
+```
+yum install -y openstack-dashboard
+```
+
+Tạo file direct
+```
+filehtml=/var/www/html/index.html
+touch $filehtml
+cat << EOF >> $filehtml
+<html>
+<head>
+<META HTTP-EQUIV="Refresh" Content="0.5; URL=http://192.168.80.131/dashboard">
+</head>
+<body>
+<center> <h1>Redirecting to OpenStack Dashboard</h1> </center>
+</body>
+</html>
+EOF
+```
+
+Backup file cấu hình
+
+```
+cp /etc/openstack-dashboard/{local_settings,local_settings.bk}
+```
+
+Chỉnh sửa cấu hình file /etc/openstack-dashboard/local_settings
+
+```
+ALLOWED_HOSTS = ['*',]
+OPENSTACK_API_VERSIONS = {
+    "identity": 3,
+    "image": 2,
+    "volume": 3,
+}
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+CACHES = {
+    'default': {
+         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+         'LOCATION': '192.168.80.131:11211',
+    }
+}
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"
+OPENSTACK_HOST = "192.168.80.131"
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "myrole"
+
+TIME_ZONE = "Asia/Ho_Chi_Minh"
+WEBROOT = '/dashboard/'
+```
+
+Thêm config httpd cho dashboard
+
+```
+echo "WSGIApplicationGroup %{GLOBAL}" >> /etc/httpd/conf.d/openstack-dashboard.conf
+```
+
+Restart service httpd và memcached
+
+```
+systemctl restart httpd.service memcached.service
+```
+
 # 4. Hướng dẫn sử dụng 
+
 ## 4.1. Khai báo network provider
 
 Truy cập `Horizon`

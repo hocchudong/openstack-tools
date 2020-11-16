@@ -66,7 +66,9 @@ systemctl disable firewalld
 Cấu hình đồng bộ thời gian
 
 ```
+dnf install chrony -y
 timedatectl set-timezone Asia/Ho_Chi_Minh
+sed -i 's/2.centos.pool.ntp.org/2.vn.pool.ntp.org/g' /etc/chrony.conf
 systemctl enable chronyd.service
 systemctl restart chronyd.service
 chronyc sources
@@ -139,21 +141,22 @@ dnf install -y epel-release
 dnf update -y
 ```
 
-Cấu hình đồng bộ thời gian
-
 ```
+dnf install chrony -y
 timedatectl set-timezone Asia/Ho_Chi_Minh
+sed -i 's/2.centos.pool.ntp.org/2.vn.pool.ntp.org/g' /etc/chrony.conf
 systemctl enable chronyd.service
 systemctl restart chronyd.service
 chronyc sources
 ```
 
-Cài đặt môi trường
+Cài đặt các gói hỗ trợ
 
-```
-yum install -y python-devel libffi-devel gcc openssl-devel libselinux-python
-yum install -y vim git byobu
-```
+`dnf install -y vim git byobu`
+
+Cài đặt môi trường python
+
+`dnf install python3-devel libffi-devel gcc openssl-devel python3-libselinux -y`
 
 Tắt máy và snapshot lại
 
@@ -260,7 +263,7 @@ kolla_install_type: "source"
 # enable_haproxy: "no"
 
 # Dải Mngt + admin, internal API
-kolla_internal_vip_address: "10.10.30.63"
+kolla_internal_vip_address: "10.10.30.61"
 network_interface: "ens3"
 
 # Dải Mngt Provider
@@ -329,3 +332,94 @@ source /etc/kolla/admin-openrc.sh
 Kiểm tra xem OpenStack hoạt động hay chưa
 
 `openstack token issue`
+
+### Phần 5 Hướng dẫn cấu hình octavia bằng kolla-ansible
+
+Clone repo về 
+
+`git clone https://github.com/openstack/octavia -b stable/ussuri`
+
+Kiểm tra password của octavia
+
+`cat /etc/kolla/passwords.yml | grep octavia_ca_password`
+
+Thay thế password vào file gen cert
+
+`sed -i 's/not-secure-passphrase/4eSTukxVTs700MecknzV4zt878tgwBMNPhQf58ka/g' octavia/bin/create_single_CA_intermediate_CA.sh`
+
+Gen cert
+
+```
+cd octavia/bin/
+./create_single_CA_intermediate_CA.sh openssl.cnf
+```
+
+Copy các file cert vào thư mục cấu hình
+
+```
+mkdir -p /etc/kolla/config/octavia
+cp single_ca/etc/octavia/certs/* /etc/kolla/config/octavia/
+```
+
+Chỉnh sửa file `/etc/kolla/globals.yml` thêm vào cấu hình sau
+
+`enable_octavia: "yes"`
+
+Sau đó reconfigure lại bằng câu lệnh
+
+`kolla-ansible -i multinode reconfigure`
+
+Sau khi cài đặt xong, tiến hành tạo image từ công cụ image builder
+
+```
+virtualenv /root/env-octavia
+source /root/env-octavia/bin/activate
+cd octavia/
+pip install -r requirements.txt
+cd diskimage-create
+pip install -r requirements.txt
+yum install -y qemu-img
+yum install debootstrap -y 
+./diskimage-create.sh -i ubuntu -t qcow2 -o amphora-x64-haproxy
+```
+
+Đợi cho tới khi quá trình tạo image hoàn tất.
+
+Xem password của octavia
+
+`cat /etc/kolla/passwords.yml | grep octavia_keystone_password`
+
+Tạo file octavia-rc.sh
+
+```
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_NAME=service
+export OS_TENANT_NAME=service
+export OS_USERNAME=octavia
+export OS_PASSWORD=JZKdOSBzrrHoP94anEy4suPMCiADffU4Odhu2cGC
+export OS_AUTH_URL=http://10.10.30.61:35357/v3
+export OS_INTERFACE=internal
+export OS_ENDPOINT_TYPE=internalURL
+export OS_IDENTITY_API_VERSION=3
+export OS_REGION_NAME=RegionOne
+export OS_AUTH_PLUGIN=password
+```
+
+Kích hoạt biến môi trường
+
+```
+source octavia-rc.sh
+```
+
+Tạo image từ file image đã tạo
+
+```
+openstack image create --container-format bare --disk-format qcow2 --private --file /root/amphora-x64-haproxy.qcow2 --tag amphora amphora
+```
+
+Tạo flavor
+
+```
+
+```

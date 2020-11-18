@@ -25,9 +25,8 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget git vim
+dnf install -y wget  git vim
 ```
-
 
 Thiết lập hostname cho `controller01`
 
@@ -38,7 +37,7 @@ hostnamectl set-hostname controller01
 Khai báo file `/etc/hosts`
 
 ```
-echo "127.0.0.1 localhost controller01" > /etc/hosts
+echo "127.0.0.1 localhost `hostname`" > /etc/hosts
 echo "192.168.98.81 controller01" >> /etc/hosts
 echo "192.168.98.91 network01" >> /etc/hosts
 echo "192.168.98.101 compute01" >> /etc/hosts
@@ -89,7 +88,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget git vim
+dnf install -y wget byobu git vim
 ```
 
 
@@ -102,7 +101,7 @@ hostnamectl set-hostname network01
 Khai báo file `/etc/hosts`
 
 ```
-echo "127.0.0.1 localhost network01" > /etc/hosts
+echo "127.0.0.1 localhost `hostname`" > /etc/hosts
 echo "192.168.98.81 controller01" >> /etc/hosts
 echo "192.168.98.91 network01" >> /etc/hosts
 echo "192.168.98.101 compute01" >> /etc/hosts
@@ -152,7 +151,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget git vim
+dnf install -y wget byobu git vim
 ```
 
 Thiết lập hostname
@@ -164,7 +163,7 @@ hostnamectl set-hostname compute01
 Khai báo file `/etc/hosts`
 
 ```
-echo "127.0.0.1 localhost compute01" > /etc/hosts
+echo "127.0.0.1 localhost `hostname`" > /etc/hosts
 echo "192.168.98.81 controller01" >> /etc/hosts
 echo "192.168.98.91 network01" >> /etc/hosts
 echo "192.168.98.101 compute01" >> /etc/hosts

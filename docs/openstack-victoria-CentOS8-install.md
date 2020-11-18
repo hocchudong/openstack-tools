@@ -26,6 +26,8 @@ dnf update -y
 dnf config-manager --set-enabled PowerTools
 
 dnf install -y wget  git vim
+
+dnf install -y network-scripts
 ```
 
 Thiết lập hostname cho `controller01`
@@ -89,6 +91,8 @@ dnf update -y
 dnf config-manager --set-enabled PowerTools
 
 dnf install -y wget git vim
+
+dnf install -y network-scripts
 ```
 
 
@@ -152,6 +156,8 @@ dnf update -y
 dnf config-manager --set-enabled PowerTools
 
 dnf install -y wget git vim
+
+dnf install -y network-scripts
 ```
 
 Thiết lập hostname

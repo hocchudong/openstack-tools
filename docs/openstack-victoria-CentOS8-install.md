@@ -25,7 +25,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget byobu git vim
+dnf install -y wget git vim
 ```
 
 
@@ -89,7 +89,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget byobu git vim
+dnf install -y wget git vim
 ```
 
 
@@ -152,7 +152,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget byobu git vim
+dnf install -y wget git vim
 ```
 
 Thiết lập hostname

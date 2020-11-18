@@ -207,17 +207,22 @@ sudo systemctl start network
 init 6
 ```
 
+### Thực hiện kiểm tra trên các node
+
+- Ping ra internet bằng IP và domain name.
+- Ping ra gateway của các interface
+- Ping tới các IP của các node trong topo.
 
 ## 3.2. Cài đặt OpenStack
 
 Thực hiện cài đặt các gói trên OpenStack
 
-### 3.2.1.Cài đặt package cho OpenStacl trên Controller và Compute
+### 3.2.1.Cài đặt package cho OpenStack trên Controller node, Network node và Compute node
 
-*Khai báo repo cho OpenStack Train trên cả tất cả các node.*
+*Khai báo repo cho OpenStack Victoria trên cả tất cả các node.*
 
 ```
-dnf -y install centos-release-openstack-train
+dnf -y install centos-release-openstack-victoria
 
 dnf -y upgrade
 

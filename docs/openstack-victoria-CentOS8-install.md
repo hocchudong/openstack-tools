@@ -228,7 +228,7 @@ dnf -y upgrade
 
 dnf -y install crudini wget vim
 
-dnf -y install python-openstackclient openstack-selinux python2-PyMySQL
+dnf -y install openstack-selinux  python3-openstackclient
 
 dnf -y update
 ```

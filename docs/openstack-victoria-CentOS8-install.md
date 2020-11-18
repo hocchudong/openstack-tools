@@ -338,6 +338,8 @@ sed -i 's/server 1.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
 sed -i 's/server 2.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
 
 sed -i 's/server 3.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
+
+sed -i 's/#allow 192.168.0.0\/16/allow 192.168.98.0\/24/g' /etc/chrony.conf
 ```
 
 Khởi động lại chrony

@@ -1,4 +1,4 @@
-# Hướng dẫn cài đặt OpenStack Train trên CenOS 7
+# Hướng dẫn cài đặt OpenStack Victoria trên CenOS 8
 
 # 1. Mô hình
 
@@ -88,7 +88,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget byobu git vim
+dnf install -y wget git vim
 ```
 
 
@@ -151,7 +151,7 @@ dnf update -y
 
 dnf config-manager --set-enabled PowerTools
 
-dnf install -y wget byobu git vim
+dnf install -y wget git vim
 ```
 
 Thiết lập hostname

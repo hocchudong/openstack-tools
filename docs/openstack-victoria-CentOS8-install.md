@@ -741,10 +741,9 @@ keystone-manage bootstrap --bootstrap-password Welcome123 \
 
 Keystone sẽ sử dụng httpd để chạy service, các request vào keystone sẽ thông qua httpd. Do vậy cần cấu hình httpd để keystone sử dụng.
 
-Sửa cấu hình `httpd`, mở file `/etc/httpd/conf/httpd.conf` để thêm sau dòng 95 cấu hình bên dưới (hoắc sửa dòng 95 cũng được)
-
+Sửa cấu hình `httpd`, thay dòng `#ServerName www.example.com:80` bằng dòng `ServerName controller01`
 ```
-ServerName controller01
+sed -i 's/#ServerName www.example.com:80/ServerName controller01/g' /etc/httpd/conf/httpd.conf
 ```
 
 Tạo liên kết cho file `/usr/share/keystone/wsgi-keystone.conf`
@@ -828,6 +827,7 @@ mysql -uroot -pWelcome123 -e "CREATE DATABASE glance;
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'controller01' IDENTIFIED BY 'Welcome123';
 FLUSH PRIVILEGES;"
 ```
 
@@ -861,10 +861,6 @@ Cài đặt glance và các gói cần thiết.
 
 ```
 dnf install -y openstack-glance
-
-dnf install -y MySQL-python
-
-dnf install -y python-devel
 ```
 
 Sao lưu file cấu hình glance 
@@ -946,6 +942,7 @@ mysql -uroot -pWelcome123 -e "CREATE DATABASE placement;
 GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'controller01' IDENTIFIED BY 'Welcome123';
 FLUSH PRIVILEGES;"
 ```
 
@@ -1032,16 +1029,19 @@ mysql -uroot -pWelcome123 -e "CREATE DATABASE nova_api;
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'controller01' IDENTIFIED BY 'Welcome123';
 
 CREATE DATABASE nova;
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'controller01' IDENTIFIED BY 'Welcome123';
 
 CREATE DATABASE nova_cell0;
 GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'controller01' IDENTIFIED BY 'Welcome123';
 FLUSH PRIVILEGES;"
 ```
 
@@ -1320,6 +1320,7 @@ mysql -uroot -pWelcome123 -e "CREATE DATABASE neutron;
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'192.168.98.81' IDENTIFIED BY 'Welcome123';"
+GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'controller01' IDENTIFIED BY 'Welcome123';"
 ```
 
 Tạo project, user, endpoint cho neutron

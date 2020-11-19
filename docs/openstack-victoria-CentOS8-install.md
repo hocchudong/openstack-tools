@@ -1020,7 +1020,7 @@ systemctl restart httpd
 ```
 
 ### 3.2.11. Cài đặt và cấu hình Nova
-#### 3.2.11.1 Cài đặt nova trên Controller
+#### 3.2.11.1 Cài đặt nova trên Controller node
 
 Tạo các database, user, mật khẩu cho services nova
 
@@ -1082,7 +1082,8 @@ crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welco
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova_api
 crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova
-crudini --set /etc/nova/nova.conf api connection  mysql+pymysql://nova:Welcome123@192.168.98.81/nova
+crudini --set /etc/nova/nova.conf api auth_strategy keystone
+#crudini --set /etc/nova/nova.conf api connection  mysql+pymysql://nova:Welcome123@192.168.98.81/nova
 
 crudini --set /etc/nova/nova.conf keystone_authtoken www_authenticate_uri http://192.168.98.81:5000/
 crudini --set /etc/nova/nova.conf keystone_authtoken auth_url http://192.168.98.81:5000/
@@ -1189,12 +1190,13 @@ openstack compute service list
 Kết quả như sau là OK
 
 ```
-+----+----------------+-------------+----------+---------+-------+----------------------------+
-| ID | Binary         | Host        | Zone     | Status  | State | Updated At                 |
-+----+----------------+-------------+----------+---------+-------+----------------------------+
-|  1 | nova-scheduler | controller01 | internal | enabled | up    | 2019-12-26T09:38:55.000000 |
-|  3 | nova-conductor | controller01 | internal | enabled | up    | 2019-12-26T09:38:54.000000 |
-+----+----------------+-------------+----------+---------+-------+----------------------------+
+[root@controller01 ~]# openstack compute service list
++----+----------------+--------------+----------+---------+-------+----------------------------+
+| ID | Binary         | Host         | Zone     | Status  | State | Updated At                 |
++----+----------------+--------------+----------+---------+-------+----------------------------+
+|  4 | nova-conductor | controller01 | internal | enabled | up    | 2020-11-18T20:28:30.000000 |
+|  6 | nova-scheduler | controller01 | internal | enabled | up    | 2020-11-18T20:28:32.000000 |
++----+----------------+--------------+----------+---------+-------+----------------------------+
 ```
 
 #### 3.2.11.2 Cài đặt nova trên Compute
@@ -1204,7 +1206,7 @@ Thực hiện các bước này trên máy chủ `compute01`
 Cài đặt các gói của nova
 
 ```
-dnf install -y python-openstackclient openstack-selinux openstack-utils
+dnf install -y python-openstackclient openstack-selinux
 
 dnf install -y openstack-nova-compute
 ```

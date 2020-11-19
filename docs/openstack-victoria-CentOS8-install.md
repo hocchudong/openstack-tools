@@ -682,13 +682,14 @@ mysql -uroot -pWelcome123 -e "CREATE DATABASE keystone;
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'controller01' IDENTIFIED BY 'Welcome123';
 FLUSH PRIVILEGES;"
 ```
 
 Cài đặt keystone 
 
 ```
-dnf install openstack-keystone httpd mod_wsgi -y
+dnf install -y openstack-keystone python3-openstackclient httpd mod_ssl python3-mod_wsgi python3-oauth2client
 ```
 
 Sao lưu file cấu hình của keystone

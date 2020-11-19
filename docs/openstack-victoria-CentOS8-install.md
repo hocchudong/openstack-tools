@@ -355,7 +355,11 @@ systemctl restart chronyd.service
 Kiểm chứng lại xem thời gian được đồng bộ hay chưa. Nếu xuất hiện dấu `*` trong kết quả của lênh dưới là đã đồng bộ thành công.
 
 ```
-chronyc sources
+[root@network01 ~]# chronyc sources
+210 Number of sources = 1
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^* controller01                  4   6   377     1   -593ns[  +24us] +/-   12ms
 ```
 
 Kiểm tra lại thời gian sau khi đồng bộ
@@ -367,14 +371,21 @@ timedatectl
 Kết quả như bên dưới là ok.
 
 ```
-      Local time: Thu 2019-12-26 22:20:05 +07
-  Universal time: Thu 2019-12-26 15:20:05 UTC
-        RTC time: Thu 2019-12-26 15:20:05
-       Time zone: Asia/Ho_Chi_Minh (+07, +0700)
-     NTP enabled: yes
-NTP synchronized: yes
- RTC in local TZ: yes
-      DST active: n/a
+[root@network01 ~]# timedatectl
+               Local time: Wed 2020-11-18 17:10:12 +07
+           Universal time: Wed 2020-11-18 10:10:12 UTC
+                 RTC time: Wed 2020-11-18 10:10:11
+                Time zone: Asia/Ho_Chi_Minh (+07, +0700)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: yes
+
+Warning: The system is configured to read the RTC time in the local time zone.
+         This mode cannot be fully supported. It will create various problems
+         with time zone changes and daylight saving time adjustments. The RTC
+         time is never updated, it relies on external facilities to maintain it.
+         If at all possible, use RTC in UTC by calling
+         'timedatectl set-local-rtc 0'.
 
 ```
 
@@ -420,7 +431,11 @@ systemctl restart chronyd.service
 Kiểm chứng lại xem thời gian được đồng bộ hay chưa. Nếu xuất hiện dấu `*` trong kết quả của lênh dưới là đã đồng bộ thành công.
 
 ```
-chronyc sources
+[root@compute01 ~]# chronyc sources
+210 Number of sources = 1
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^* controller01                  4   6     7     0  +6548ns[  +43us] +/-   12ms
 ```
 
 Kiểm tra lại thời gian sau khi đồng bộ
@@ -432,15 +447,21 @@ timedatectl
 Kết quả như bên dưới là ok.
 
 ```
-      Local time: Thu 2019-12-26 22:20:05 +07
-  Universal time: Thu 2019-12-26 15:20:05 UTC
-        RTC time: Thu 2019-12-26 15:20:05
-       Time zone: Asia/Ho_Chi_Minh (+07, +0700)
-     NTP enabled: yes
-NTP synchronized: yes
- RTC in local TZ: yes
-      DST active: n/a
+[root@compute01 ~]# timedatectl
+               Local time: Wed 2020-11-18 17:11:39 +07
+           Universal time: Wed 2020-11-18 10:11:39 UTC
+                 RTC time: Wed 2020-11-18 10:11:39
+                Time zone: Asia/Ho_Chi_Minh (+07, +0700)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: yes
 
+Warning: The system is configured to read the RTC time in the local time zone.
+         This mode cannot be fully supported. It will create various problems
+         with time zone changes and daylight saving time adjustments. The RTC
+         time is never updated, it relies on external facilities to maintain it.
+         If at all possible, use RTC in UTC by calling
+         'timedatectl set-local-rtc 0'.
 ```
 
 
@@ -452,7 +473,7 @@ NTP synchronized: yes
 Cài đặt memcache
 
 ```
-dnf -y install memcached python-memcached
+dnf -y install memcached python3-memcached
 ```
 
 Sao lưu file cấu hình của memcache
@@ -484,7 +505,7 @@ systemctl restart memcached.service
 Cài đặt MariaDB
 
 ```
-dnf install mariadb mariadb-server python2-PyMySQL -y
+dnf module -y install mariadb:10.3
 ```
 
 Khai báo file cấu hình của MariaDB dành cho OpenStack
@@ -517,7 +538,10 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'Welcome123' WITH GRANT 
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.98.81' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'controller01' IDENTIFIED BY 'Welcome123' WITH GRANT OPTION ;FLUSH PRIVILEGES;
 DROP USER 'root'@'::1';
+
+exit
 ```
 
 ### 3.2.5. Cài đặt & cấu hình rabbitmq trên máy controller
@@ -547,16 +571,6 @@ rabbitmq-plugins enable rabbitmq_management
 systemctl restart rabbitmq-server
 ```
 
-Cấu hình trang quản lý rabbitmq trên UI
-
-```
-curl -O http://localhost:15672/cli/rabbitmqadmin
-
-chmod a+x rabbitmqadmin
-
-mv rabbitmqadmin /usr/sbin/
-```
-
 Khai báo tài khoản và mật khẩu cho rabbitmq
 
 ```
@@ -566,12 +580,9 @@ rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 
 rabbitmqctl set_user_tags openstack administrator
 	
-rabbitmqadmin list users
 ```
 
 Sau đó có thể đăng nhập vào UI của rabbitmq bằng URL `http://IP_MANAGER_CONTROLLER:15672` với user và mật khẩu ở trên để kiểm tra
-
-![Giao diện quản trị Rabbitmq](https://image.prntscr.com/image/f4j5ZTCcR_W3U9ZO9PzmhQ.png)
 
 Ta sẽ thấy được giao diện như bên dưới nếu đăng nhập thành công 
 
@@ -635,23 +646,26 @@ systemctl status etcd
 Kết quả như bên dưới là OK.
 
 ```
+[root@controller01 ~]# systemctl status etcd
 ● etcd.service - Etcd Server
    Loaded: loaded (/usr/lib/systemd/system/etcd.service; enabled; vendor preset: disabled)
-   Active: active (running) since Wed 2019-12-25 21:28:57 +07; 3s ago
- Main PID: 14392 (etcd)
+   Active: active (running) since Wed 2020-11-18 23:38:07 +07; 3s ago
+ Main PID: 25769 (etcd)
+    Tasks: 10 (limit: 23977)
+   Memory: 20.7M
    CGroup: /system.slice/etcd.service
-           └─14392 /usr/bin/etcd --name=controller01 --data-dir=/var/lib/etcd/default.etcd --listen-client-urls=http://192.168.98.81:2379
+           └─25769 /usr/bin/etcd --name=controller01 --data-dir=/var/lib/etcd/default.etcd --listen-client-urls>
 
-Dec 25 21:28:57 controller01 etcd[14392]: af176767531bba91 received MsgVoteResp from af176767531bba91 at term 2
-Dec 25 21:28:57 controller01 etcd[14392]: af176767531bba91 became leader at term 2
-Dec 25 21:28:57 controller01 etcd[14392]: raft.node: af176767531bba91 elected leader af176767531bba91 at term 2
-Dec 25 21:28:57 controller01 etcd[14392]: published {Name:controller01 ClientURLs:[http://192.168.98.81:2379]} to cluster 39e2d6f9b633ec98
-Dec 25 21:28:57 controller01 etcd[14392]: setting up the initial cluster version to 3.3
-Dec 25 21:28:57 controller01 etcd[14392]: ready to serve client requests
-Dec 25 21:28:57 controller01 etcd[14392]: serving insecure client requests on 192.168.98.81:2379, this is strongly discouraged!
-Dec 25 21:28:57 controller01 systemd[1]: Started Etcd Server.
-Dec 25 21:28:57 controller01 etcd[14392]: set the initial cluster version to 3.3
-Dec 25 21:28:57 controller01 etcd[14392]: enabled capabilities for version 3.3
+Nov 18 23:38:07 controller01 etcd[25769]: 9eef34a33104c116 received MsgVoteResp from 9eef34a33104c116 at term 2
+Nov 18 23:38:07 controller01 etcd[25769]: 9eef34a33104c116 became leader at term 2
+Nov 18 23:38:07 controller01 etcd[25769]: raft.node: 9eef34a33104c116 elected leader 9eef34a33104c116 at term 2
+Nov 18 23:38:07 controller01 etcd[25769]: published {Name:controller01 ClientURLs:[http://192.168.98.81:2379]} >
+Nov 18 23:38:07 controller01 etcd[25769]: setting up the initial cluster version to 3.2
+Nov 18 23:38:07 controller01 etcd[25769]: ready to serve client requests
+Nov 18 23:38:07 controller01 etcd[25769]: set the initial cluster version to 3.2
+Nov 18 23:38:07 controller01 etcd[25769]: enabled capabilities for version 3.2
+Nov 18 23:38:07 controller01 etcd[25769]: serving insecure client requests on 192.168.98.81:2379, this is stron>
+Nov 18 23:38:07 controller01 systemd[1]: Started Etcd Server.
 ```
 
 ### 3.2.7. Cài đặt và cấu hình Keystone

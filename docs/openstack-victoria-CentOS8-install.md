@@ -1288,11 +1288,12 @@ openstack compute service list --service nova-compute
 Kết quả ta sẽ thấy như bên dưới là ok.
 
 ```
-+----+--------------+----------+------+---------+-------+----------------------------+
-| ID | Binary       | Host     | Zone | Status  | State | Updated At                 |
-+----+--------------+----------+------+---------+-------+----------------------------+
-|  6 | nova-compute | compute01 | nova | enabled | up    | 2019-12-26T15:52:36.000000 |
-+----+--------------+----------+------+---------+-------+----------------------------+
+[root@controller01 ~]# openstack compute service list --service nova-compute
++----+--------------+-----------+------+---------+-------+------------+
+| ID | Binary       | Host      | Zone | Status  | State | Updated At |
++----+--------------+-----------+------+---------+-------+------------+
+|  8 | nova-compute | compute01 | nova | enabled | up    | None       |
++----+--------------+-----------+------+---------+-------+------------+
 ```
 
 Thực hiện add nocde compute vào CELL
@@ -1310,6 +1311,19 @@ Getting computes from cell 'cell1': d16d0f3c-a3ba-493a-8885-ebae73bd3bf5
 Checking host mapping for compute host 'compute01': d6c24463-a6f1-4457-848b-e1f83cc2fde8
 Creating host mapping for compute host 'compute01': d6c24463-a6f1-4457-848b-e1f83cc2fde8
 Found 1 unmapped computes in cell: d16d0f3c-a3ba-493a-8885-ebae73bd3bf5
+```
+
+Kiểm tra dịch vụ nova sau khi hoàn tất bằng lệnh `openstack compute service list`, kết quả như sau là OK.
+
+```
+[root@controller01 ~]# openstack compute service list
++----+----------------+--------------+----------+---------+-------+----------------------------+
+| ID | Binary         | Host         | Zone     | Status  | State | Updated At                 |
++----+----------------+--------------+----------+---------+-------+----------------------------+
+|  4 | nova-conductor | controller01 | internal | enabled | up    | 2020-11-18T20:42:30.000000 |
+|  6 | nova-scheduler | controller01 | internal | enabled | up    | 2020-11-18T20:42:33.000000 |
+|  8 | nova-compute   | compute01    | nova     | enabled | up    | 2020-11-18T20:42:33.000000 |
++----+----------------+--------------+----------+---------+-------+----------------------------+
 ```
 
 ### 3.2.12. Cài đặt và cấu hình Neutron

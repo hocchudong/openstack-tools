@@ -1754,7 +1754,11 @@ systemctl enable --now neutron-openvswitch-agent
 +--------------------------------------+--------------------+--------------+-------------------+-------+-------+---------------------------+
 ```
 
-# 4. Hướng dẫn sử dụng 
+# 4. Hướng dẫn tạo VM để kiểm chứng hoạt động của OpenStack
+
+## Khai báo các tài nguyên cần thiết để tạo VM.
+
+
 - Khai báo provider network 
 
 ```
@@ -1762,18 +1766,15 @@ openstack network create \
 --share \
 --provider-physical-network physnet1 \
 --provider-network-type flat --external ext_net
+```
 
+- Khai báo subnet cho provider network 
 
+```
 openstack subnet create subnet1-ext --network ext_net \
 --project 8787620b73564feb972158269edc2f4b --subnet-range 192.168.64.0/24 \
 --allocation-pool start=192.168.64.200,end=192.168.64.220 \
 --gateway 192.168.64.1 --dns-nameserver 8.8.8.8
-```
-
-- Tạo router 
-
-```
-openstack router create router01
 ```
 
 - Tạo private network 
@@ -1788,6 +1789,12 @@ openstack network create int_net --provider-network-type vxlan
 openstack subnet create subnet1 --network int_net \
 --subnet-range 192.168.23.0/24 --gateway 192.168.23.1 \
 --dns-nameserver 8.8.8.8
+```
+
+- Tạo router 
+
+```
+openstack router create router01
 ```
 
 - Gắn private network với router vừa tạo ở trên 
@@ -1839,7 +1846,7 @@ openstack server list
 +--------------------------------------+------+--------+---------------------------+--------+---------+
 | ID                                   | Name | Status | Networks                  | Image  | Flavor  |
 +--------------------------------------+------+--------+---------------------------+--------+---------+
-| 549d136e-d549-47de-a5df-bc6d56396862 | vm01 | ACTIVE | sharednet1=192.168.64.207 | cirros | m1.tiny |
+| 549d136e-d549-47de-a5df-bc6d56396862 | vm01 | ACTIVE | ext_net=192.168.64.21     | cirros | m1.tiny |
 +--------------------------------------+------+--------+---------------------------+--------+---------+
 ```
 

@@ -1569,7 +1569,9 @@ Sửa file cấu hình của `/etc/neutron/plugins/ml2/ml2_conf.ini`
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,gre,vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security     
+     
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks physnet1          
 ```
 
 Sửa file cấu hình của  `/etc/neutron/plugins/ml2/openvswitch_agent.ini`
@@ -1577,6 +1579,9 @@ Sửa file cấu hình của  `/etc/neutron/plugins/ml2/openvswitch_agent.ini`
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup firewall_driver openvswitch
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_security_group true
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_ipset true
+
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini ovs bridge_mappings physnet1:br-eth1
+
 ```
 
 Tạo liên kết file cho `/etc/neutron/plugins/ml2/ml2_conf.ini`
@@ -1593,6 +1598,10 @@ systemctl enable --now openvswitch
 Tạo bridge
 ```
 ovs-vsctl add-br br-int
+
+ovs-vsctl add-br br-eth1
+
+ovs-vsctl add-port br-eth1 eth1
 ```
 
 Khởi động lại các service của neutron trên node network.
@@ -1654,7 +1663,9 @@ Sửa file cấu hình của `/etc/neutron/plugins/ml2/ml2_conf.ini`
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,gre,vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security
+          
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks  physnet1 
 ```
 
 Sửa file cấu hình của  `/etc/neutron/plugins/ml2/openvswitch_agent.ini`
@@ -1662,6 +1673,8 @@ Sửa file cấu hình của  `/etc/neutron/plugins/ml2/openvswitch_agent.ini`
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup firewall_driver openvswitch
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_security_group true
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_ipset true
+
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini ovs bridge_mappings physnet1:br-eth1
 ```
 
 
@@ -1694,7 +1707,11 @@ ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 systemctl enable --now openvswitch
  
 ovs-vsctl add-br br-int
- 
+
+ovs-vsctl add-br br-eth1
+
+ovs-vsctl add-port br-eth1 eth1
+
 systemctl restart openstack-nova-compute
 	
 systemctl enable --now neutron-openvswitch-agent

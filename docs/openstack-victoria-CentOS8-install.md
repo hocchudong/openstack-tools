@@ -1,4 +1,4 @@
-# Hướng dẫn cài đặt OpenStack Victoria trên CenOS 8
+# Hướng dẫn cài đặt OpenStack Victoria trên CentOS 8
 
 # 1. Mô hình
 

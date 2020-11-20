@@ -1331,7 +1331,7 @@ Kiểm tra dịch vụ nova sau khi hoàn tất bằng lệnh `openstack compute
 ```
 
 ### 3.2.12. Cài đặt và cấu hình Neutron
-### 3.2.12.1 Cài đặt và cấu hình Neutron trên Controller.
+### 3.2.12.1 Cài đặt và cấu hình Neutron trên node Controller.
 
 Tạo database cho neutron
 
@@ -1445,7 +1445,13 @@ Sửa file cấu hình của `/etc/neutron/plugins/ml2/ml2_conf.ini`
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,gre,vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security      
+    
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks physnet1
+
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vxlan vni_ranges 1:1000
+
+ 
 ```
 
 
@@ -1571,7 +1577,10 @@ crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxl
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security     
      
-crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks physnet1          
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks physnet1
+
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vxlan vni_ranges 1:1000
+     
 ```
 
 Sửa file cấu hình của  `/etc/neutron/plugins/ml2/openvswitch_agent.ini`
@@ -1581,7 +1590,10 @@ crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enabl
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_ipset true
 
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini ovs bridge_mappings physnet1:br-eth1
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini ovs local_ip 192.168.98.91
 
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini agent tunnel_types vxlan
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini agent prevent_arp_spoofing True
 ```
 
 Tạo liên kết file cho `/etc/neutron/plugins/ml2/ml2_conf.ini`
@@ -1666,6 +1678,9 @@ crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvs
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security
           
 crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_flat flat_networks  physnet1 
+
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2_type_vxlan vni_ranges 1:1000
+
 ```
 
 Sửa file cấu hình của  `/etc/neutron/plugins/ml2/openvswitch_agent.ini`
@@ -1675,6 +1690,10 @@ crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enabl
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_ipset true
 
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini ovs bridge_mappings physnet1:br-eth1
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini ovs local_ip 192.168.98.101
+
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini agent tunnel_types vxlan
+crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini agent prevent_arp_spoofing True
 ```
 
 
@@ -1736,19 +1755,51 @@ systemctl enable --now neutron-openvswitch-agent
 ```
 
 # 4. Hướng dẫn sử dụng 
-- Khai báo network 
+- Khai báo provider network 
 
 ```
-projectID=$(openstack project list | grep service | awk '{print $2}')
+openstack network create \
+--share \
+--provider-physical-network physnet1 \
+--provider-network-type flat --external ext_net
 
-openstack network create --project $projectID \
---share --provider-network-type flat --provider-physical-network physnet1 sharednet1
 
-
-openstack subnet create subnet1 --network sharednet1 \
+openstack subnet create subnet1-ext --network ext_net \
 --project 8787620b73564feb972158269edc2f4b --subnet-range 192.168.64.0/24 \
 --allocation-pool start=192.168.64.200,end=192.168.64.220 \
 --gateway 192.168.64.1 --dns-nameserver 8.8.8.8
+```
+
+- Tạo router 
+
+```
+openstack router create router01
+```
+
+- Tạo private network 
+
+```
+openstack network create int_net --provider-network-type vxlan
+```
+
+- Tạo subnet cho private network 
+
+```
+openstack subnet create subnet1 --network int_net \
+--subnet-range 192.168.23.0/24 --gateway 192.168.23.1 \
+--dns-nameserver 8.8.8.8
+```
+
+- Gắn private network với router vừa tạo ở trên 
+
+```
+openstack router add subnet router01 subnet1
+```
+
+- Gắn provider network với router vừa tạo ở trên 
+
+```
+openstack router set router01 --external-gateway ext_net
 ```
 
 Tạo securitygroup 
@@ -1769,12 +1820,12 @@ openstack security group rule create --protocol tcp --dst-port 22:22 secgroup01
 openstack flavor create --id 0 --vcpus 1 --ram 512 --disk 5 m1.tiny
 ```
 
-- Tạo VM gắn với provider network
+### Tạo vm gắn với provider network 
 
 ```
-netID=$(openstack network list | grep sharednet1 | awk '{ print $2 }')
+netID=$(openstack network list | grep ext_net | awk '{ print $2 }')
 
-openstack server create --flavor m1.small --image cirros --security-group secgroup01 --nic net-id=$netID vm01
+openstack server create --flavor m1.tiny --image cirros --security-group secgroup01 --nic net-id=$netID vm01
 ```
 
 - Kiểm tra lại danh sách vm
@@ -1793,6 +1844,103 @@ openstack server list
 ```
 
 Thực hiện ping và ssh với tài khoản `cirros` và mật khẩu `gocubsgo`.
+
+### Tạo vm gắn với private network 
+
+- Tạo VM gắn với private network (self-service)
+
+```
+netID=$(openstack network list | grep int_net | awk '{ print $2 }')
+
+openstack server create --flavor m1.tiny --image cirros --security-group secgroup01 --nic net-id=$netID vm02
+```
+
+- Kiểm tra lại xem server vm02 đã tạo được hay chưa, nếu tạo được kết quả tương tự như bên dưới
+
+```
+[root@controller01 ~]# openstack server list
++--------------------------------------+------+--------+------------------------+--------+---------+
+| ID                                   | Name | Status | Networks               | Image  | Flavor  |
++--------------------------------------+------+--------+------------------------+--------+---------+
+| d3adc40e-d083-4be8-88e9-292fa74dfcbd | vm02 | ACTIVE | int_net=192.168.23.145 | cirros | m1.tiny |
+| 80ec0a88-a624-4ce4-a16f-d9646d30fcaa | vm01 | ACTIVE | ext_net=192.168.64.210 | cirros | m1.tiny |
++--------------------------------------+------+--------+------------------------+--------+---------+
+```
+
+Lưu ý: Lúc này `vm02` sẽ nhận IP của dải mạng private được khai báo trước đó là `192.168.23.0/24`, để có thể truy cập vào VM này từ bên ngoài, cần phải thực hiện thao tác floating IP.
+
+- Floating IP.
+
+```
+openstack floating ip create ext_net
+```
+
+Kết quả:
+
+```
+[root@controller01 ~]# openstack floating ip create ext_net
++---------------------+--------------------------------------+
+| Field               | Value                                |
++---------------------+--------------------------------------+
+| created_at          | 2020-11-20T02:16:42Z                 |
+| description         |                                      |
+| dns_domain          | None                                 |
+| dns_name            | None                                 |
+| fixed_ip_address    | None                                 |
+| floating_ip_address | 192.168.64.216                       |
+| floating_network_id | 82e1e759-394f-46ca-b13f-bbc73505cae9 |
+| id                  | b89b30d0-37c5-43a1-94f8-d4894e01f70e |
+| name                | 192.168.64.216                       |
+| port_details        | None                                 |
+| port_id             | None                                 |
+| project_id          | 56f915778f414f5b81733353121d7027     |
+| qos_policy_id       | None                                 |
+| revision_number     | 0                                    |
+| router_id           | None                                 |
+| status              | DOWN                                 |
+| subnet_id           | None                                 |
+| tags                | []                                   |
+| updated_at          | 2020-11-20T02:16:42Z                 |
++---------------------+--------------------------------------+
+```
+
+Sau kết quả lệnh trên thì ghi lại IP để sử dụng cho bước bên dưới.
+
+
+
+- Găn IP floating với VM02
+
+```
+openstack server add floating ip vm02 192.168.64.216
+```
+
+- Kiểm tra lại kết quả sau khi floating IP bằng lệnh `openstack server list`, ta thấy kết quả như bên dưới là thành công. 
+```
+[root@controller01 ~]# openstack server list
++--------------------------------------+------+--------+----------------------------------------+--------+---------+
+| ID                                   | Name | Status | Networks                               | Image  | Flavor  |
++--------------------------------------+------+--------+----------------------------------------+--------+---------+
+| d3adc40e-d083-4be8-88e9-292fa74dfcbd | vm02 | ACTIVE | int_net=192.168.23.145, 192.168.64.216 | cirros | m1.tiny |
+| 80ec0a88-a624-4ce4-a16f-d9646d30fcaa | vm01 | ACTIVE | ext_net=192.168.64.210                 | cirros | m1.tiny |
++--------------------------------------+------+--------+----------------------------------------+--------+---------+
+```
+
+Ping và ssh thử với tài khoản `cirros`, mật khẩu `gocubsgo` tới IP floating ở trên (192.168.64.216) để kiểm tra.
+
+```
+C:\Users\congto>ping 192.168.64.216
+
+Pinging 192.168.64.216 with 32 bytes of data:
+Reply from 192.168.64.216: bytes=32 time=17ms TTL=62
+Reply from 192.168.64.216: bytes=32 time=7ms TTL=62
+Reply from 192.168.64.216: bytes=32 time=8ms TTL=62
+Reply from 192.168.64.216: bytes=32 time=7ms TTL=62
+
+Ping statistics for 192.168.64.216:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 7ms, Maximum = 17ms, Average = 9ms
+```
 
 
 ## 4.2. Hướng dẫn tạo VM.

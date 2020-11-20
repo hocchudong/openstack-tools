@@ -1226,7 +1226,9 @@ crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welco
 crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.80.132
 crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
 crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
-
+crudini --set /etc/nova/nova.conf DEFAULT linuxnet_interface_driver nova.network.linux_net.LinuxOVSInterfaceDriver
+crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_is_fatal True
+crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_timeout 300
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova_api
 
@@ -1446,11 +1448,32 @@ Sửa file cấu hình của `/etc/neutron/plugins/ml2/ml2_conf.ini`
 	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
 	```
 
+
+Sửa file `/etc/nova/nova.conf`
+
+```
+crudini --set /etc/nova/nova.conf DEFAULT use_neutron True
+crudini --set /etc/nova/nova.conf DEFAULT linuxnet_interface_driver nova.network.linux_net.LinuxOVSInterfaceDriver
+crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+
+crudini --set /etc/nova/nova.conf neutron url http://192.168.98.81:9696
+crudini --set /etc/nova/nova.conf neutron auth_url http://192.168.98.81:5000
+crudini --set /etc/nova/nova.conf neutron auth_type password
+crudini --set /etc/nova/nova.conf neutron project_domain_name Default
+crudini --set /etc/nova/nova.conf neutron user_domain_name Default
+crudini --set /etc/nova/nova.conf neutron project_name service
+crudini --set /etc/nova/nova.conf neutron username neutron
+crudini --set /etc/nova/nova.conf neutron password Welcome123
+crudini --set /etc/nova/nova.conf neutron service_metadata_proxy True
+crudini --set /etc/nova/nova.conf neutron metadata_proxy_shared_secret Welcome123
+```
+
 Tạo liên kết
 
 ```
 ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
 ```
+
 
 Thiết lập database 
 
@@ -1459,10 +1482,13 @@ su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron
 ```
 
+
 Khởi động và kích hoạt dịch vụ neutron
 
 ```
 systemctl enable --now neutron-server neutron-metadata-agent
+
+systemctl restart openstack-nova-api 
 ```
 
 ### 3.2.12.2 Cài đặt và cấu hìn Neutron trên node Network
@@ -1591,27 +1617,6 @@ Sao lưu file cấu hình của neutron trên node compute
 cp /etc/neutron/neutron.conf /etc/neutron/neutron.conf.org
 ```
 
-Khai báo bổ sung cho nova
-
-```
-crudini --set /etc/nova/nova.conf neutron url http://192.168.98.81:9696
-crudini --set /etc/nova/nova.conf neutron auth_url http://192.168.98.81:5000
-crudini --set /etc/nova/nova.conf neutron auth_type password
-crudini --set /etc/nova/nova.conf neutron project_domain_name Default
-crudini --set /etc/nova/nova.conf neutron user_domain_name Default
-crudini --set /etc/nova/nova.conf neutron project_name service
-crudini --set /etc/nova/nova.conf neutron username neutron
-crudini --set /etc/nova/nova.conf neutron password Welcome123
-crudini --set /etc/nova/nova.conf neutron service_metadata_proxy True
-crudini --set /etc/nova/nova.conf neutron metadata_proxy_shared_secret metadata_secret
-
-crudini --set /etc/nova/nova.conf DEFAULT use_neutron True
-crudini --set /etc/nova/nova.conf DEFAULT linuxnet_interface_driver nova.network.linux_net.LinuxOVSInterfaceDriver
-crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
-crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_is_fatal True
-crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_timeout 300
-```
-
 Sửa file cấu hình của neutron `/etc/neutron/neutron.conf`
 
 ```
@@ -1659,6 +1664,41 @@ crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enabl
 crudini --set /etc/neutron/plugins/ml2/openvswitch_agent.ini securitygroup enable_ipset true
 ```
 
+
+Khai báo bổ sung cho nova
+
+```
+crudini --set /etc/nova/nova.conf neutron url http://192.168.98.81:9696
+crudini --set /etc/nova/nova.conf neutron auth_url http://192.168.98.81:5000
+crudini --set /etc/nova/nova.conf neutron auth_type password
+crudini --set /etc/nova/nova.conf neutron project_domain_name Default
+crudini --set /etc/nova/nova.conf neutron user_domain_name Default
+crudini --set /etc/nova/nova.conf neutron project_name service
+crudini --set /etc/nova/nova.conf neutron username neutron
+crudini --set /etc/nova/nova.conf neutron password Welcome123
+crudini --set /etc/nova/nova.conf neutron service_metadata_proxy True
+crudini --set /etc/nova/nova.conf neutron metadata_proxy_shared_secret Welcome123
+
+crudini --set /etc/nova/nova.conf DEFAULT use_neutron True
+crudini --set /etc/nova/nova.conf DEFAULT linuxnet_interface_driver nova.network.linux_net.LinuxOVSInterfaceDriver
+crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_is_fatal True
+crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_timeout 300
+```
+
+Khởi động Neutron và restart nova trên compute node
+
+```
+ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
+
+systemctl enable --now openvswitch
+ 
+ovs-vsctl add-br br-int
+ 
+systemctl restart openstack-nova-compute
+	
+systemctl enable --now neutron-openvswitch-agent
+```
 
 
 

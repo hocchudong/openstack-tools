@@ -1079,7 +1079,7 @@ crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
 crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 crudini --set /etc/nova/nova.conf DEFAULT linuxnet_interface_driver nova.network.linux_net.LinuxOVSInterfaceDriver
 crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
-crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81:5672/
+crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova_api
 crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova
@@ -1423,30 +1423,30 @@ crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neut
 
 Khai báo sysctl 
 
-	```
-	echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
-	echo 'net.bridge.bridge-nf-call-ip6tables = 1' >> /etc/sysctl.conf
-	modprobe br_netfilter
-	/sbin/sysctl -p
-	```
+```
+echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
+echo 'net.bridge.bridge-nf-call-ip6tables = 1' >> /etc/sysctl.conf
+modprobe br_netfilter
+/sbin/sysctl -p
+```
 
 
 Khai báo cho file `/etc/neutron/metadata_agent.ini`
 
-	```
-	crudini --set /etc/neutron/metadata_agent.ini DEFAULT nova_metadata_host 192.168.98.81
-	crudini --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secret Welcome123
-	crudini --set /etc/neutron/metadata_agent.ini DEFAULT memcache_servers 192.168.98.81:11211
-	```
+```
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT nova_metadata_host 192.168.98.81
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secret Welcome123
+crudini --set /etc/neutron/metadata_agent.ini DEFAULT memcache_servers 192.168.98.81:11211
+```
 
 Sửa file cấu hình của `/etc/neutron/plugins/ml2/ml2_conf.ini`
 
-	```
-	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,gre,vxlan
-	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
-	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
-	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
-	```
+```
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,gre,vxlan
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
+crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
+```
 
 
 Sửa file `/etc/nova/nova.conf`

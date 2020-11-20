@@ -1717,10 +1717,83 @@ systemctl restart openstack-nova-compute
 systemctl enable --now neutron-openvswitch-agent
 ```
 
+### Kiểm tra trạng thái của các agent của network
 
+- Đứng trên controller node và thực hiện lệnh `openstack network agent list`
+
+```
+[root@controller01 nova]# openstack network agent list
++--------------------------------------+--------------------+--------------+-------------------+-------+-------+---------------------------+
+| ID                                   | Agent Type         | Host         | Availability Zone | Alive | State | Binary                    |
++--------------------------------------+--------------------+--------------+-------------------+-------+-------+---------------------------+
+| 4bb0cb83-d81a-40b2-96d2-39afed2fa3d8 | Open vSwitch agent | compute01    | None              | :-)   | UP    | neutron-openvswitch-agent |
+| 5ea00245-61b6-4905-8771-595c1811da10 | Metadata agent     | network01    | None              | :-)   | UP    | neutron-metadata-agent    |
+| 675fa996-474d-4fe2-9d07-72e28348ce6f | DHCP agent         | network01    | nova              | :-)   | UP    | neutron-dhcp-agent        |
+| 6be52fd9-e0c7-4210-8012-3fd0e1ea14d4 | Metadata agent     | controller01 | None              | :-)   | UP    | neutron-metadata-agent    |
+| 862b6066-8b7d-409d-9157-5f771f05ed59 | L3 agent           | network01    | nova              | :-)   | UP    | neutron-l3-agent          |
+| aa09d739-7123-473d-9cfa-b094c8b85bbd | Open vSwitch agent | network01    | None              | :-)   | UP    | neutron-openvswitch-agent |
++--------------------------------------+--------------------+--------------+-------------------+-------+-------+---------------------------+
+```
 
 # 4. Hướng dẫn sử dụng 
-## 4.1. Khai báo network, router 
+- Khai báo network 
+
+```
+projectID=$(openstack project list | grep service | awk '{print $2}')
+
+openstack network create --project $projectID \
+--share --provider-network-type flat --provider-physical-network physnet1 sharednet1
+
+
+openstack subnet create subnet1 --network sharednet1 \
+--project 8787620b73564feb972158269edc2f4b --subnet-range 192.168.64.0/24 \
+--allocation-pool start=192.168.64.200,end=192.168.64.220 \
+--gateway 192.168.64.1 --dns-nameserver 8.8.8.8
+```
+
+Tạo securitygroup 
+
+```
+
+openstack security group create secgroup01
+
+openstack security group rule create --protocol icmp --ingress secgroup01
+
+openstack security group rule create --protocol tcp --dst-port 22:22 secgroup01
+
+```
+
+- Khai báo flavor
+
+```
+openstack flavor create --id 0 --vcpus 1 --ram 512 --disk 5 m1.tiny
+```
+
+- Tạo VM gắn với provider network
+
+```
+netID=$(openstack network list | grep sharednet1 | awk '{ print $2 }')
+
+openstack server create --flavor m1.small --image cirros --security-group secgroup01 --nic net-id=$netID vm01
+```
+
+- Kiểm tra lại danh sách vm
+
+```
+openstack server list
+```
+
+```
+[root@controller01 nova]# openstack server list
++--------------------------------------+------+--------+---------------------------+--------+---------+
+| ID                                   | Name | Status | Networks                  | Image  | Flavor  |
++--------------------------------------+------+--------+---------------------------+--------+---------+
+| 549d136e-d549-47de-a5df-bc6d56396862 | vm01 | ACTIVE | sharednet1=192.168.64.207 | cirros | m1.tiny |
++--------------------------------------+------+--------+---------------------------+--------+---------+
+```
+
+Thực hiện ping và ssh với tài khoản `cirros` và mật khẩu `gocubsgo`.
+
 
 ## 4.2. Hướng dẫn tạo VM.
 

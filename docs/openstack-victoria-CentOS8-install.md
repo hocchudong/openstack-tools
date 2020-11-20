@@ -1369,11 +1369,11 @@ dnf install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-openvsw
 Sao lưu các file cấu hình của neutron
 
 ```
-cp  /etc/neutron/neutron.conf /etc/neutron/neutron.conf.orig
+cp /etc/neutron/neutron.conf /etc/neutron/neutron.conf.orig
 
 cp /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugins/ml2/ml2_conf.ini.orig
 
-cp  /etc/neutron/plugins/ml2/linuxbridge_agent.ini /etc/neutron/plugins/ml2/linuxbridge_agent.ini.orig 
+cp etc/neutron/plugins/ml2/linuxbridge_agent.ini /etc/neutron/plugins/ml2/linuxbridge_agent.ini.orig 
 
 cp /etc/neutron/plugins/ml2/openvswitch_agent.ini /etc/neutron/plugins/ml2/openvswitch_agent.ini.orig
 

@@ -1942,6 +1942,8 @@ Approximate round trip times in milli-seconds:
     Minimum = 7ms, Maximum = 17ms, Average = 9ms
 ```
 
+- Kết quả SSH: http://prntscr.com/vmpass
+
 
 ## 4.2. Hướng dẫn tạo VM.
 

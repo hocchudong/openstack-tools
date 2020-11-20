@@ -1337,8 +1337,8 @@ Tạo database cho neutron
 mysql -uroot -pWelcome123 -e "CREATE DATABASE neutron;
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY 'Welcome123';
 GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY 'Welcome123';
-GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'192.168.98.81' IDENTIFIED BY 'Welcome123';"
-GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'controller01' IDENTIFIED BY 'Welcome123';"
+GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'controller01' IDENTIFIED BY 'Welcome123'; 
 FLUSH PRIVILEGES;"
 ```
 
@@ -1421,12 +1421,30 @@ crudini --set /etc/neutron/neutron.conf oslo_concurrency lock_path /var/lib/neut
 
 Khai báo sysctl 
 
-```
-echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
-echo 'net.bridge.bridge-nf-call-ip6tables = 1' >> /etc/sysctl.conf
-modprobe br_netfilter
-/sbin/sysctl -p
-```
+	```
+	echo 'net.bridge.bridge-nf-call-iptables = 1' >> /etc/sysctl.conf
+	echo 'net.bridge.bridge-nf-call-ip6tables = 1' >> /etc/sysctl.conf
+	modprobe br_netfilter
+	/sbin/sysctl -p
+	```
+
+
+Khai báo cho file `/etc/neutron/metadata_agent.ini`
+
+	```
+	crudini --set /etc/neutron/metadata_agent.ini DEFAULT nova_metadata_host 192.168.98.81
+	crudini --set /etc/neutron/metadata_agent.ini DEFAULT metadata_proxy_shared_secret Welcome123
+	crudini --set /etc/neutron/metadata_agent.ini DEFAULT memcache_servers 192.168.98.81:11211
+	```
+
+Sửa file cấu hình của `/etc/neutron/plugins/ml2/ml2_conf.ini`
+
+	```
+	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 type_drivers flat,vlan,gre,vxlan
+	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 tenant_network_types vxlan
+	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 mechanism_drivers openvswitch
+	crudini --set /etc/neutron/plugins/ml2/ml2_conf.ini ml2 extension_drivers port_security          
+	```
 
 Tạo liên kết
 

@@ -213,7 +213,7 @@ init 6
 - Ping ra gateway của các interface
 - Ping tới các IP của các node trong topo.
 
-## 3.2. Cài đặt OpenStack
+## 3.2. Cài đặt OpenStack cơ bản
 
 Thực hiện cài đặt các gói trên OpenStack
 
@@ -1331,7 +1331,7 @@ Kiểm tra dịch vụ nova sau khi hoàn tất bằng lệnh `openstack compute
 ```
 
 ### 3.2.12. Cài đặt và cấu hình Neutron
-### 3.2.12.1 Cài đặt và cấu hình Neutron trên node Controller.
+#### 3.2.12.1 Cài đặt và cấu hình Neutron trên node Controller.
 
 Tạo database cho neutron
 
@@ -1497,7 +1497,7 @@ systemctl enable --now neutron-server neutron-metadata-agent
 systemctl restart openstack-nova-api 
 ```
 
-### 3.2.12.2 Cài đặt và cấu hìn Neutron trên node Network
+#### 3.2.12.2 Cài đặt và cấu hìn Neutron trên node Network
 
 Chuyển sang node network và thực hiện các bước sau
 
@@ -1624,7 +1624,7 @@ systemctl enable --now neutron-$service
 done
 ```
 
-### 3.2.12.3 Cài đặt và cấu hình Neutron trên node Compute
+#### 3.2.12.3 Cài đặt và cấu hình Neutron trên node Compute
 
 Cài đặt neutron
 
@@ -1736,7 +1736,7 @@ systemctl restart openstack-nova-compute
 systemctl enable --now neutron-openvswitch-agent
 ```
 
-### Kiểm tra trạng thái của các agent của network
+#### Kiểm tra trạng thái của các agent của network
 
 - Đứng trên controller node và thực hiện lệnh `openstack network agent list`
 
@@ -1753,6 +1753,132 @@ systemctl enable --now neutron-openvswitch-agent
 | aa09d739-7123-473d-9cfa-b094c8b85bbd | Open vSwitch agent | network01    | None              | :-)   | UP    | neutron-openvswitch-agent |
 +--------------------------------------+--------------------+--------------+-------------------+-------+-------+---------------------------+
 ```
+
+### 3.2.13. Cài đặt và cấu hình Cinder
+
+Trong mô hình này chúng ta sử dụng cinder trên tất cả node controller, thay vì tách node storage dành cho cinder-volume.
+
+- Trước tiên cần thiết lập LVM đối với máy controller, trong lab này sẽ cấu hình ổ thứ hai (/dev/vdb) làm LVM để sau này cấp phát các volume 
+
+```
+dnf -y install lvm2
+
+systemctl enable lvm2-lvmetad.service
+systemctl start lvm2-lvmetad.service
+
+pvcreate /dev/vdb
+vgcreate cinder-volumes /dev/vdb
+
+cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
+#sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
+# fix filter cua lvm tren CentOS 7.4, chen vao dong 141 cua file /etc/lvm/lvm.conf
+sed -i '141i\        filter = [ "a/sda/", "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
+```
+
+- Tạo database cho cinder
+
+```
+mysql -uroot -pWelcome123  -e "CREATE DATABASE cinder;
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'controller01' IDENTIFIED BY 'Welcome123';
+
+FLUSH PRIVILEGES;"
+```
+
+- Tạo endpoint cho cinder
+
+```
+openstack user create  cinder --domain default --password Welcome123
+openstack role add --project service --user cinder admin
+
+openstack service create --name cinderv2 --description "OpenStack Block Storage" volumev2
+openstack service create --name cinderv3 --description "OpenStack Block Storage" volumev3
+
+openstack endpoint create --region RegionOne volumev2 public http://192.168.98.81:8776/v2/%\(tenant_id\)s
+openstack endpoint create --region RegionOne volumev2 internal http://192.168.98.81:8776/v2/%\(tenant_id\)s
+openstack endpoint create --region RegionOne volumev2 admin http://192.168.98.81:8776/v2/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne volumev3 public http://192.168.98.81:8776/v3/%\(tenant_id\)s
+openstack endpoint create --region RegionOne volumev3 internal http://192.168.98.81:8776/v3/%\(tenant_id\)s
+openstack endpoint create --region RegionOne volumev3 admin http://192.168.98.81:8776/v3/%\(tenant_id\)s
+```
+
+- Cài đặt cinder 
+
+```
+dnf -y install openstack-cinder targetcli lvm2 device-mapper-persistent-data
+```
+
+- Sao lưu file cấu hình của cinder 
+
+```
+cp /etc/cinder/cinder.conf /etc/cinder/cinder.conf.orig
+```
+
+- Cấu hình cho cinder
+
+```
+crudini --set /etc/cinder/cinder.conf DEFAULT rpc_backend rabbit
+crudini --set /etc/cinder/cinder.conf DEFAULT auth_strategy keystone
+crudini --set /etc/cinder/cinder.conf DEFAULT my_ip 192.168.98.81
+crudini --set /etc/cinder/cinder.conf DEFAULT control_exchange cinder
+crudini --set /etc/cinder/cinder.conf DEFAULT enable_v3_api True
+crudini --set /etc/cinder/cinder.conf DEFAULT osapi_volume_listen  \$my_ip
+crudini --set /etc/cinder/cinder.conf DEFAULT control_exchange cinder
+crudini --set /etc/cinder/cinder.conf DEFAULT glance_api_servers http://192.168.98.81:9292
+crudini --set /etc/cinder/cinder.conf DEFAULT enabled_backends lvm
+crudini --set /etc/cinder/cinder.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
+
+
+crudini --set /etc/cinder/cinder.conf database connection  mysql+pymysql://cinder:Welcome123@192.168.98.81/cinder
+
+crudini --set /etc/cinder/cinder.conf keystone_authtoken www_authenticate_uri http://192.168.98.81:5000
+crudini --set /etc/cinder/cinder.conf keystone_authtoken auth_url http://192.168.98.81:5000
+crudini --set /etc/cinder/cinder.conf keystone_authtoken memcached_servers 192.168.98.81:11211
+crudini --set /etc/cinder/cinder.conf keystone_authtoken auth_type password
+crudini --set /etc/cinder/cinder.conf keystone_authtoken project_domain_name Default
+crudini --set /etc/cinder/cinder.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/cinder/cinder.conf keystone_authtoken project_name service
+crudini --set /etc/cinder/cinder.conf keystone_authtoken username cinder
+crudini --set /etc/cinder/cinder.conf keystone_authtoken password Welcome123
+
+crudini --set /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_host 192.168.98.81
+crudini --set /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_port 5672
+crudini --set /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_userid openstack
+crudini --set /etc/cinder/cinder.conf oslo_messaging_rabbit rabbit_password Welcome123
+
+crudini --set /etc/cinder/cinder.conf oslo_concurrency lock_path /var/lib/cinder/tmp
+
+crudini --set /etc/cinder/cinder.conf oslo_messaging_notifications driver messagingv2
+
+
+crudini --set /etc/cinder/cinder.conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
+crudini --set /etc/cinder/cinder.conf lvm volume_group cinder-volumes
+crudini --set /etc/cinder/cinder.conf lvm iscsi_protocol iscsi
+crudini --set /etc/cinder/cinder.conf lvm iscsi_helper lioadm
+```
+
+- Bổ sung cấu hình cho nova trên node controller để sử dụng cinder
+
+```
+crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne
+```
+
+- Restart nova-api sau khi khai báo bổ sung xong nova 
+
+```
+systemctl restart openstack-nova-api.service
+```
+
+- Khởi động và kích hoạt các dịch vụ của cinder 
+
+```
+systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service
+systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service
+```
+
 
 # 4. Hướng dẫn tạo VM để kiểm chứng hoạt động của OpenStack
 
@@ -1952,8 +2078,7 @@ Approximate round trip times in milli-seconds:
 - Kết quả SSH: http://prntscr.com/vmpass
 
 
-## 4.2. Hướng dẫn tạo VM.
-
+## 
 
 
 

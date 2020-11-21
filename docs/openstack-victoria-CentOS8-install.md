@@ -778,6 +778,7 @@ export OS_PROJECT_DOMAIN_NAME=Default
 export OS_AUTH_URL=http://192.168.98.81:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
+export OS_VOLUME_API_VERSION=3
 EOF
 ```
 
@@ -1771,8 +1772,8 @@ vgcreate cinder-volumes /dev/vdb
 
 cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
 #sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
-# fix filter cua lvm tren CentOS 7.4, chen vao dong 141 cua file /etc/lvm/lvm.conf
-sed -i '141i\        filter = [ "a/sda/", "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
+# fix filter cua lvm tren CentOS 8.2, chen vao dong 146 cua file /etc/lvm/lvm.conf
+sed -i '146i\        filter = [ "a/vda/", "a/vdb/", "r/.*/"]' /etc/lvm/lvm.conf
 ```
 
 - Tạo database cho cinder
@@ -1808,7 +1809,7 @@ openstack endpoint create --region RegionOne volumev3 admin http://192.168.98.81
 - Cài đặt cinder 
 
 ```
-dnf -y install openstack-cinder targetcli lvm2 device-mapper-persistent-data
+dnf -y install openstack-cinder targetcli lvm2 device-mapper-persistent-data 
 ```
 
 - Sao lưu file cấu hình của cinder 
@@ -1872,11 +1873,16 @@ crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne
 systemctl restart openstack-nova-api.service
 ```
 
+- Đồng bộ DB cho cinder
+
+```
+su -s /bin/sh -c "cinder-manage db sync" cinder
+```
+
 - Khởi động và kích hoạt các dịch vụ của cinder 
 
 ```
-systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service
-systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service
+systemctl enable --now openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service 
 ```
 
 

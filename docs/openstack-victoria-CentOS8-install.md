@@ -1757,15 +1757,14 @@ systemctl enable --now neutron-openvswitch-agent
 
 ### 3.2.13. Cài đặt và cấu hình Cinder
 
-Trong mô hình này chúng ta sử dụng cinder trên tất cả node controller, thay vì tách node storage dành cho cinder-volume.
+Trong mô hình này thay vì tách node storage dành cho cinder-volume, chúng ta sẽ cài đặt tất cả các thành phần của cinder gồm: `cinder-api, cinder-scheduler, cinder-volume` trên tất cả node controller
 
 - Trước tiên cần thiết lập LVM đối với máy controller, trong lab này sẽ cấu hình ổ thứ hai (/dev/vdb) làm LVM để sau này cấp phát các volume 
 
 ```
-dnf -y install lvm2
+dnf -y install lvm2 targetcli lvm2 device-mapper-persistent-data 
 
-systemctl enable lvm2-lvmetad.service
-systemctl start lvm2-lvmetad.service
+systemctl enable --now lvm2-lvmetad.service targetcli
 
 pvcreate /dev/vdb
 vgcreate cinder-volumes /dev/vdb
@@ -1809,7 +1808,7 @@ openstack endpoint create --region RegionOne volumev3 admin http://192.168.98.81
 - Cài đặt cinder 
 
 ```
-dnf -y install openstack-cinder targetcli lvm2 device-mapper-persistent-data 
+dnf -y install openstack-cinder
 ```
 
 - Sao lưu file cấu hình của cinder 
@@ -1883,9 +1882,9 @@ crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne
 systemctl restart openstack-nova-compute
 ```
 
-Chuyển sang node controller và thực hiện các việc tiếp theo.
+Chuyển sang node controller và thực hiện các việc tiếp theo, hãy SSH vào node controller và thực hiện các lệnh dưới.
 
-- Bổ sung cấu hình cho nova trên node controller để sử dụng cinder, hãy SSH vào node controller và thực hiện các lệnh dưới.
+- Bổ sung cấu hình cho nova trên node controller để sử dụng cinder.
 
 ```
 crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne

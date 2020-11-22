@@ -1864,7 +1864,7 @@ crudini --set /etc/cinder/cinder.conf lvm target_ip_address 192.168.98.81
 ```
 
 
-Chuyển sang node compute và thực hiện các việc tiếp theo để tích hợp nova và cinder, bước này thực hiện trên node compute.
+Chuyển sang node compute và thực hiện các việc tiếp theo để tích hợp nova và cinder, hãy SS vào node compute và thực hiện theo các hướng dẫn dưới.
 
 ```
 dnf -y install targetcli 
@@ -1873,7 +1873,7 @@ systemctl enable --now  target.service
 ```
 
 ```
-crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne
+crudini --set /etc/nova/nova.conf cinder os_region_name RegionOne
 ```
 
 - Restart nova-compute sau khi khai báo bổ sung xong nova 

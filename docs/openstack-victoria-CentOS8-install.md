@@ -1757,18 +1757,28 @@ systemctl enable --now neutron-openvswitch-agent
 
 ### 3.2.13. Cài đặt và cấu hình Cinder
 
-Trong mô hình này thay vì tách node storage dành cho cinder-volume, chúng ta sẽ cài đặt tất cả các thành phần của cinder gồm: `cinder-api, cinder-scheduler, cinder-volume` trên tất cả node controller
+Trong mô hình này thay vì tách node storage dành cho `cinder-volume`, chúng ta sẽ cài đặt tất cả các thành phần của cinder gồm: `cinder-api, cinder-scheduler, cinder-volume` trên tất cả node controller
 
-- Trước tiên cần thiết lập LVM đối với máy controller, trong lab này sẽ cấu hình ổ thứ hai (/dev/vdb) làm LVM để sau này cấp phát các volume 
+Trước tiên cần thiết lập LVM đối với máy controller, trong lab này sẽ cấu hình ổ thứ hai (/dev/vdb) làm LVM để sau này cấp phát các volume 
+
+- Thực hiện các bước cài đặt cinder.
 
 ```
 dnf -y install lvm2 targetcli lvm2 device-mapper-persistent-data 
 
 systemctl enable --now lvm2-lvmetad.service targetcli
+```
 
+- Tạo LVM cho ổ `/dev/vdb`
+
+```
 pvcreate /dev/vdb
 vgcreate cinder-volumes /dev/vdb
+```
 
+- Cấu hình cho LVM 
+
+```
 cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
 #sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
 # fix filter cua lvm tren CentOS 8.2, chen vao dong 146 cua file /etc/lvm/lvm.conf
@@ -1790,6 +1800,8 @@ FLUSH PRIVILEGES;"
 - Tạo endpoint cho cinder
 
 ```
+/root/admin-openrc
+
 openstack user create  cinder --domain default --password Welcome123
 openstack role add --project service --user cinder admin
 
@@ -1864,7 +1876,7 @@ crudini --set /etc/cinder/cinder.conf lvm target_ip_address 192.168.98.81
 ```
 
 
-Chuyển sang node compute và thực hiện các việc tiếp theo để tích hợp nova và cinder, hãy SS vào node compute và thực hiện theo các hướng dẫn dưới.
+Chuyển sang node compute và thực hiện các việc tiếp theo để tích hợp nova và cinder, hãy SSH vào node compute và thực hiện theo các hướng dẫn dưới.
 
 ```
 dnf -y install targetcli 
@@ -1906,6 +1918,18 @@ su -s /bin/sh -c "cinder-manage db sync" cinder
 
 ```
 systemctl enable --now openstack-cinder-api.service openstack-cinder-scheduler.service openstack-cinder-volume.service target.service 
+```
+
+- Kiểm tra trạng thái của các dịch vụ cinder sau khi cài đặt xong bằng lệnh `openstack volume service list`, kết quả trả về như bên dưới là ok.
+
+```
+[root@controller01 ~]# openstack volume service list
++------------------+------------------+------+---------+-------+----------------------------+
+| Binary           | Host             | Zone | Status  | State | Updated At                 |
++------------------+------------------+------+---------+-------+----------------------------+
+| cinder-scheduler | controller01     | nova | enabled | up    | 2020-11-22T08:29:58.000000 |
+| cinder-volume    | controller01@lvm | nova | enabled | up    | 2020-11-22T08:30:00.000000 |
++------------------+------------------+------+---------+-------+----------------------------+
 ```
 
 

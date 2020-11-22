@@ -2187,5 +2187,12 @@ vda     253:0    0   5G  0 disk
 vdb     253:16   0  10G  0 disk
 ```
 
+### Tạo volume để boot máy ảo
+
+Đây là tính năng dùng volume để chứa các image của glance và thực hiện boot máy ảo (tưởng tượng giống như các ổ cứng di động hoặc USB có hệ điều hành nhé)
+
+```
+Đang thực hiện
+```
 
 

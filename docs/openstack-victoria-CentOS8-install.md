@@ -1871,7 +1871,7 @@ Chuyển sang node compute và thực hiện các việc tiếp theo để tích
 dnf -y install targetcli 
 
 systemctl enable --now  target.service
-``
+```
 
 ```
 crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne

@@ -1932,6 +1932,8 @@ systemctl enable --now openstack-cinder-api.service openstack-cinder-scheduler.s
 +------------------+------------------+------+---------+-------+----------------------------+
 ```
 
+Tới đây có thể dừng việc cài đặt để chuyển sang bước tạo VM, sau đó thao tác tiếp với các lệnh đối với cinder để kiểm chứng hoạt động của cinder ở các bước tiếp theo.
+
 
 # 4. Hướng dẫn tạo VM để kiểm chứng hoạt động của OpenStack
 
@@ -2130,8 +2132,60 @@ Approximate round trip times in milli-seconds:
 
 - Kết quả SSH: http://prntscr.com/vmpass
 
+### Tạo volume để kiểm chứng hoạt động của cinder.
 
-## 
+- Tạo volume chính là tạo các ổ cứng để gắn với máy ảo hoặc boot máy ảo từ volume đó.
+
+### Tạo volume gắn với máy ảo đã có.
+
+ Trong bước này sẽ thực hiện tạo volume và gắn volume với máy ảo đã có, việc này tương tự như gắn thêm các disk cho các VM.
+
+ - Tạo volume với dung lượng 10GB.
+
+```
+openstack volume create --size 10 disk01
+```
+
+- Kiểm tra lại xem volume đã được tạo hay chưa bằng lệnh `openstack volume list`, ta có kết quả như bên dưới.
+
+```
+[root@controller01 ~]# openstack volume list
++--------------------------------------+--------+-----------+------+-------------+
+| ID                                   | Name   | Status    | Size | Attached to |
++--------------------------------------+--------+-----------+------+-------------+
+| 7c064c31-0d1f-486d-aa56-3f3ebea964fc | disk01 | available |   10 |             |
++--------------------------------------+--------+-----------+------+-------------+
+```
+
+- Gắn volume vào máy ảo đã tồn tại (bước tạo máy ảo phải được thực hiện trước đó)
+
+```
+openstack server add volume vm01 disk01
+```
+
+Kiểm tra xem máy ảo đã gắn được volume hay chưa bằng các cách sau
+
+- Cách kiểm trang bằng lệnh `openstack volume list`, ta sẽ nhìn thấy ở cột `Attached to`
+
+```
+[root@controller01 ~]# openstack volume list
++--------------------------------------+--------+--------+------+-------------------------------+
+| ID                                   | Name   | Status | Size | Attached to                   |
++--------------------------------------+--------+--------+------+-------------------------------+
+| 7c064c31-0d1f-486d-aa56-3f3ebea964fc | disk01 | in-use |   10 | Attached to vm01 on /dev/vdb  |
++--------------------------------------+--------+--------+------+-------------------------------+
+```
+
+- Hoặc SSH vào VM01 (VM01 được tạo ở bước trước, có IP là `192.168.64.210`) và kiểm tra bằng lệnh `lsblk`, nếu thấy xuất hiện có disk 10GB là OK, để sử dụng disk này cần thực hiện các bước format để mount vào các thư mục và sử dụng. 
+
+```
+$ lsblk
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+vda     253:0    0   5G  0 disk
+|-vda1  253:1    0   5G  0 part /
+`-vda15 253:15   0   8M  0 part
+vdb     253:16   0  10G  0 disk
+```
 
 
 

@@ -1233,7 +1233,7 @@ crudini --set /etc/nova/nova.conf DEFAULT vif_plugging_timeout 300
 
 crudini --set /etc/nova/nova.conf api_database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova_api
 
-crudini --set /etc/nova/nova.conf database connection = mysql+pymysql://nova:Welcome123@192.168.98.81/nova
+crudini --set /etc/nova/nova.conf database connection mysql+pymysql://nova:Welcome123@192.168.98.81/nova
 
 crudini --set /etc/nova/nova.conf api auth_strategy keystone
 
@@ -1831,6 +1831,7 @@ crudini --set /etc/cinder/cinder.conf DEFAULT control_exchange cinder
 crudini --set /etc/cinder/cinder.conf DEFAULT glance_api_servers http://192.168.98.81:9292
 crudini --set /etc/cinder/cinder.conf DEFAULT enabled_backends lvm
 crudini --set /etc/cinder/cinder.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
+crudini --set /etc/cinder/cinder.conf DEFAULT state_path /var/lib/cinder
 
 
 crudini --set /etc/cinder/cinder.conf database connection  mysql+pymysql://cinder:Welcome123@192.168.98.81/cinder
@@ -1857,11 +1858,28 @@ crudini --set /etc/cinder/cinder.conf oslo_messaging_notifications driver messag
 
 crudini --set /etc/cinder/cinder.conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
 crudini --set /etc/cinder/cinder.conf lvm volume_group cinder-volumes
-crudini --set /etc/cinder/cinder.conf lvm iscsi_protocol iscsi
-crudini --set /etc/cinder/cinder.conf lvm iscsi_helper lioadm
+crudini --set /etc/cinder/cinder.conf lvm target_protocol iscsi
+crudini --set /etc/cinder/cinder.conf lvm target_helper lioadm
+crudini --set /etc/cinder/cinder.conf lvm volumes_dir \$state_path/volumes
+crudini --set /etc/cinder/cinder.conf lvm target_ip_address 192.168.98.81
 ```
 
-- Bổ sung cấu hình cho nova trên node controller để sử dụng cinder
+
+Chuyển sang node compute và thực hiện các việc tiếp theo để tích hợp nova và cinder, bước này thực hiện trên node compute.
+
+```
+crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne
+```
+
+- Restart nova-compute sau khi khai báo bổ sung xong nova 
+
+```
+systemctl restart openstack-nova-compute
+```
+
+Chuyển sang node controller và thực hiện các việc tiếp theo.
+
+- Bổ sung cấu hình cho nova trên node controller để sử dụng cinder, hãy SSH vào node controller và thực hiện các lệnh dưới.
 
 ```
 crudini --set /etc/nova/nova.conf cinder  os_region_name RegionOne

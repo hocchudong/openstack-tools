@@ -2196,3 +2196,18 @@ vdb     253:16   0  10G  0 disk
 ```
 
 
+# NÂNG CAO
+
+Trên là các bước ở mức độ cơ bản để cài đặt các project core của OpenStack bao gồm: `Keystone, Glance, Nova, Neutron, Cinder, Horrizon`. Ở mức độ này, ta đã có một hệ thống cơ bản để cung cấp VM cho hạ tầng. 
+
+Trong các ghi chép tiếp theo, chúng ta sẽ cài đặt các project nâng cao của OpenStack để có thể xây dựng hạ tầng hoàn chỉnh hơn, cung cấp được nhiều tài nguyên, dịch vụ hơn cho hạ tầng. Các project sẽ được hướng dẫn tiếp theo bao gồm:
+
+- Heat
+- Octavia
+- Manila
+- Babican
+- Magnum
+
+Sau đây hãy thực hiện tiếp các bước của phần cơ bản để có thể cài đặt thêm các project được liệt kê ở trên. Lưu ý: mô hình sẽ được bổ sung các node, các network để có thể đủ điều kiện cài đặt các project.
+
+

@@ -2573,6 +2573,25 @@ su -s /bin/bash manila -c "manila-manage db sync"
 systemctl enable --now openstack-manila-api openstack-manila-scheduler
 ```
 
+### 6.2. Cài đặt và cấu hình manila trên node storage
+
+Lưu ý: Trong hướng dẫn này thì node storage sử dụng chung với node controller.
+
+- Cài đặt các gói cần thiết
+
+```
+dnf -y install openstack-manila-share python3-manilaclient python3-PyMySQL python3-mysqlclient
+```
+
+- Cấu hình thêm cho file của manila 
+
+```
+crudini --set /etc/manila/manila.conf DEFAULT enabled_share_protocols NFS,CIFS
+```
+
+
+
+
 ===
 # THAM KHẢO
 1. https://www.server-world.info/en/note?os=CentOS_8&p=openstack_victoria3&f=4

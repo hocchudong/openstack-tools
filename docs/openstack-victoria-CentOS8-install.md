@@ -2256,21 +2256,27 @@ openstack service create --name heat --description "Orchestration" orchestration
 
 openstack service create --name heat-cfn --description "Orchestration"  cloudformation
 
-openstack endpoint create --region RegionOne orchestration public http://controller:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration public http://192.168.98.81:8004/v1/%\(tenant_id\)s
 
-openstack endpoint create --region RegionOne orchestration internal http://controller:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration internal http://192.168.98.81:8004/v1/%\(tenant_id\)s
 
-openstack endpoint create --region RegionOne orchestration admin http://controller:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration admin http://192.168.98.81:8004/v1/%\(tenant_id\)s
 
-openstack endpoint create --region RegionOne cloudformation public http://controller:8000/v1
+openstack endpoint create --region RegionOne cloudformation public http://192.168.98.81:8000/v1
 
-openstack endpoint create --region RegionOne cloudformation internal http://controller:8000/v1
+openstack endpoint create --region RegionOne cloudformation internal http://192.168.98.81:8000/v1
 
-openstack endpoint create --region RegionOne cloudformation admin http://controller:8000/v1
-
+openstack endpoint create --region RegionOne cloudformation admin http://192.168.98.81:8000/v1
 ```
 
-Cấu hình heat
+Cài đặt và cấu hình heat
+
+- Cài đặt các gói cho heat
+
+```
+dnf -y install openstack-heat-api openstack-heat-api-cfn openstack-heat-engine python3-heatclient openstack-heat-common
+
+```
 
 - Sao lưu file cấu hình của heat
 
@@ -2278,3 +2284,57 @@ Cấu hình heat
 cp /etc/heat/heat.conf /etc/heat/heat.conf.orig
 ```
 
+- Sửa các cấu hình của heat
+
+```
+crudini --set /etc/heat/heat.conf DEFAULT deferred_auth_method trusts
+crudini --set /etc/heat/heat.conf DEFAULT trusts_delegated_roles heat_stack_owner
+crudini --set /etc/heat/heat.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
+crudini --set /etc/heat/heat.conf DEFAULT heat_metadata_server_url http://192.168.98.81:8000
+crudini --set /etc/heat/heat.conf DEFAULT heat_waitcondition_server_url http://192.168.98.81:8000/v1/waitcondition
+crudini --set /etc/heat/heat.conf DEFAULT stack_domain_admin heat_domain_admin
+crudini --set /etc/heat/heat.conf DEFAULT stack_domain_admin_password Welcome123
+crudini --set /etc/heat/heat.conf DEFAULT stack_user_domain_name heat
+
+
+crudini --set /etc/heat/heat.conf database connection mysql+pymysql://heat:Welcome123@192.168.98.81/heat
+
+crudini --set /etc/heat/heat.conf clients_keystone auth_uri http://192.168.98.81
+
+crudini --set /etc/heat/heat.conf ec2authtoken auth_uri http://192.168.98.81
+
+crudini --set /etc/heat/heat.conf heat_api bind_host 0.0.0.0
+crudini --set /etc/heat/heat.conf heat_api bind_port 8004
+
+crudini --set /etc/heat/heat.conf heat_api_cfn bind_host 0.0.0.0
+crudini --set /etc/heat/heat.conf heat_api_cfn bind_port 8004
+
+
+crudini --set /etc/heat/heat.conf keystone_authtoken www_authenticate_uri = http://192.168.98.81:5000
+crudini --set /etc/heat/heat.conf keystone_authtoken auth_url http://192.168.98.81:5000
+crudini --set /etc/heat/heat.conf keystone_authtoken memcached_servers 192.168.98.81:11211
+crudini --set /etc/heat/heat.conf keystone_authtoken auth_type password
+crudini --set /etc/heat/heat.conf keystone_authtoken project_domain_name Default
+crudini --set /etc/heat/heat.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/heat/heat.conf keystone_authtoken project_name service
+crudini --set /etc/heat/heat.conf keystone_authtoken username heat
+crudini --set /etc/heat/heat.conf keystone_authtoken password = Welcome123
+
+crudini --set /etc/heat/heat.conf trustee auth_type password
+crudini --set /etc/heat/heat.conf trustee auth_url http://192.168.98.81:35357
+crudini --set /etc/heat/heat.conf trustee username heat
+crudini --set /etc/heat/heat.conf trustee password Welcome123
+crudini --set /etc/heat/heat.conf trustee user_domain_name Default
+```
+
+- Đồng bộ database cho heat
+
+```
+su -s /bin/sh -c "heat-manage db_sync" heat
+```
+
+- Kích hoạt heat
+
+``
+systemctl enable --now openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
+```

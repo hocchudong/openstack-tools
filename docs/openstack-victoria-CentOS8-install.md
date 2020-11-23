@@ -2217,3 +2217,65 @@ Sau đây hãy thực hiện tiếp các bước của phần cơ bản để c�
 
 Thực hiện các bước cài đặt heat trên controller
 
+- Tạo database cho heat
+
+```
+mysql -uroot -pWelcome123  -e "CREATE DATABASE heat;
+GRANT ALL PRIVILEGES ON heat.* TO 'heat'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON heat.* TO 'heat'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON heat.* TO 'heat'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON heat.* TO 'heat'@'controller01' IDENTIFIED BY 'Welcome123';
+
+FLUSH PRIVILEGES;"
+```
+
+- Tạo user, project, endpoint và phân quyền cho các user, project liên quan tới heat.
+
+```
+/root/admin-openrc
+
+openstack user create --domain default --project service --password Welcome123 heat
+
+openstack role add --project services --user heat admin
+
+openstack domain create --description "Stack projects and users" heat
+
+openstack role create heat_stack_owner
+openstack role create heat_stack_user
+
+openstack role add --project admin --user admin heat_stack_owner
+
+openstack user create --domain heat --password Welcome123 heat_domain_admin
+
+openstack role add --domain heat --user-domain heat --user heat_domain_admin admin
+
+
+openstack role add --project demo --user demo heat_stack_owner
+
+
+openstack service create --name heat \
+--description "Orchestration" orchestration
+
+openstack service create --name heat-cfn \
+--description "Orchestration"  cloudformation
+
+
+openstack endpoint create --region RegionOne \
+orchestration public http://controller:8004/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne \
+orchestration internal http://controller:8004/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne \
+orchestration admin http://controller:8004/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne \
+cloudformation public http://controller:8000/v1
+
+openstack endpoint create --region RegionOne \
+cloudformation internal http://controller:8000/v1
+
+openstack endpoint create --region RegionOne \
+cloudformation admin http://controller:8000/v1
+
+```

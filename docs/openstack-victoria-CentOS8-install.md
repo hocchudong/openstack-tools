@@ -2211,9 +2211,9 @@ Trong các ghi chép tiếp theo, chúng ta sẽ cài đặt các project nâng 
 Sau đây hãy thực hiện tiếp các bước của phần cơ bản để có thể cài đặt thêm các project được liệt kê ở trên. Lưu ý: mô hình sẽ được bổ sung các node, các network để có thể đủ điều kiện cài đặt các project.
 
 
-# 5. Cài đăt heat
+## 5. Cài đăt heat
 
-## 5.1 Cài đặt heat trên node controller
+### 5.1 Cài đặt heat
 
 Thực hiện các bước cài đặt heat trên controller.
 Lưu ý: Cần đảm bảo các project ở mục 03 và 04 đã hoàn tất, kể cả các network, subnet, router, các image, các security group đã được tạo.
@@ -2323,7 +2323,7 @@ crudini --set /etc/heat/heat.conf keystone_authtoken username heat
 crudini --set /etc/heat/heat.conf keystone_authtoken password Welcome123
 
 crudini --set /etc/heat/heat.conf trustee auth_plugin password
-crudini --set /etc/heat/heat.conf trustee auth_url http://192.168.98.81:35357
+crudini --set /etc/heat/heat.conf trustee auth_url http://192.168.98.81:5000
 crudini --set /etc/heat/heat.conf trustee username heat
 crudini --set /etc/heat/heat.conf trustee password Welcome123
 crudini --set /etc/heat/heat.conf trustee user_domain_name default
@@ -2354,6 +2354,9 @@ Kiểm tra xem heat đã hoạt động hay chưa bằng lệnh ` openstack orch
 | controller01 | heat-engine | d67439ff-103d-485f-b350-204acdb5af99 | controller01 | engine | 2020-11-23T07:49:37.000000 | up     |
 +--------------+-------------+--------------------------------------+--------------+--------+----------------------------+--------+
 ```
+
+
+### 5.2 Hướng dẫn sử dụng heat
 
 Sử dụng heat để tạo các tài nguyên (VM) trong OpenStack
 
@@ -2478,8 +2481,97 @@ openstack stack delete --yes Sample-Stack
 - Sau đó kiểm tra lại bằng lệnh ` openstack stack list` ta sẽ không thấy có dòng nào xuất hiện là ok.
 
 
+## 6. Cài đặt manila 
 
+- Trong hướng dẫn này sẽ cài đặt toàn bộ các thành phần của manila trên node controller.
 
+Có 02 mô hình sử dụng maniala, bao gồm:
+- Sử dụng manila dạng local. Với mô hình này sẽ có node storage (trong hướng dẫn này dùng chung trên controller và sử dụng ổ /dev/vdc được cấu hình LVM) làm backend để cấp ra các volume để share cho các vm sử dụng chung.
+- Sử dụng manila dạng VM. Đối với mô hình này sẽ cần điều kiện phải có các project neutron, nova, glance, cinder để sử dụng. Mô hình này sẽ sử dụng image đặc thù để boot một máy ảo có chức năng như NFS.
+
+Trong hướng dẫn này sẽ sử dụng mô hình manila dùng theo kiểu local.
+
+### 6.1. Cài đặt và cấu hình manila trên node controller
+
+- Tạo database cho manila
+
+```
+mysql -uroot -pWelcome123  -e "CREATE DATABASE manila;
+GRANT ALL PRIVILEGES ON manila.* TO 'manila'@'localhost' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON manila.* TO 'manila'@'%' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON manila.* TO 'manila'@'192.168.98.81' IDENTIFIED BY 'Welcome123';
+GRANT ALL PRIVILEGES ON manila.* TO 'manila'@'controller01' IDENTIFIED BY 'Welcome123';
+
+FLUSH PRIVILEGES;"
+```
+
+- Tạo user, gán role, tao endpoint cho manila 
+
+```
+openstack user create --domain default --project service --password Welcome123 manila
+openstack role add --project service --user manila admin
+
+openstack service create --name manila --description "OpenStack Shared Filesystem" share
+
+openstack service create --name manilav2 --description "OpenStack Shared Filesystem V2" sharev2
+
+openstack endpoint create --region RegionOne share public http://192.168.98.81:8786/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne share internal http://192.168.98.81:8786/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne share admin http://192.168.98.81:8786/v1/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne sharev2 public http://192.168.98.81:8786/v2/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne sharev2 internal http://192.168.98.81:8786/v2/%\(tenant_id\)s
+
+openstack endpoint create --region RegionOne sharev2 admin http://192.168.98.81:8786/v2/%\(tenant_id\)s
+```
+
+- Sao lưu cấu hình file manila
+
+```
+cp /etc/manila/manila.conf /etc/manila/manila.conf.org
+```
+
+- Sửa cấu hình của manila
+
+```
+crudini --set /etc/manila/manila.conf DEFAULT my_ip 192.168.98.81 
+crudini --set /etc/manila/manila.conf DEFAULT api_paste_config /etc/manila/api-paste.ini
+crudini --set /etc/manila/manila.conf DEFAULT rootwrap_config /etc/manila/rootwrap.conf
+crudini --set /etc/manila/manila.conf DEFAULT state_path /var/lib/manila
+crudini --set /etc/manila/manila.conf DEFAULT auth_strategy keystone
+crudini --set /etc/manila/manila.conf DEFAULT default_share_type default_share_type
+crudini --set /etc/manila/manila.conf DEFAULT share_name_template share-%s
+crudini --set /etc/manila/manila.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
+
+crudini --set /etc/manila/manila.conf database connection mysql+pymysql://manila:Welcome123@192.168.98.81/manila
+
+crudini --set /etc/manila/manila.conf keystone_authtoken www_authenticate_uri http://192.168.98.81:5000
+crudini --set /etc/manila/manila.conf keystone_authtoken auth_url http://192.168.98.81:5000
+crudini --set /etc/manila/manila.conf keystone_authtoken memcached_servers 192.168.98.81:11211
+crudini --set /etc/manila/manila.conf keystone_authtoken auth_type password
+crudini --set /etc/manila/manila.conf keystone_authtoken project_domain_name default
+crudini --set /etc/manila/manila.conf keystone_authtoken user_domain_name default
+crudini --set /etc/manila/manila.conf keystone_authtoken project_name service
+crudini --set /etc/manila/manila.conf keystone_authtoken username heat
+crudini --set /etc/manila/manila.conf keystone_authtoken password Welcome123
+
+crudini --set /etc/manila/manila.conf oslo_concurrency lock_path \$state_path/tmp
+```
+
+- Đồng bộ DB cho manila 
+
+```
+su -s /bin/bash manila -c "manila-manage db sync"
+```
+
+- Kích hoạt các dịch vụ của manila 
+
+```
+systemctl enable --now openstack-manila-api openstack-manila-scheduler
+```
 
 ===
 # THAM KHẢO

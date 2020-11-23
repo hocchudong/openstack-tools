@@ -56,7 +56,9 @@ systemctl disable firewalld
 Cấu hình đồng bộ thời gian
 
 ```
+dnf install chrony -y
 timedatectl set-timezone Asia/Ho_Chi_Minh
+sed -i 's/2.centos.pool.ntp.org/2.vn.pool.ntp.org/g' /etc/chrony.conf
 systemctl enable chronyd.service
 systemctl restart chronyd.service
 chronyc sources
@@ -174,3 +176,27 @@ Thiết lập File Environment Openstack
 
 `kolla-ansible -i all-in-one post-deploy`
 
+### Phần 4. Cài đặt Openstack Client
+
+Cài đặt các gói cần thiết để tạo virtualenv
+Tạo virtualen có tên là venv
+
+```
+pip3 install virtualenv
+virtualenv venv
+```
+
+Source environment
+
+`. venv/bin/activate`
+
+Cài đặt các gói openstack client trong virtualenv
+
+```
+pip3 install python-openstackclient python-glanceclient python-neutronclient
+source /etc/kolla/admin-openrc.sh
+```
+
+Kiểm tra xem OpenStack hoạt động hay chưa
+
+`openstack token issue`

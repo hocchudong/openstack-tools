@@ -2402,7 +2402,7 @@ Thực hiện tạo stack (tạo vm bằng heat), trong lệnh dưới truyền 
 - Sử dụng image là cirros
 
 ```
-openstack stack create -t sample-stack.yml --parameter "ImageID=CentOS8;NetID=$Int_Net_ID" Sample-Stack
+openstack stack create -t sample-stack.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID" Sample-Stack
 ```
 
 - Kiểm tra xem server đã được tạo hay chưa (việc tạo này có thể sẽ lâu hơn cách tạo VM thông thường như trong hướng dẫn trước), lệnh kiểm tra là `openstack stack list`.

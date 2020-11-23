@@ -2215,7 +2215,8 @@ Sau đây hãy thực hiện tiếp các bước của phần cơ bản để c�
 
 ## 5.1 Cài đặt heat trên node controller
 
-Thực hiện các bước cài đặt heat trên controller
+Thực hiện các bước cài đặt heat trên controller.
+Lưu ý: Cần đảm bảo các project ở mục 03 và 04 đã hoàn tất, kể cả các network, subnet, router, các image, các security group đã được tạo.
 
 - Tạo database cho heat
 
@@ -2292,39 +2293,40 @@ crudini --set /etc/heat/heat.conf DEFAULT trusts_delegated_roles heat_stack_owne
 crudini --set /etc/heat/heat.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
 crudini --set /etc/heat/heat.conf DEFAULT heat_metadata_server_url http://192.168.98.81:8000
 crudini --set /etc/heat/heat.conf DEFAULT heat_waitcondition_server_url http://192.168.98.81:8000/v1/waitcondition
+crudini --set /etc/heat/heat.conf DEFAULT heat_watch_server_url http://192.168.98.81:8003
+crudini --set /etc/heat/heat.conf DEFAULT heat_stack_user_role  heat_stack_user
+
 crudini --set /etc/heat/heat.conf DEFAULT stack_domain_admin heat_domain_admin
 crudini --set /etc/heat/heat.conf DEFAULT stack_domain_admin_password Welcome123
 crudini --set /etc/heat/heat.conf DEFAULT stack_user_domain_name heat
 
-
 crudini --set /etc/heat/heat.conf database connection mysql+pymysql://heat:Welcome123@192.168.98.81/heat
 
-crudini --set /etc/heat/heat.conf clients_keystone auth_uri http://192.168.98.81
+crudini --set /etc/heat/heat.conf clients_keystone auth_uri http://192.168.98.81:5000
 
-crudini --set /etc/heat/heat.conf ec2authtoken auth_uri http://192.168.98.81
+crudini --set /etc/heat/heat.conf ec2authtoken auth_uri http://192.168.98.81:5000
 
 crudini --set /etc/heat/heat.conf heat_api bind_host 0.0.0.0
 crudini --set /etc/heat/heat.conf heat_api bind_port 8004
 
 crudini --set /etc/heat/heat.conf heat_api_cfn bind_host 0.0.0.0
-crudini --set /etc/heat/heat.conf heat_api_cfn bind_port 8004
+crudini --set /etc/heat/heat.conf heat_api_cfn bind_port 8000
 
-
-crudini --set /etc/heat/heat.conf keystone_authtoken www_authenticate_uri = http://192.168.98.81:5000
+crudini --set /etc/heat/heat.conf keystone_authtoken www_authenticate_uri http://192.168.98.81:5000
 crudini --set /etc/heat/heat.conf keystone_authtoken auth_url http://192.168.98.81:5000
 crudini --set /etc/heat/heat.conf keystone_authtoken memcached_servers 192.168.98.81:11211
 crudini --set /etc/heat/heat.conf keystone_authtoken auth_type password
-crudini --set /etc/heat/heat.conf keystone_authtoken project_domain_name Default
-crudini --set /etc/heat/heat.conf keystone_authtoken user_domain_name Default
+crudini --set /etc/heat/heat.conf keystone_authtoken project_domain_name default
+crudini --set /etc/heat/heat.conf keystone_authtoken user_domain_name default
 crudini --set /etc/heat/heat.conf keystone_authtoken project_name service
 crudini --set /etc/heat/heat.conf keystone_authtoken username heat
-crudini --set /etc/heat/heat.conf keystone_authtoken password = Welcome123
+crudini --set /etc/heat/heat.conf keystone_authtoken password Welcome123
 
-crudini --set /etc/heat/heat.conf trustee auth_type password
+crudini --set /etc/heat/heat.conf trustee auth_plugin password
 crudini --set /etc/heat/heat.conf trustee auth_url http://192.168.98.81:35357
 crudini --set /etc/heat/heat.conf trustee username heat
 crudini --set /etc/heat/heat.conf trustee password Welcome123
-crudini --set /etc/heat/heat.conf trustee user_domain_name Default
+crudini --set /etc/heat/heat.conf trustee user_domain_name default
 ```
 
 - Đồng bộ database cho heat
@@ -2338,3 +2340,147 @@ su -s /bin/sh -c "heat-manage db_sync" heat
 ```
 systemctl enable --now openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
 ```
+
+Kiểm tra xem heat đã hoạt động hay chưa bằng lệnh ` openstack orchestration service list`, ta sẽ có kết quả như bên dưới nếu OK.
+
+```
+[root@controller01 ~]#  openstack orchestration service list
++--------------+-------------+--------------------------------------+--------------+--------+----------------------------+--------+
+| Hostname     | Binary      | Engine ID                            | Host         | Topic  | Updated At                 | Status |
++--------------+-------------+--------------------------------------+--------------+--------+----------------------------+--------+
+| controller01 | heat-engine | bcf62d6e-0097-40d5-8d91-d1030447c859 | controller01 | engine | 2020-11-23T07:49:37.000000 | up     |
+| controller01 | heat-engine | 1218fd7f-93c5-4fa2-bce2-cc250bceaac1 | controller01 | engine | 2020-11-23T07:49:37.000000 | up     |
+| controller01 | heat-engine | a9fbcc39-9443-4b3d-ac4e-ba0fd8f80149 | controller01 | engine | 2020-11-23T07:49:37.000000 | up     |
+| controller01 | heat-engine | d67439ff-103d-485f-b350-204acdb5af99 | controller01 | engine | 2020-11-23T07:49:37.000000 | up     |
++--------------+-------------+--------------------------------------+--------------+--------+----------------------------+--------+
+```
+
+Sử dụng heat để tạo các tài nguyên (VM) trong OpenStack
+
+- Kiểm tra xem ta đang có các network nào, trong ví dụ này sẽ lấy ID của private network và lưu vào `Int_Net_ID`
+
+```
+Int_Net_ID=$(openstack network list | grep int_net | awk '{ print $2 }')
+```
+
+- Tạo file `sample-stack.yml` theo mẫu dưới, lưu ý tạo đúng định dạng của yaml. 
+
+```
+heat_template_version: 2018-08-31
+
+description: Heat Sample Template
+
+parameters:
+  ImageID:
+    type: string
+    description: Image used to boot a server
+  NetID:
+    type: string
+    description: Network ID for the server
+
+resources:
+  server1:
+    type: OS::Nova::Server
+    properties:
+      name: "Heat_Deployed_Server"
+      image: { get_param: ImageID }
+      flavor: "m1.tiny"
+      security_groups:
+      - secgroup01
+      networks:
+      - network: { get_param: NetID }
+
+outputs:
+  server1_private_ip:
+    description: IP address of the server in the private network
+    value: { get_attr: [ server1, first_address ] }
+```
+
+Trong file trên, ta sử dụng security group có tên là `secgroup01` và flavor có lên là: `m1.tiny` 
+
+Thực hiện tạo stack (tạo vm bằng heat), trong lệnh dưới truyền thêm các tham số vào trong lệnh, ví dụ như:
+- Sử dụng image là cirros
+
+```
+openstack stack create -t sample-stack.yml --parameter "ImageID=CentOS8;NetID=$Int_Net_ID" Sample-Stack
+```
+
+- Kiểm tra xem server đã được tạo hay chưa (việc tạo này có thể sẽ lâu hơn cách tạo VM thông thường như trong hướng dẫn trước), lệnh kiểm tra là `openstack stack list`.
+
+```
+[root@controller01 ~]# openstack stack list
++--------------------------------------+--------------+----------------------------------+-----------------+----------------------+--------------+
+| ID                                   | Stack Name   | Project                          | Stack Status    | Creation Time        | Updated Time |
++--------------------------------------+--------------+----------------------------------+-----------------+----------------------+--------------+
+| 0450ad15-61c6-407d-aefe-eac8575c4013 | Sample-Stack | 56f915778f414f5b81733353121d7027 | CREATE_COMPLETE | 2020-11-23T07:42:01Z | None         |
++--------------------------------------+--------------+----------------------------------+-----------------+----------------------+--------------+
+```
+
+- Kiểm tra xem server tạo thông qua heat đã active hay chưa bằng lệnh `openstack server list`,  có thể phải thực hiện lệnh lặp đi lặp lại từ 2 đến 3 lần để thấy trạng thái của VM là Active nếu như các bước cấu hình ổn thỏa.
+
+
+```
+[root@controller01 ~]# openstack server list
++--------------------------------------+----------------------+--------+----------------------------------------+--------+---------+
+| ID                                   | Name                 | Status | Networks                               | Image  | Flavor  |
++--------------------------------------+----------------------+--------+----------------------------------------+--------+---------+
+| 4bb2d206-d8cc-4301-9778-020260236536 | Heat_Deployed_Server | BUILD  |                                        | cirros | m1.tiny |
+| d3adc40e-d083-4be8-88e9-292fa74dfcbd | vm02                 | ACTIVE | int_net=192.168.23.145, 192.168.64.216 | cirros | m1.tiny |
+| 80ec0a88-a624-4ce4-a16f-d9646d30fcaa | vm01                 | ACTIVE | ext_net=192.168.64.210                 | cirros | m1.tiny |
++--------------------------------------+----------------------+--------+----------------------------------------+--------+---------+
+```
+
+- Kiểm tra chi tiết VM được tạo thông qua heat bằng lệnh `openstack server show Heat_Deployed_Server`
+
+```
+[root@controller01 ~]# openstack server show Heat_Deployed_Server
++-------------------------------------+----------------------------------------------------------+
+| Field                               | Value                                                    |
++-------------------------------------+----------------------------------------------------------+
+| OS-DCF:diskConfig                   | MANUAL                                                   |
+| OS-EXT-AZ:availability_zone         | nova                                                     |
+| OS-EXT-SRV-ATTR:host                | compute01                                                |
+| OS-EXT-SRV-ATTR:hypervisor_hostname | compute01                                                |
+| OS-EXT-SRV-ATTR:instance_name       | instance-00000007                                        |
+| OS-EXT-STS:power_state              | Running                                                  |
+| OS-EXT-STS:task_state               | None                                                     |
+| OS-EXT-STS:vm_state                 | active                                                   |
+| OS-SRV-USG:launched_at              | 2020-11-23T07:42:14.000000                               |
+| OS-SRV-USG:terminated_at            | None                                                     |
+| accessIPv4                          |                                                          |
+| accessIPv6                          |                                                          |
+| addresses                           | int_net=192.168.23.128                                   |
+| config_drive                        |                                                          |
+| created                             | 2020-11-23T07:42:05Z                                     |
+| flavor                              | m1.tiny (0)                                              |
+| hostId                              | 016193f20246751e6e1113196caa1b52c4af5278e9f50672b6d9277e |
+| id                                  | 4bb2d206-d8cc-4301-9778-020260236536                     |
+| image                               | cirros (2d85154d-d0ab-44cd-bbea-37c8ec398ba4)            |
+| key_name                            | None                                                     |
+| name                                | Heat_Deployed_Server                                     |
+| progress                            | 0                                                        |
+| project_id                          | 56f915778f414f5b81733353121d7027                         |
+| properties                          |                                                          |
+| security_groups                     | name='secgroup01'                                        |
+| status                              | ACTIVE                                                   |
+| updated                             | 2020-11-23T07:42:14Z                                     |
+| user_id                             | 69e6fe66393a420d877194471423c5b5                         |
+| volumes_attached                    |                                                          |
++-------------------------------------+----------------------------------------------------------+
+```
+
+- Xóa stack bằng lệnh 
+
+```
+openstack stack delete --yes Sample-Stack
+```
+
+- Sau đó kiểm tra lại bằng lệnh ` openstack stack list` ta sẽ không thấy có dòng nào xuất hiện là ok.
+
+
+
+
+
+===
+# THAM KHẢO
+1. https://www.server-world.info/en/note?os=CentOS_8&p=openstack_victoria3&f=4

@@ -2232,11 +2232,11 @@ FLUSH PRIVILEGES;"
 - Tạo user, project, endpoint và phân quyền cho các user, project liên quan tới heat.
 
 ```
-/root/admin-openrc
+source /root/admin-openrc
 
 openstack user create --domain default --project service --password Welcome123 heat
 
-openstack role add --project services --user heat admin
+openstack role add --project service --user heat admin
 
 openstack domain create --description "Stack projects and users" heat
 

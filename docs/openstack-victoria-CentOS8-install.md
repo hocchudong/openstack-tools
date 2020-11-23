@@ -2203,11 +2203,17 @@ Trên là các bước ở mức độ cơ bản để cài đặt các project 
 Trong các ghi chép tiếp theo, chúng ta sẽ cài đặt các project nâng cao của OpenStack để có thể xây dựng hạ tầng hoàn chỉnh hơn, cung cấp được nhiều tài nguyên, dịch vụ hơn cho hạ tầng. Các project sẽ được hướng dẫn tiếp theo bao gồm:
 
 - Heat
+- Babican
 - Octavia
 - Manila
-- Babican
 - Magnum
 
 Sau đây hãy thực hiện tiếp các bước của phần cơ bản để có thể cài đặt thêm các project được liệt kê ở trên. Lưu ý: mô hình sẽ được bổ sung các node, các network để có thể đủ điều kiện cài đặt các project.
 
+
+# 5. Cài đăt heat
+
+## 5.1 Cài đặt heat trên node controller
+
+Thực hiện các bước cài đặt heat trên controller
 

@@ -2528,6 +2528,12 @@ openstack endpoint create --region RegionOne sharev2 internal http://192.168.98.
 openstack endpoint create --region RegionOne sharev2 admin http://192.168.98.81:8786/v2/%\(tenant_id\)s
 ```
 
+- Cài đặt các gói cần thiết cho manila 
+
+```
+dnf -y install openstack-manila python3-manilaclient
+```
+
 - Sao lưu cấu hình file manila
 
 ```
@@ -2589,9 +2595,79 @@ dnf -y install openstack-manila-share python3-manilaclient python3-PyMySQL pytho
 crudini --set /etc/manila/manila.conf DEFAULT enabled_share_protocols NFS,CIFS
 ```
 
+- Khởi động lại cấu hình của manila 
 
+```
+systemctl restart openstack-manila-api openstack-manila-scheduler
+```
+- Khai báo phân vùng để tạo volume cho manila 
+
+```
+pvcreate /dev/vdc
+
+vgcreate manila-volumes /dev/vdc
+```
+
+- Bổ sung cấu hình của manila 
+
+```
+crudini --set /etc/manila/manila.conf DEFAULT enabled_share_backends lvm
+
+crudini --set /etc/manila/manila.conf lvm share_backend_name LVM
+crudini --set /etc/manila/manila.conf lvm share_driver manila.share.drivers.lvm.LVMShareDriver
+crudini --set /etc/manila/manila.conf lvm driver_handles_share_servers False
+crudini --set /etc/manila/manila.conf lvm lvm_share_volume_group manila-volumes
+crudini --set /etc/manila/manila.conf lvm lvm_share_export_ips 192.168.98.81
+```
+
+- Kích hoạt manila và backend
+
+```
+systemctl enable --now openstack-manila-share nfs-server
+```
+
+### 6.3. Hướng dẫn sử dụng manila 
+
+Thực hiện các khai báo tiếp theo để sử dụng manila, các bước này làm trên node controller
+
+- Thực hiện tạo default share type cho manila.
+
+```
+manila type-create default_share_type False
+```
+
+- Kiểm lại type của manila 
+
+```
+manila type-list
+```
+
+- Tạo một phân vùng để share NFS có tên là share01 với dung lượng 10GB.
+
+```
+manila create NFS 10 --name share01
+```
+
+- Kiểm tra lại dung lượng của các phân vùng share
+
+```
+manila list
+```
+
+- Phân quyền để phân vùng share này cho các network cần thiết
+
+```
+manila access-allow share01 ip 10.0.0.0/24 --access-level rw
+```
+
+- Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM01
+
+```
+openstack server list
+```
 
 
 ===
+
 # THAM KHẢO
 1. https://www.server-world.info/en/note?os=CentOS_8&p=openstack_victoria3&f=4

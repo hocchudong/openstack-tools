@@ -2335,6 +2335,6 @@ su -s /bin/sh -c "heat-manage db_sync" heat
 
 - Kích hoạt heat
 
-``
+```
 systemctl enable --now openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
 ```

@@ -2648,6 +2648,7 @@ manila list
 - Phân quyền để phân vùng share này cho các network cần thiết
 ```
 manila access-allow share01 ip 192.168.64.0/24 --access-level rw
+manila access-allow share01 ip 192.168.98.0/24 --access-level rw
 ```
 
 - Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM01
@@ -2655,6 +2656,43 @@ manila access-allow share01 ip 192.168.64.0/24 --access-level rw
   openstack server list
   ```
 
+
+- Thực hiện mount, đứng từ VM và chạy lệnh dưới.
+
+```
+sudo mount -vvvv -t nfs 192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36 /mnt
+```
+
+Đối với việc mount khác range (mount qua NAT) ta sẽ gặp lỗi sau
+```
+root@vm03:~# sudo mount -vvvv -t nfs 192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36 /mnt
+mount.nfs: timeout set for Tue Nov 24 10:07:25 2020
+mount.nfs: trying text-based options 'vers=4.2,addr=192.168.98.81,clientaddr=192.168.64.211'
+mount.nfs: mount(2): Operation not permitted
+mount.nfs: trying text-based options 'addr=192.168.98.81'
+mount.nfs: prog 100003, trying vers=3, prot=6
+mount.nfs: trying 192.168.98.81 prog 100003 vers 3 prot TCP port 2049
+mount.nfs: prog 100005, trying vers=3, prot=17
+mount.nfs: trying 192.168.98.81 prog 100005 vers 3 prot UDP port 20048
+```
+
+Cách xử lý là mở file `/etc/exports` trên controller ( hoặc node storage), thay các từ `secure` thành `insecure`. Lý do là trong port mà nfs sử dụng để thiết lập mount có giá trị lớn hơn 1024, do vậy nếu khác range giữa client và server thì sẽ bị từ chối, tham khảo (https://blog.bigon.be/2013/02/08/mount-nfs-export-for-machine-behind-a-nat/). Trong hướng dẫn này sửa như sau:
+
+```
+/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36  192.168.64.0/24(rw,sync,wdelay,hide,nocrossmnt,insecure,no_root_squash,no_all_squash,no_subtree_check,secure_locks,acl,no_pnfs,anonuid=65534,anongid=65534,sec=sys,rw,insecure,no_root_squash,no_all_squash)
+/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36  192.168.98.0/24(rw,sync,wdelay,hide,nocrossmnt,insecure,no_root_squash,no_all_squash,no_subtree_check,secure_locks,acl,no_pnfs,anonuid=65534,anongid=65534,sec=sys,rw,insecure,no_root_squash,no_all_squash)
+```
+
+Sau đó khởi động lại nfs và manila-share bằng lệnh `systemctl restart openstack-manila-share nfs-server`.
+
+Quay sang client và thực hiện lệnh mount (login vào VM và thực hiện lệnh dưới)
+
+```
+sudo mount -vvvv -t nfs 192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36 /mnt
+```
+
+
+- Kiểm tra xem đã mount được hay chưa
 
 ===
 

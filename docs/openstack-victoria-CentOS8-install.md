@@ -2651,9 +2651,9 @@ manila access-allow share01 ip 192.168.64.0/24 --access-level rw
 ```
 
 - Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM01
-```
-openstack server list
-```
+  ```
+  openstack server list
+  ```
 
 
 ===

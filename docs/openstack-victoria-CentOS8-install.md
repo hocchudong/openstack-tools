@@ -2692,8 +2692,38 @@ sudo mount -vvvv -t nfs 192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e
 ```
 
 
-- Kiểm tra xem đã mount được hay chưa
+- Kiểm tra xem đã mount được hay chưa bằng lệnh `df -hT`
 
+```
+root@vm03:~# df -hT
+Filesystem                                                                   Type      Size  Used Avail Use% Mounted on
+udev                                                                         devtmpfs  978M     0  978M   0% /dev
+tmpfs                                                                        tmpfs     199M  976K  198M   1% /run
+/dev/vda1                                                                    ext4      9.6G  1.4G  8.2G  15% /
+tmpfs                                                                        tmpfs     994M     0  994M   0% /dev/shm
+tmpfs                                                                        tmpfs     5.0M     0  5.0M   0% /run/lock
+tmpfs                                                                        tmpfs     994M     0  994M   0% /sys/fs/cgroup
+/dev/vda15                                                                   vfat      105M  3.9M  101M   4% /boot/efi
+/dev/loop0                                                                   squashfs   56M   56M     0 100% /snap/core18/1932
+/dev/loop1                                                                   squashfs   68M   68M     0 100% /snap/lxd/18150
+/dev/loop2                                                                   squashfs   31M   31M     0 100% /snap/snapd/9721
+tmpfs                                                                        tmpfs     199M     0  199M   0% /run/user/1000
+192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36 nfs4      9.8G   36M  9.3G   1% /mnt
+
+root@vm03:~# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether fa:16:3e:3a:a8:98 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.64.211/24 brd 192.168.64.255 scope global dynamic ens3
+       valid_lft 83133sec preferred_lft 83133sec
+    inet6 fe80::f816:3eff:fe3a:a898/64 scope link
+       valid_lft forever preferred_lft forever
+```
 ===
 
 # THAM KHẢO

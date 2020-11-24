@@ -2280,13 +2280,11 @@ dnf -y install openstack-heat-api openstack-heat-api-cfn openstack-heat-engine p
 ```
 
 - Sao lưu file cấu hình của heat
-
 ```
 cp /etc/heat/heat.conf /etc/heat/heat.conf.orig
 ```
 
 - Sửa các cấu hình của heat
-
 ```
 crudini --set /etc/heat/heat.conf DEFAULT deferred_auth_method trusts
 crudini --set /etc/heat/heat.conf DEFAULT trusts_delegated_roles heat_stack_owner
@@ -2330,13 +2328,11 @@ crudini --set /etc/heat/heat.conf trustee user_domain_name default
 ```
 
 - Đồng bộ database cho heat
-
 ```
 su -s /bin/sh -c "heat-manage db_sync" heat
 ```
 
 - Kích hoạt heat
-
 ```
 systemctl enable --now openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
 ```
@@ -2621,7 +2617,6 @@ crudini --set /etc/manila/manila.conf lvm lvm_share_export_ips 192.168.98.81
 ```
 
 - Kích hoạt manila và backend
-
 ```
 systemctl enable --now openstack-manila-share nfs-server
 ```
@@ -2631,37 +2626,31 @@ systemctl enable --now openstack-manila-share nfs-server
 Thực hiện các khai báo tiếp theo để sử dụng manila, các bước này làm trên node controller
 
 - Thực hiện tạo default share type cho manila.
-
 ```
 manila type-create default_share_type False
 ```
 
 - Kiểm lại type của manila 
-
 ```
 manila type-list
 ```
 
 - Tạo một phân vùng để share NFS có tên là share01 với dung lượng 10GB.
-
 ```
 manila create NFS 10 --name share01
 ```
 
 - Kiểm tra lại dung lượng của các phân vùng share
-
 ```
 manila list
 ```
 
 - Phân quyền để phân vùng share này cho các network cần thiết
-
 ```
 manila access-allow share01 ip 192.168.64.0/24 --access-level rw
 ```
 
 - Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM01
-
 ```
 openstack server list
 ```

@@ -1224,7 +1224,7 @@ Cấu hình nova
 ```
 crudini --set /etc/nova/nova.conf DEFAULT enabled_apis osapi_compute,metadata
 crudini --set /etc/nova/nova.conf DEFAULT transport_url rabbit://openstack:Welcome123@192.168.98.81
-crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.80.132
+crudini --set /etc/nova/nova.conf DEFAULT my_ip 192.168.98.101
 crudini --set /etc/nova/nova.conf DEFAULT use_neutron true
 crudini --set /etc/nova/nova.conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 crudini --set /etc/nova/nova.conf DEFAULT linuxnet_interface_driver nova.network.linux_net.LinuxOVSInterfaceDriver
@@ -2586,7 +2586,7 @@ Lưu ý: Trong hướng dẫn này thì node storage sử dụng chung với nod
 - Cài đặt các gói cần thiết
 
 ```
-dnf -y install openstack-manila-share python3-manilaclient python3-PyMySQL python3-mysqlclient
+dnf -y install openstack-manila-share python3-manilaclient python3-PyMySQL 
 ```
 
 - Cấu hình thêm cho file của manila 
@@ -2657,7 +2657,7 @@ manila list
 - Phân quyền để phân vùng share này cho các network cần thiết
 
 ```
-manila access-allow share01 ip 10.0.0.0/24 --access-level rw
+manila access-allow share01 ip 192.168.64.0/24 --access-level rw
 ```
 
 - Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM01

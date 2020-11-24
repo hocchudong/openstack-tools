@@ -2724,6 +2724,9 @@ root@vm03:~# ip a
     inet6 fe80::f816:3eff:fe3a:a898/64 scope link
        valid_lft forever preferred_lft forever
 ```
+
+Lưu ý: Client sẽ mất đường dẫn mount sau khi reboot, google để biết cách gắn mount mỗi khi OS reboot nhé.
+
 ===
 
 # THAM KHẢO

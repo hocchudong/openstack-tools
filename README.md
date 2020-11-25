@@ -22,3 +22,5 @@
 - [Hướng dẫn cài đặt OpenStack Ussuri trên Centos 8 sử dụng Kolla Ansible trên 1 node](./docs/kolla/openstack-ussuri-aio-kolla.md)
 
 - [Hướng dẫn cài đặt OpenStack Ussuri trên Centos 8 sử dụng Kolla Ansible trên nhiều node](./docs/kolla/openstack-ussuri-multinode-kolla.md)
+
+- [Hướng dẫn cài đặt OpenStack Victoria trên CentOS8 không có HA](./docs/openstack-victoria-CentOS8-install.md)

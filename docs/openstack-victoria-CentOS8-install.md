@@ -1934,6 +1934,64 @@ systemctl enable --now openstack-cinder-api.service openstack-cinder-scheduler.s
 
 Tới đây có thể dừng việc cài đặt để chuyển sang bước tạo VM, sau đó thao tác tiếp với các lệnh đối với cinder để kiểm chứng hoạt động của cinder ở các bước tiếp theo.
 
+## Cài đặt và cấu hình horizon
+
+- Cài đặt package
+
+`dnf --enablerepo=centos-openstack-ussuri,PowerTools,epel -y install openstack-dashboard`
+
+- Backup file cấu hình
+
+`/etc/openstack-dashboard/local_settings`
+
+- Chỉnh sửa file cấu hình
+
+`vi /etc/openstack-dashboard/local_settings`
+
+```
+# line 39: set Hosts you allow to access
+# to specify wildcard ['*'], allow all
+ALLOWED_HOSTS = ['*', ]
+# line 94-99: uncomment and specify Memcache server Host
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '192.168.98.81:11211',
+    },
+}
+
+# line 105: add
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# line 118: set Openstack Host
+# line 119: comment out and add a line to specify URL of Keystone Host
+OPENSTACK_HOST = "192.168.98.81"
+#OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_URL = "http://192.168.98.81:5000/v3"
+# line 123: set your timezone
+TIME_ZONE = "Asia/Ho_Chi_Minh"
+# add to the end
+WEBROOT = '/dashboard/'
+LOGIN_URL = '/dashboard/auth/login/'
+LOGOUT_URL = '/dashboard/auth/logout/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
+OPENSTACK_API_VERSIONS = {
+    "identity": 3,
+    "volume": 3,
+    "compute": 2,
+}
+```
+
+Thêm vào file `/etc/httpd/conf.d/openstack-dashboard.conf`
+
+`WSGIApplicationGroup %{GLOBAL}`
+
+Restart lại httpd
+
+`systemctl restart httpd`
+
+Truy cập dashboard ở địa chỉ `http://192.168.98.81/dashboard/`
 
 # 4. Hướng dẫn tạo VM để kiểm chứng hoạt động của OpenStack
 

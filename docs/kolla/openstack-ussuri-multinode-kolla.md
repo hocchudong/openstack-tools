@@ -66,7 +66,9 @@ systemctl disable firewalld
 Cấu hình đồng bộ thời gian
 
 ```
+dnf install chrony -y
 timedatectl set-timezone Asia/Ho_Chi_Minh
+sed -i 's/2.centos.pool.ntp.org/2.vn.pool.ntp.org/g' /etc/chrony.conf
 systemctl enable chronyd.service
 systemctl restart chronyd.service
 chronyc sources
@@ -139,21 +141,22 @@ dnf install -y epel-release
 dnf update -y
 ```
 
-Cấu hình đồng bộ thời gian
-
 ```
+dnf install chrony -y
 timedatectl set-timezone Asia/Ho_Chi_Minh
+sed -i 's/2.centos.pool.ntp.org/2.vn.pool.ntp.org/g' /etc/chrony.conf
 systemctl enable chronyd.service
 systemctl restart chronyd.service
 chronyc sources
 ```
 
-Cài đặt môi trường
+Cài đặt các gói hỗ trợ
 
-```
-yum install -y python-devel libffi-devel gcc openssl-devel libselinux-python
-yum install -y vim git byobu
-```
+`dnf install -y vim git byobu`
+
+Cài đặt môi trường python
+
+`dnf install python3-devel libffi-devel gcc openssl-devel python3-libselinux -y`
 
 Tắt máy và snapshot lại
 
@@ -260,7 +263,7 @@ kolla_install_type: "source"
 # enable_haproxy: "no"
 
 # Dải Mngt + admin, internal API
-kolla_internal_vip_address: "10.10.30.63"
+kolla_internal_vip_address: "10.10.30.61"
 network_interface: "ens3"
 
 # Dải Mngt Provider
@@ -329,3 +332,187 @@ source /etc/kolla/admin-openrc.sh
 Kiểm tra xem OpenStack hoạt động hay chưa
 
 `openstack token issue`
+
+### Phần 5 Hướng dẫn cấu hình octavia bằng kolla-ansible
+
+Clone repo về 
+
+`git clone https://github.com/openstack/octavia -b stable/ussuri`
+
+Kiểm tra password của octavia
+
+`cat /etc/kolla/passwords.yml | grep octavia_ca_password`
+
+Thay thế password vào file gen cert
+
+`sed -i 's/not-secure-passphrase/4eSTukxVTs700MecknzV4zt878tgwBMNPhQf58ka/g' octavia/bin/create_single_CA_intermediate_CA.sh`
+
+Gen cert
+
+```
+cd octavia/bin/
+./create_single_CA_intermediate_CA.sh openssl.cnf
+```
+
+Copy các file cert vào thư mục cấu hình
+
+```
+mkdir -p /etc/kolla/config/octavia
+cp single_ca/etc/octavia/certs/* /etc/kolla/config/octavia/
+```
+
+Chỉnh sửa file `/etc/kolla/globals.yml` thêm vào cấu hình sau
+
+`enable_octavia: "yes"`
+
+Sau đó reconfigure lại bằng câu lệnh
+
+`kolla-ansible -i multinode reconfigure`
+
+Sau khi cài đặt xong, tiến hành tạo image từ công cụ image builder
+
+```
+virtualenv /root/env-octavia
+source /root/env-octavia/bin/activate
+cd octavia/
+pip install -r requirements.txt
+cd diskimage-create
+pip install -r requirements.txt
+yum install -y qemu-img
+yum install debootstrap -y 
+./diskimage-create.sh -i ubuntu -t qcow2 -o amphora-x64-haproxy
+```
+
+Đợi cho tới khi quá trình tạo image hoàn tất.
+
+Xem password của octavia
+
+`cat /etc/kolla/passwords.yml | grep octavia_keystone_password`
+
+Tạo file octavia-rc.sh
+
+```
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_NAME=service
+export OS_TENANT_NAME=service
+export OS_USERNAME=octavia
+export OS_PASSWORD=JZKdOSBzrrHoP94anEy4suPMCiADffU4Odhu2cGC
+export OS_AUTH_URL=http://10.10.30.61:35357/v3
+export OS_INTERFACE=internal
+export OS_ENDPOINT_TYPE=internalURL
+export OS_IDENTITY_API_VERSION=3
+export OS_REGION_NAME=RegionOne
+export OS_AUTH_PLUGIN=password
+```
+
+Kích hoạt biến môi trường
+
+```
+source octavia-rc.sh
+```
+
+Tạo image từ file image đã tạo
+
+```
+openstack image create --container-format bare --disk-format qcow2 --private --file /root/amphora-x64-haproxy.qcow2 --tag amphora amphora
+```
+
+Tạo flavor
+
+```
+openstack flavor create --ram 2048 --disk 10 --vcpus 2 amphora-2g-2c
+```
+
+Tajo keypair
+
+```
+openstack keypair create --public-key /root/.ssh/id_rsa.pub octavia_ssh_key
+```
+
+Khởi tạo Security Group và Rule cho LB Network .
+
+````
+openstack --os-region-name=RegionOne security group create lb-mgmt-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol icmp lb-mgmt-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol tcp --dst-port 22 lb-mgmt-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol tcp --dst-port 9443 lb-mgmt-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol icmpv6 --ethertype IPv6 --remote-ip ::/0 lb-mgmt-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol tcp --dst-port 22 --ethertype IPv6 --remote-ip ::/0 lb-mgmt-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol tcp --dst-port 9443 --ethertype IPv6 --remote-ip ::/0 lb-mgmt-sec-grp
+```
+
+Khởi tạo Security group cho Health manager ( heatbeat tới các VM Load Balanacer ) . Đây là mạng liên hệ giữa Controller và các VM Load Balancer.
+
+```
+openstack --os-region-name=RegionOne security group create lb-health-mgr-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol udp --dst-port 5555 lb-health-mgr-sec-grp
+openstack --os-region-name=RegionOne security group rule create --protocol udp --dst-port 5555 --ethertype IPv6 --remote-ip ::/0 lb-health-mgr-sec-grp
+```
+
+Khởi tạo LB Network
+
+```
+neutron --os-region-name=RegionOne net-create lb-mgmt-net1
+neutron --os-region-name=RegionOne subnet-create --name lb-mgmt-subnet1 lb-mgmt-net1 192.168.199.0/24 --no-gateway
+```
+
+Khởi tạo port trên neutron sử dụng Security Group lb-health-mgr-sec-grp, sau đó gắn vào openvswitch cho Health Manager ( thực hiện trên tất cả node controller )
+
+```
+neutron port-create --name octavia-health-manager-region-one-listen-port --security-group lb-health-mgr-sec-grp --device-owner Octavia:health-mgr --binding:host_id=controller lb-mgmt-net1
+```
+
+Lưu lại thông tin của port
+
+<img src="https://i.imgur.com/y4eQHFW.png">
+
+Ta sẽ add nó vào ovs
+
+```
+docker exec -it openvswitch_vswitchd bash
+ovs-vsctl --may-exist add-port br-int o-hm0 \
+  -- set Interface o-hm0 type=internal \
+  -- set Interface o-hm0 external-ids:iface-status=active \
+  -- set Interface o-hm0 external-ids:attached-mac=fa:16:3e:07:b3:53 \
+  -- set Interface o-hm0 external-ids:skip_cleanup=true \
+  -- set Interface o-hm0 external-ids:iface-id=0b180f17-402f-488f-b16c-16a9526e8a46
+
+sudo ip link set dev o-hm0 address fa:16:3e:07:b3:53
+sudo dhclient -v o-hm0
+```
+
+Thêm các thông tin vào file `/etc/kolla/octavia-worker/octavia.conf`
+
+Chỉnh sửa các tham số `amp_boot_network_list, amp_secgroup_list, amp_flavor_id` và tham số `health_manager` về ip của dải `lb_mgnt` của cả file `/etc/kolla/octavia-health-manager/octavia.conf`
+
+```
+[controller_worker]
+amp_boot_network_list = 54e69090-760b-4a3e-8af9-1714caf6aa9e
+amp_image_tag = amphora
+amp_secgroup_list = e4f8988c-0855-46de-b373-37ede8ed28e6
+amp_flavor_id = a9ace064-810a-4249-a205-be4d320b0354
+amp_ssh_key_name = octavia_ssh_key
+client_ca = /etc/octavia/certs/client_ca.cert.pem
+network_driver = allowed_address_pairs_driver
+compute_driver = compute_nova_driver
+amphora_driver = amphora_haproxy_rest_driver
+amp_active_retries = 100
+amp_active_wait_sec = 2
+loadbalancer_topology = SINGLE
+
+[health_manager]
+bind_port = 5555
+bind_ip = 192.168.199.102
+heartbeat_key = insecure
+controller_ip_port_list = 192.168.199.102:5555
+stats_update_threads = 4
+health_update_threads = 4
+```
+
+Sau đó ta sẽ restart octavia-worker container
+
+```
+docker restart octavia_worker
+docker restart octavia_health_manager
+```

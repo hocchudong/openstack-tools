@@ -1934,7 +1934,7 @@ systemctl enable --now openstack-cinder-api.service openstack-cinder-scheduler.s
 
 Tới đây có thể dừng việc cài đặt để chuyển sang bước tạo VM, sau đó thao tác tiếp với các lệnh đối với cinder để kiểm chứng hoạt động của cinder ở các bước tiếp theo.
 
-## Cài đặt và cấu hình horizon
+## 3.2.14 Cài đặt và cấu hình horizon
 
 - Cài đặt package
 

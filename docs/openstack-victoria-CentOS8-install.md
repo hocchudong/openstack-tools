@@ -2132,11 +2132,82 @@ Approximate round trip times in milli-seconds:
 
 - Kết quả SSH: http://prntscr.com/vmpass
 
-### Tạo volume để kiểm chứng hoạt động của cinder.
+### Tạo VM sử dụng keypair
+
+Đây là kỹ thuật tạo vm và sử dụng keypair để login vào vm, ta thực hiện các bước sau
+
+- Down image ubuntu 20.04 
+
+```
+wget http://cloud-images.ubuntu.com/releases/20.04/release/ubuntu-20.04-server-cloudimg-amd64.img -P /var/kvm/images
+```
+
+- Up image lên hệ thống
+
+```
+openstack image create "Ubuntu2004-Official" --file /var/kvm/images/ubuntu-20.04-server-cloudimg-amd64.img --disk-format qcow2 --container-format bare --public
+```
+
+- Tạo flavor để boot VM là ubuntu
+
+```
+openstack flavor create --id 1 --vcpus 2 --ram 2048 --disk 10 m1.small
+```
+
+- Lấy network ID để gắn máy ảo vào
+
+```
+netID=$(openstack network list | grep ext_net | awk '{ print $2 }')
+```
+
+- Tạo keypair
+
+```
+ssh-keygen -q -N ""
+```
+
+```
+openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey
+```
+
+- Tạo vm
+
+```
+openstack server create --flavor m1.small --image Ubuntu2004-Official --security-group secgroup01 --key-name mykey --nic net-id=$netID vm0
+```
+
+- Kiểm tra lại danh sách VM bằng lệnh `openstack server list`
+
+- Đứng từ controller, thực hiện lệnh ssh với tài khoản là ubuntu vào VM vừa tạo (VM có IP 192.168.64.211)
+
+```
+ssh ubuntu@192.168.64.211
+```
+
+Ta không cần dùng mật khẩu dạng clear text vì image này và cách tạo máy ảo này sẽ sử dụng ssh keypair để thực hiện. Kết quả sẽ như bên dưới.
+
+```
+ubuntu@vm03:~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether fa:16:3e:3a:a8:98 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.64.211/24 brd 192.168.64.255 scope global dynamic ens3
+       valid_lft 74891sec preferred_lft 74891sec
+    inet6 fe80::f816:3eff:fe3a:a898/64 scope link
+       valid_lft forever preferred_lft forever
+ubuntu@vm03:~$
+```
+
+### Tạo volume để kiểm chứng hoạt động của cinder
 
 - Tạo volume chính là tạo các ổ cứng để gắn với máy ảo hoặc boot máy ảo từ volume đó.
 
-### Tạo volume gắn với máy ảo đã có.
+### Tạo volume gắn với máy ảo đã có
 
  Trong bước này sẽ thực hiện tạo volume và gắn volume với máy ảo đã có, việc này tương tự như gắn thêm các disk cho các VM.
 
@@ -2638,12 +2709,20 @@ manila type-list
 - Tạo một phân vùng để share NFS có tên là share01 với dung lượng 10GB.
 ```
 manila create NFS 10 --name share01
+manila create NFS 10 --name share02
 ```
 
-- Kiểm tra lại dung lượng của các phân vùng share
+- Kiểm tra lại dung lượng của các phân vùng share bằng lệnh `manila list`, ta có kết quả như sau
 ```
-manila list
+[root@controller01 ~]# manila list
++--------------------------------------+---------+------+-------------+-----------+-----------+--------------------+----------------------------------+-------------------+
+| ID                                   | Name    | Size | Share Proto | Status    | Is Public | Share Type Name    | Host                             | Availability Zone |
++--------------------------------------+---------+------+-------------+-----------+-----------+--------------------+----------------------------------+-------------------+
+| 19517cfa-1ff3-49aa-9232-be18ed5c635b | share02 | 10   | NFS         | available | False     | default_share_type | controller01@lvm#lvm-single-pool | nova              |
+| 16fbca6b-6fdc-4328-93e0-049a7746d98c | share01 | 10   | NFS         | available | False     | default_share_type | controller01@lvm#lvm-single-pool | nova              |
++--------------------------------------+---------+------+-------------+-----------+-----------+--------------------+----------------------------------+-------------------+
 ```
+
 
 - Phân quyền để phân vùng share này cho các network cần thiết
 ```
@@ -2651,13 +2730,44 @@ manila access-allow share01 ip 192.168.64.0/24 --access-level rw
 manila access-allow share01 ip 192.168.98.0/24 --access-level rw
 ```
 
-- Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM01
-  ```
-  openstack server list
-  ```
+- Kiểm tra lại việc phân quyền share bằng lệnh `manila access-list share01` ta có kết quả như sau:
+
+```
+[root@controller01 ~]#  manila access-list share01
++--------------------------------------+-------------+-----------------+--------------+--------+------------+----------------------------+------------+
+| id                                   | access_type | access_to       | access_level | state  | access_key | created_at                 | updated_at |
++--------------------------------------+-------------+-----------------+--------------+--------+------------+----------------------------+------------+
+| 0e6c9072-5198-4024-822b-28500b06ff15 | ip          | 192.168.64.0/24 | rw           | active | None       | 2020-11-24T16:23:12.000000 | None       |
+| 85b08cd2-9264-4f68-9d83-a2c5dddd007e | ip          | 192.168.98.0/24 | rw           | active | None       | 2020-11-24T16:23:17.000000 | None       |
++--------------------------------------+-------------+-----------------+--------------+--------+------------+----------------------------+------------+
+```
+
+- Lấy đường dẫn của thư mục share bằng lệnh `manila show share01` sau đó tìm dòng có chứa đường dẫn của phân vùng share hoặc sử dụng lệnh đưới để lấy nhanh đường dẫn `manila show share01 | grep path | cut -d'|' -f3`, ta sẽ có kết quả như sau:
+
+```
+[root@controller01 ~]# manila show share01 | grep path | cut -d'|' -f3
+path = 192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36
+```
 
 
-- Thực hiện mount, đứng từ VM và chạy lệnh dưới.
+- Khai báo để VM sử dụng phân vùng share, trong hướng dẫn này sẽ gắn với VM03. Cần tạo ra các VM có hệ điều hành là Ubuntu hoặc CentOS để thực hiện lệnh mount thay vì sử dụng hệ điều hành `cirros` vì sẽ thiếu gói.
+```
+openstack server list
+```
+
+```
+[root@controller01 ~]# openstack server list
++--------------------------------------+----------------------+--------+----------------------------------------+---------------------+----------+
+| ID                                   | Name                 | Status | Networks                               | Image               | Flavor   |
++--------------------------------------+----------------------+--------+----------------------------------------+---------------------+----------+
+| f05f0823-697d-4b22-9ed8-eceb95e5695c | vm03                 | ACTIVE | ext_net=192.168.64.211                 | Ubuntu2004-Official | m1.small |
+| b3acb579-2e3d-4ece-ba2b-abf6b06350ec | Heat_Deployed_Server | ACTIVE | int_net=192.168.23.99                  | cirros              | m1.tiny  |
+| d3adc40e-d083-4be8-88e9-292fa74dfcbd | vm02                 | ACTIVE | int_net=192.168.23.145, 192.168.64.216 | cirros              | m1.tiny  |
+| 80ec0a88-a624-4ce4-a16f-d9646d30fcaa | vm01                 | ACTIVE | ext_net=192.168.64.210                 | cirros              | m1.tiny  |
++--------------------------------------+----------------------+--------+----------------------------------------+---------------------+----------+
+```
+
+- Trong hướng dẫn này sử dụng `vm03` để thực hiện mount, ssh vào `vm03` này và thực hiện lệnh mount.
 
 ```
 sudo mount -vvvv -t nfs 192.168.98.81:/var/lib/manila/mnt/share-17473438-fe7e-4e50-b632-b28e7202cb36 /mnt

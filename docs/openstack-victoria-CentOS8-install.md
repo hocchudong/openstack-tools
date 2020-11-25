@@ -1937,7 +1937,7 @@ Tới đây có thể dừng việc cài đặt để chuyển sang bước tạ
 
 # 4. Hướng dẫn tạo VM để kiểm chứng hoạt động của OpenStack
 
-## Khai báo các tài nguyên cần thiết để tạo VM.
+## 4.1. Khai báo các tài nguyên cần thiết để tạo VM.
 
 
 - Khai báo provider network 
@@ -2203,7 +2203,7 @@ ubuntu@vm03:~$ ip a
 ubuntu@vm03:~$
 ```
 
-### Tạo volume để kiểm chứng hoạt động của cinder
+## 4.2. Tạo volume để kiểm chứng hoạt động của cinder
 
 - Tạo volume chính là tạo các ổ cứng để gắn với máy ảo hoặc boot máy ảo từ volume đó.
 

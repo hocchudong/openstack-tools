@@ -113,14 +113,16 @@ function install_ntp_server {
           sleep 3
           cp /etc/chrony.conf /etc/chrony.conf.orig
           if [ "$IP_ADD" == "$CTL1_IP_NIC1" ]; then
-                  sed -i 's/server 0.centos.pool.ntp.org iburst/ \
-server 1.vn.pool.ntp.org iburst \
-server 0.asia.pool.ntp.org iburst \
-server 3.asia.pool.ntp.org iburst/g' /etc/chrony.conf
+# sed -i 's/server 0.centos.pool.ntp.org iburst/ \
+# server 1.vn.pool.ntp.org iburst \
+# server 0.asia.pool.ntp.org iburst \
+# server 3.asia.pool.ntp.org iburst/g' /etc/chrony.conf
+# Bo comment 04 dong tren neu khong co may chu NTP Server (192.168.80.82)
+                  sed -i 's/server 0.centos.pool.ntp.org iburst/server 192.168.80.82 iburst/g' /etc/chrony.conf
                   sed -i 's/server 1.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
                   sed -i 's/server 2.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
                   sed -i 's/server 3.centos.pool.ntp.org iburst/#/g' /etc/chrony.conf
-                  sed -i 's/#allow 192.168.0.0\/16/allow 192.168.70.0\/24/g' /etc/chrony.conf
+				  sed -i 's/#allow 192.168.0.0\/16/allow 192.168.80.0\/24/g' /etc/chrony.conf
                   sleep 5                  
                   systemctl enable chronyd.service
                   systemctl start chronyd.service
@@ -148,8 +150,8 @@ function install_memcached() {
         #IP_LOCAL=`ip -o -4 addr show dev ens160 | sed 's/.* inet \([^/]*\).*/\1/'`
         #sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,$IP_LOCAL/g" /etc/sysconfig/memcached
         sed -i "s/-l 127.0.0.1,::1/-l 127.0.0.1,::1,$CTL1_IP_NIC1/g" /etc/sysconfig/memcached
-				systemctl enable memcached.service
-				systemctl start memcached.service
+		systemctl enable memcached.service
+		systemctl start memcached.service
 }
 
 ##############################################################################
@@ -164,9 +166,9 @@ sleep 3
 copykey
 setup_config
 
-echocolor "Cai dat proxy tren cac node"
-sleep 3
-install_proxy
+# echocolor "Cai dat proxy tren cac node"
+# sleep 3
+# install_proxy
 
 echocolor "Cai dat repo tren cac node"
 sleep 3
@@ -190,7 +192,7 @@ ssh root@$COM1_IP_NIC1 "hostnamectl set-hostname $COM1_HOSTNAME"
 ssh root@$COM2_IP_NIC1 "hostnamectl set-hostname $COM2_HOSTNAME"
 
 echocolor "XONG & KHOI DONG LAI MAY CHU"
-sleep 5
+sleep 3
 ssh root@$COM1_IP_NIC1 'init 6'
 ssh root@$COM2_IP_NIC1 'init 6'
 init 6

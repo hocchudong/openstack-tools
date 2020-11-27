@@ -38,7 +38,7 @@ function com_nova_config {
 	cp $com_nova_conf $com_nova_conf.orig
 
 	ops_edit $com_nova_conf DEFAULT enabled_apis osapi_compute,metadata
-	ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev ens160 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+	ops_edit $com_nova_conf DEFAULT my_ip $(ip addr show dev eth0 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
 	ops_edit $com_nova_conf DEFAULT use_neutron true
 	ops_edit $com_nova_conf DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 	ops_edit $com_nova_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC1
@@ -142,9 +142,9 @@ function com_neutron_config {
         
         ops_edit $com_neutron_conf oslo_messaging_notifications driver messagingv2
         
-        ops_edit $com_linuxbridge_agent linux_bridge physical_interface_mappings provider:ens256
+        ops_edit $com_linuxbridge_agent linux_bridge physical_interface_mappings provider:eth3
         ops_edit $com_linuxbridge_agent vxlan enable_vxlan True
-        ops_edit $com_linuxbridge_agent vxlan local_ip $(ip addr show dev ens192 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
+        ops_edit $com_linuxbridge_agent vxlan local_ip $(ip addr show dev eth1 scope global | grep "inet " | sed -e 's#.*inet ##g' -e 's#/.*##g')
         ops_edit $com_linuxbridge_agent securitygroup enable_security_group True
         ops_edit $com_linuxbridge_agent securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
         

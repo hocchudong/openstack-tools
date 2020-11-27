@@ -168,13 +168,13 @@ function create_lvm() {
 		systemctl enable lvm2-lvmetad.service
 		systemctl start lvm2-lvmetad.service
 
-		pvcreate /dev/sdb
-		vgcreate cinder-volumes /dev/sdb
+		pvcreate /dev/vdb
+		vgcreate cinder-volumes /dev/vdb
 
 		cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
-		#sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/sdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
+		#sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/vdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
     # fix filter cua lvm tren CentOS 7.4, chen vao dong 141 cua file /etc/lvm/lvm.conf
-    sed -i '141i\        filter = [ "a/sda/", "a/sdb/", "r/.*/"]' /etc/lvm/lvm.conf
+    sed -i '141i\        filter = [ "a/vda/", "a/vdb/", "r/.*/"]' /etc/lvm/lvm.conf
 	else 
 		echocolor "Khong cau hinh LVM vi ko cai cinder-volume"
 	fi
@@ -207,6 +207,6 @@ cinder_syncdb
 
 echocolor "Restart dich vu CINDER"
 sleep 3
-cinder_enable_restart
+cinder_enable_restart $1
 
 echocolor "Da cai dat xong CINDER"

@@ -89,7 +89,7 @@ function com_nova_config {
 	ops_edit $com_nova_conf libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
 	ops_edit $com_nova_conf oslo_messaging_notifications driver messagingv2
 
-    ops_edit $com_nova_conf cinder os_region_name RegionOne
+  ops_edit $com_nova_conf cinder os_region_name RegionOne
 	
 }
 

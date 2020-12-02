@@ -873,10 +873,12 @@ cp /etc/glance/glance-api.conf /etc/glance/glance-api.conf.orig
 Cấu hình glance 
 
 ```
+crudini --set /etc/glance/glance-api.conf DEFAULT connection bind_host 0.0.0.0
+
 crudini --set /etc/glance/glance-api.conf database connection  mysql+pymysql://glance:Welcome123@192.168.98.81/glance
 
 crudini --set /etc/glance/glance-api.conf keystone_authtoken www_authenticate_uri http://192.168.98.81:5000
-crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_url  http://192.168.98.81:5000
+crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_url http://192.168.98.81:5000
 crudini --set /etc/glance/glance-api.conf keystone_authtoken memcached_servers 192.168.98.81:11211
 crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_type password 
 crudini --set /etc/glance/glance-api.conf keystone_authtoken project_domain_name Default

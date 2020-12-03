@@ -274,7 +274,7 @@ Kiểm tra lại trạng thái của chrony xem đã OK hay chưa.
 systemctl status chronyd
 ```
 
-Kết quả như bên dưới là NTP server đã hoạt động.
+Kiểm tra thời gian và trạng thái đồng bộ bằng lệnh `timedatectl`. Kết quả như bên dưới là NTP server đã hoạt động.
 
 ```
 [root@controller01 ~]# timedatectl
@@ -362,13 +362,7 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ^* controller01                  4   6   377     1   -593ns[  +24us] +/-   12ms
 ```
 
-Kiểm tra lại thời gian sau khi đồng bộ
-
-```
-timedatectl
-```
-
-Kết quả như bên dưới là ok.
+Kiểm tra thời gian và trạng thái đồng bộ bằng lệnh `timedatectl`. Kết quả như bên dưới là NTP server đã hoạt động.
 
 ```
 [root@network01 ~]# timedatectl
@@ -438,13 +432,8 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ^* controller01                  4   6     7     0  +6548ns[  +43us] +/-   12ms
 ```
 
-Kiểm tra lại thời gian sau khi đồng bộ
+Kiểm tra thời gian và trạng thái đồng bộ bằng lệnh `timedatectl`. Kết quả như bên dưới là NTP server đã hoạt động.
 
-```
-timedatectl
-```
-
-Kết quả như bên dưới là ok.
 
 ```
 [root@compute01 ~]# timedatectl

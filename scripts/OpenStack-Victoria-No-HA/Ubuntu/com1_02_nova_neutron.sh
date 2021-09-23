@@ -131,8 +131,7 @@ function neutron_config_linuxbridge () {
 	ops_add $linuxbridgefile vxlan l2_population true
   
   ops_add $linuxbridgefile securitygroup enable_security_group true
-	ops_add $linuxbridgefile securitygroup \
-		firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+	ops_add $linuxbridgefile securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 }
 
 
@@ -148,8 +147,7 @@ function neutron_config_dhcp () {
 	ops_add $dhcpfile DEFAULT interface_driver linuxbridge
 	ops_add $dhcpfile DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
 	ops_add $dhcpfile DEFAULT enable_isolated_metadata true
-	ops_add $dhcpfile DEFAULT force_metadata True
-  
+	ops_add $dhcpfile DEFAULT force_metadata True  
 }
 
 # Function configure the metadata agent

@@ -38,16 +38,16 @@ function placement_create_info () {
   openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC2:8778
   openstack endpoint create --region RegionOne placement admin  http://$CTL1_IP_NIC2:8778
 
-	## Create info for placement user
-	echocolor "Create info for placement user"
-	sleep 3
+  ## Create info for placement user
+  echocolor "Create info for placement user"
+  sleep 3
 
-	openstack user create --domain default --password $PLACEMENT_PASS placement
-	openstack role add --project service --user placement admin
-	openstack service create --name placement --description "Placement API" placement
-	openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC2:8778
-	openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC2:8778
-	openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC2:8778
+  openstack user create --domain default --password $PLACEMENT_PASS placement
+  openstack role add --project service --user placement admin
+  openstack service create --name placement --description "Placement API" placement
+  openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC2:8778
+  openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC2:8778
+  openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC2:8778
 }
 
 # Function install components of placement

@@ -203,7 +203,7 @@ function nova_config () {
 }
 
 # Function populate the nova-api database
-nova_populate_nova-api_db () {
+nova_populate_nova_api_db () {
 echocolor "Populate the nova-api database"
 sleep 3
 su -s /bin/sh -c "nova-manage api_db sync" nova
@@ -249,47 +249,88 @@ function nova_restart () {
 }
 
 #######################
-###Execute placement_###
+## Execute placement_##
 #######################
+
+sendtelegram "Bat dau cai dat placement `hostname`"
 
 placement_create_db
+sendtelegram "Cai placement_create_db tren `hostname`"
+
 placement_create_info
+sendtelegram "Cai placement_create_info tren `hostname`"
+
 placement_install
+sendtelegram "Cai placement_install tren `hostname`"
+
 placement_config
+sendtelegram "Cai placement_config tren `hostname`"
+
 placement_populate_db
+sendtelegram "Cai placement_populate_db tren `hostname`"
+
 placement_restart
+sendtelegram "Cai placement_restart tren `hostname`"
+
+sendtelegram "Da hoa thanh cai dat placement `hostname`"
+notify
 
 
 #######################
-###Execute placement_###
+###Execute Nova###
 #######################
+
+sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
 nova_create_db
+sendtelegram "Da hoa thanh cai dat nova_create_db `hostname`"
+
 
 # Create infomation for Compute service
 nova_create_info
+sendtelegram "Da hoa thanh cai dat nova_create_info `hostname`"
 
 # Install components of Nova
 nova_install
+sendtelegram "Da hoa thanh cai dat nova_install `hostname`"
+
 
 # Config /etc/nova/nova.conf file
+sendtelegram "Da hoa thanh cai dat nova_config `hostname`"
 nova_config
 
+
 # Populate the nova-api database
-nova_populate_nova-api_db
+sendtelegram "Da hoa thanh cai dat nova_populate_nova_api_db `hostname`"
+nova_populate_nova_api_db
+
 
 # Register the cell0 database
+sendtelegram "Da hoa thanh cai dat nova_register_cell0 `hostname`"
+
 nova_register_cell0
+
 	
 # Create the cell1 cell
+sendtelegram "Da hoa thanh cai dat nova_create_cell1 `hostname`"
 nova_create_cell1
 
+
 # Populate the nova database
+sendtelegram "Da hoa thanh cai dat nova_populate_nova_db `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly
+sendtelegram "Da hoa thanh cai dat nova_verify_cell `hostname`"
 nova_verify_cell
 
+
 # Restart installation
+sendtelegram "Thu hien nova_restart `hostname`"
 nova_restart
+
+sendtelegram "Da hoa thanh cai dat NOVA `hostname`"
+
+sendtelegram "Da hoa thanh script $0 `hostname`"
+notify

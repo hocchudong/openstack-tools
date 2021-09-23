@@ -188,6 +188,6 @@ keystone_create_opsclient_scripts
 sendtelegram "Cau hinh keystone_verify tren `hostname`"
 keystone_verify
 
-sendtelegram "Da hoan thanh cai dat keystone tren `hostname`"
+sendtelegram "Da hoa thanh $0 `hostname`"
 notify
 

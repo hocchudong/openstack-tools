@@ -137,4 +137,6 @@ install_mq
 # Install Memcached
 sendtelegram "Cai dat install_memcached tren `hostname`"
 install_memcached
+
+sendtelegram "Da hoa thanh $0 `hostname`"
 notify

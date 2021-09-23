@@ -240,6 +240,7 @@ function nova_restart () {
 #######################
 ## Execute placement_##
 #######################
+sendtelegram "Thuc thi script $0 tren `hostname`"
 
 sendtelegram "Bat dau cai dat placement `hostname`"
 

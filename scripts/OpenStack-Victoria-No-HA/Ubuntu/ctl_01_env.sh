@@ -116,9 +116,11 @@ function install_memcached () {
 #######################
 ###Execute functions###
 #######################
+
+sendtelegram "Thuc thi script $0 tren `hostname`"
+
 sendtelegram "config_hostname `hostname`"
 config_hostname
-
 
 # Update and upgrade for controller
 sendtelegram "Update OS tren `hostname`"

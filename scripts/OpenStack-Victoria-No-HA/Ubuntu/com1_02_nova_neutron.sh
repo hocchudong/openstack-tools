@@ -178,8 +178,7 @@ function neutron_restart () {
 #######################
 ###Execute functions###
 #######################
-
-sendtelegram "Cai NOVA cho tren `hostname`"
+sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Install nova-compute
 sendtelegram "Cai nova_install cho tren `hostname`"

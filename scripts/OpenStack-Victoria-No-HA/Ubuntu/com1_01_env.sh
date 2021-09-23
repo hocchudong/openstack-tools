@@ -40,8 +40,7 @@ function install_ops_packages () {
 #######################
 ###Execute functions###
 #######################
-sendtelegram "Cai moi truong cho tren `hostname`"
-
+sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Update and upgrade for COMPUTE
 sendtelegram "Cai update_upgrade tren `hostname`"

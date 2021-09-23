@@ -130,7 +130,7 @@ function glance_upload_image () {
 ###Execute functions###
 #######################
 
-sendtelegram "Bat dau cai dat GLANCE `hostname`"
+sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Create database for Glance
 sendtelegram "Cai glance_create_db tren `hostname`"

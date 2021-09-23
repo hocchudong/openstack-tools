@@ -143,6 +143,8 @@ keystone_verify () {
 #######################
 ###Execute functions###
 #######################
+sendtelegram "Thuc thi script $0 tren `hostname`"
+
 
 # Create database for Keystone
 sendtelegram "Cai keystone_create_db tren `hostname`"

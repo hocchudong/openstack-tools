@@ -84,16 +84,22 @@ horizon_restart () {
 ###Execute functions###
 #######################
 
+sendtelegram "Thu thi script $0 tren `hostname`"
+
 # Install the packages
+sendtelegram "Cai dat horizon_install tren `hostname`"
 horizon_install
 
 # Redirecting web
+sendtelegram "Cai dat redirect_web tren `hostname`"
 redirect_web
 
 # Edit the /etc/openstack-dashboard/local_settings.py file
+sendtelegram "Cai dat horizon_config tren `hostname`"
 horizon_config
 
 # Restart installation
+sendtelegram "Cai dat horizon_restart tren `hostname`"
 horizon_restart
 
 echocolor #================================#
@@ -103,3 +109,7 @@ echo "Domain: Default"
 echo "User: admin or demo"
 echo "Password: $ADMIN_PASS"
 echocolor #================================#
+
+sendtelegram "Da hoan thanh cai dat HORIZON `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
+notify

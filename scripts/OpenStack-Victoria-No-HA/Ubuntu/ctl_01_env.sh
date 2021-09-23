@@ -132,9 +132,9 @@ install_database
 
 # Install Message queue (rabbitmq)
 sendtelegram "Cai dat install_mq tren `hostname`"
-
 install_mq
 
 # Install Memcached
 sendtelegram "Cai dat install_memcached tren `hostname`"
 install_memcached
+notify

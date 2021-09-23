@@ -18,7 +18,7 @@ EOF
 }
 
 # Function create the Glance service credentials
-glance_create_service () {
+function glance_create_service () {
 	echocolor "Set variable environment for admin user"
 	sleep 3
 	source /root/admin-openrc
@@ -28,34 +28,32 @@ glance_create_service () {
 
 	openstack user create --domain default --password $GLANCE_PASS glance
 	openstack role add --project service --user glance admin
-	openstack service create --name glance \
-	  --description "OpenStack Image" image
-	openstack endpoint create --region RegionOne \
-	  image public http://$CTL1_IP_NIC2:9292
-	openstack endpoint create --region RegionOne \
-	  image internal http://$CTL1_IP_NIC2:9292
-	openstack endpoint create --region RegionOne \
-	  image admin http://$CTL1_IP_NIC2:9292
+	openstack service create --name glance --description "OpenStack Image" image
+  
+	openstack endpoint create --region RegionOne image public http://$CTL1_IP_NIC2:9292
+	openstack endpoint create --region RegionOne image internal http://$CTL1_IP_NIC2:9292
+	openstack endpoint create --region RegionOne image admin http://$CTL1_IP_NIC2:9292
 }
 
 # Function install components of Glance
-glance_install () {
+function glance_install () {
 	echocolor "Install and configure components of Glance"
 	sleep 3
 
-	apt-get install glance -y
+	apt install glance -y
 }
 
 # Function config /etc/glance/glance-api.conf file
-glance_config_api () {
+function glance_config_api () {
 	glanceapifile=/etc/glance/glance-api.conf
 	glanceapifilebak=/etc/glance/glance-api.conf.bak
 	cp $glanceapifile $glanceapifilebak
 	egrep -v "^#|^$"  $glanceapifilebak > $glanceapifile
 
-	ops_add $glanceapifile database \
-		connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
+	ops_add $glanceapifile database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
+	ops_add $glanceapifile DEFAULT bind_host 0.0.0.0
+  
 	ops_add $glanceapifile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000	  
 	ops_add $glanceapifile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
 	ops_add $glanceapifile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211	  
@@ -74,14 +72,13 @@ glance_config_api () {
 }
 
 # Function config /etc/glance/glance-registry.conf file
-glance_config_registry () {
+function glance_config_registry () {
 	glanceregistryfile=/etc/glance/glance-registry.conf
 	glanceregistryfilebak=/etc/glance/glance-registry.conf.bak
 	cp $glanceregistryfile $glanceregistryfilebak
 	egrep -v "^#|^$"  $glanceregistryfilebak > $glanceregistryfile
 
-	ops_add $glanceregistryfile database \
-	connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
+	ops_add $glanceregistryfile database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
 	ops_add $glanceregistryfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
 	ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000		
@@ -97,7 +94,7 @@ glance_config_registry () {
 }
 
 # Function populate the Image service database
-glance_populate_db () {
+function glance_populate_db () {
 	echocolor "Populate the Image service database"
 	sleep 3
 	su -s /bin/sh -c "glance-manage db_sync" glance
@@ -105,7 +102,7 @@ glance_populate_db () {
 
 
 # Function restart the Image services
-glance_restart () {
+function glance_restart () {
 	echocolor "Restart the Image services"
 	sleep 3
 
@@ -114,7 +111,7 @@ glance_restart () {
 }
 
 # Function upload image to Glance
-glance_upload_image () {
+function glance_upload_image () {
 	echocolor "Upload image to Glance"
 	sleep 3
 	source /root/admin-openrc
@@ -134,25 +131,33 @@ glance_upload_image () {
 #######################
 
 # Create database for Glance
+sendtelegram "Cai glance_create_db tren `hostname`"
 glance_create_db
 
 # Create the Glance service credentials
+sendtelegram "Cai glance_create_service tren `hostname`"
 glance_create_service
 
 # Install components of Glance
+sendtelegram "Cai glance_install va glance_config_api tren `hostname`"
 glance_install
-
-# Config /etc/glance/glance-api.conf file
 glance_config_api
 
 # Config /etc/glance/glance-registry.conf file
+sendtelegram "Cai glance_config_registry tren `hostname`"
 glance_config_registry
 
 # Populate the Image service database 
+sendtelegram "Cai glance_populate_db tren `hostname`"
 glance_populate_db
 
 # Restart the Image services
+sendtelegram "Cai glance_restart tren `hostname`"
 glance_restart 
   
 # Upload image to Glance
+sendtelegram "Cai glance_upload_image tren `hostname`"
 glance_upload_image
+
+sendtelegram "Da hoa thanh $0 `hostname`"
+notify

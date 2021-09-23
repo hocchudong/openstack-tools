@@ -161,5 +161,6 @@ glance_restart
 sendtelegram "Cai glance_upload_image tren `hostname`"
 glance_upload_image
 
-sendtelegram "Da hoa thanh $0 `hostname`"
+sendtelegram "Da hoan thanh cai dat GLANCE `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
 notify

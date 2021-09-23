@@ -11,12 +11,6 @@ function update_upgrade () {
 	apt-get update -y && apt-get upgrade -y
 }
 
-# Function install crudini
-function install_crudini () {
-	echocolor "Install crudini"
-	sleep 3
-	apt-get install -y crudini vim byobu
-}
 
 # Function install and config NTP
 function install_ntp () {
@@ -50,8 +44,7 @@ function install_ops_packages () {
 # Update and upgrade for COMPUTE
 update_upgrade
 
-# Install crudini
-install_crudini
+
 
 # Install and config NTP
 install_ntp

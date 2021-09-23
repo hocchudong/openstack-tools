@@ -4,18 +4,20 @@
 source function.sh
 source config.cfg
 
+function config_hostname () {
+echo "127.0.0.1 locahost $CTL1_HOSTNAME" > /etc/hosts
+echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
+echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
+echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
+echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
+}
+
+
 # Function update and upgrade for CONTROLLER
 function update_upgrade () {
 	echocolor "Update and Update controller"
 	sleep 3
 	apt-get update -y&& apt-get upgrade -y
-}
-
-# Function install crudini
-function install_crudini () {
-	echocolor "Install crudini"
-	sleep 3
-	apt-get install -y crudini
 }
 
 # Function install and config NTP
@@ -31,7 +33,7 @@ pool 2.debian.pool.ntp.org offline iburst \
 server 0.asia.pool.ntp.org iburst \
 server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
-	echo "allow 172.16.68.0/24" >> $ntpfile
+	echo "allow 172.16.70.212/24" >> $ntpfile
 
 	service chrony restart
 }
@@ -40,27 +42,25 @@ server 1.asia.pool.ntp.org iburst/g' $ntpfile
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	apt-get install software-properties-common -y
-	add-apt-repository cloud-archive:queens -y
-	apt-get update -y && apt-get dist-upgrade -y
-
-	apt-get install python-openstackclient -y
+	sudo apt-get install software-properties-common -y 
+  sudo add-apt-repository cloud-archive:wallaby -y
+  sudo apt-get update -y
+  sudo apt-get upgrade -y
+  sudo apt-get install python-openstackclient -y
 }
 
 function install_database() {
 	echocolor "Install and Config MariaDB"
 	sleep 3
 
-	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | \
-	    debconf-set-selections
-	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | \
-	    debconf-set-selections
+	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | debconf-set-selections
+	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | debconf-set-selections
 
-	apt-get install -y  mariadb-server
+	sudo apt install mariadb-server python3-pymysql -y
+
 
 	sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
-	sed -i 's/character-set-server  = utf8mb4/character-set-server  = utf8/' \
-	    /etc/mysql/mariadb.conf.d/50-server.cnf
+	sed -i 's/character-set-server  = utf8mb4/character-set-server  = utf8/' /etc/mysql/mariadb.conf.d/50-server.cnf
 	sed -i 's/collation-server/#collation-server/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 	systemctl restart mysql
@@ -93,7 +93,7 @@ function install_mq () {
 	echocolor "Install Message queue (rabbitmq)"
 	sleep 3
 
-	apt-get install rabbitmq-server -y
+	sudo apt -y install rabbitmq-server memcached python3-pymysql
 	rabbitmqctl add_user openstack $RABBIT_PASS
 	rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 }
@@ -107,7 +107,7 @@ function install_memcached () {
 	memcachefile=/etc/memcached.conf
 	sed -i 's|-l 127.0.0.1|'"-l $CTL1_IP_NIC2"'|g' $memcachefile
 
-	service memcached restart
+	systemctl restart mariadb rabbitmq-server memcached
 } 
 
 #######################
@@ -116,9 +116,6 @@ function install_memcached () {
 
 # Update and upgrade for controller
 update_upgrade
-
-# Install crudini
-install_crudini
 
 # Install and config NTP
 install_ntp

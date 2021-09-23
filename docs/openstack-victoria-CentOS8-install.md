@@ -274,7 +274,7 @@ Kiểm tra lại trạng thái của chrony xem đã OK hay chưa.
 systemctl status chronyd
 ```
 
-Kết quả như bên dưới là NTP server đã hoạt động.
+Kiểm tra thời gian và trạng thái đồng bộ bằng lệnh `timedatectl`. Kết quả như bên dưới là NTP server đã hoạt động.
 
 ```
 [root@controller01 ~]# timedatectl
@@ -362,13 +362,7 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ^* controller01                  4   6   377     1   -593ns[  +24us] +/-   12ms
 ```
 
-Kiểm tra lại thời gian sau khi đồng bộ
-
-```
-timedatectl
-```
-
-Kết quả như bên dưới là ok.
+Kiểm tra thời gian và trạng thái đồng bộ bằng lệnh `timedatectl`. Kết quả như bên dưới là NTP server đã hoạt động.
 
 ```
 [root@network01 ~]# timedatectl
@@ -438,13 +432,8 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ^* controller01                  4   6     7     0  +6548ns[  +43us] +/-   12ms
 ```
 
-Kiểm tra lại thời gian sau khi đồng bộ
+Kiểm tra thời gian và trạng thái đồng bộ bằng lệnh `timedatectl`. Kết quả như bên dưới là NTP server đã hoạt động.
 
-```
-timedatectl
-```
-
-Kết quả như bên dưới là ok.
 
 ```
 [root@compute01 ~]# timedatectl
@@ -873,10 +862,12 @@ cp /etc/glance/glance-api.conf /etc/glance/glance-api.conf.orig
 Cấu hình glance 
 
 ```
+crudini --set /etc/glance/glance-api.conf DEFAULT connection bind_host 0.0.0.0
+
 crudini --set /etc/glance/glance-api.conf database connection  mysql+pymysql://glance:Welcome123@192.168.98.81/glance
 
 crudini --set /etc/glance/glance-api.conf keystone_authtoken www_authenticate_uri http://192.168.98.81:5000
-crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_url  http://192.168.98.81:5000
+crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_url http://192.168.98.81:5000
 crudini --set /etc/glance/glance-api.conf keystone_authtoken memcached_servers 192.168.98.81:11211
 crudini --set /etc/glance/glance-api.conf keystone_authtoken auth_type password 
 crudini --set /etc/glance/glance-api.conf keystone_authtoken project_domain_name Default
@@ -2686,7 +2677,7 @@ crudini --set /etc/manila/manila.conf keystone_authtoken auth_type password
 crudini --set /etc/manila/manila.conf keystone_authtoken project_domain_name default
 crudini --set /etc/manila/manila.conf keystone_authtoken user_domain_name default
 crudini --set /etc/manila/manila.conf keystone_authtoken project_name service
-crudini --set /etc/manila/manila.conf keystone_authtoken username heat
+crudini --set /etc/manila/manila.conf keystone_authtoken username manila
 crudini --set /etc/manila/manila.conf keystone_authtoken password Welcome123
 
 crudini --set /etc/manila/manila.conf oslo_concurrency lock_path \$state_path/tmp

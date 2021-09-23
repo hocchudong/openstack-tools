@@ -25,7 +25,7 @@ function install_ntp () {
 	echocolor "Install NTP"
 	sleep 3
 
-	apt-get install chrony -y
+	apt-get install chrony -y 2>&1 | tee -a filelog-install.txt
 	ntpfile=/etc/chrony/chrony.conf
 
 	sed -i 's/pool 2.debian.pool.ntp.org offline iburst/ \
@@ -35,18 +35,18 @@ server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
 	echo "allow 172.16.70.212/24" >> $ntpfile
 
-	service chrony restart
+	service chrony restart 2>&1 | tee -a filelog-install.txt
 }
 
 # Function install OpenStack packages (python-openstackclient)
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	sudo apt-get install software-properties-common -y 
-  sudo add-apt-repository cloud-archive:wallaby -y
-  sudo apt-get update -y
-  sudo apt-get upgrade -y
-  sudo apt-get install python-openstackclient -y
+	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
+  sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get install python-openstackclient -y 2>&1 | tee -a filelog-install.txt
 }
 
 function install_database() {
@@ -56,7 +56,7 @@ function install_database() {
 	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | debconf-set-selections
 	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | debconf-set-selections
 
-	sudo apt install mariadb-server python3-pymysql -y
+	sudo apt install mariadb-server python3-pymysql -y 2>&1 | tee -a filelog-install.txt
 
 
 	sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
@@ -107,7 +107,7 @@ function install_memcached () {
 	memcachefile=/etc/memcached.conf
 	sed -i 's|-l 127.0.0.1|'"-l $CTL1_IP_NIC2"'|g' $memcachefile
 
-	systemctl restart mariadb rabbitmq-server memcached
+	systemctl restart mariadb rabbitmq-server memcached 2>&1 | tee -a filelog-install.txt
 } 
 
 #######################

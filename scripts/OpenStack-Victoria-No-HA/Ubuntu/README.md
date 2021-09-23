@@ -73,11 +73,13 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
   apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
   apt-get -y install git curl vim byobu
   
-  git clone https://github.com/congto/openstack-tools.git
-  
-  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ /root/queens/
-  
-  cd queens/  && chmod +x *
+  git clone -b dev https://github.com/congto/openstack-tools
+
+  cp -R openstack-tools/scripts/OpenStack-Victoria-No-HA/Ubuntu/ .
+
+  cd Ubuntu/
+
+  chmod +x *
   ```
   
 - Thực thi script để thiết lập IP và hostname.
@@ -102,11 +104,13 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
   apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
   apt-get -y install git curl vim byobu
   
-  git clone https://github.com/congto/openstack-tools.git
-  
-  mv openstack-tools/scripts/OpenStack-Queens-No-HA/UbuntuScriptsQueens/ /root/queens/
-  
-  cd queens/ && chmod +x *
+  git clone -b dev https://github.com/congto/openstack-tools
+
+  cp -R openstack-tools/scripts/OpenStack-Victoria-No-HA/Ubuntu/ .
+
+  cd Ubuntu/
+
+  chmod +x *
   ```
   
 - Thực thi script để thiết lập IP và hostname.
@@ -129,7 +133,7 @@ Sau khi thực hiện xong, máy chủ sẽ khởi động lại, sử dụng IP
 	
 - Cài đặt git và script cài đặt.
 	```sh
-  cd /root/queens/
+  cd Ubuntu/
 	```
 
 - Thực thi script cài đặt các gói bổ trợ trên node controller1

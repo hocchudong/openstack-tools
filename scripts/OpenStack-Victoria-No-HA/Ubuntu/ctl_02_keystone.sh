@@ -22,7 +22,7 @@ EOF
 function keystone_install () {
 	echocolor "Install and configure components of Keystone"
 	sleep 3
-	apt install keystone apache2 libapache2-mod-wsgi -y
+	apt -y install keystone python3-openstackclient apache2 libapache2-mod-wsgi-py3 python3-oauth2client  
 }
 
 # Function configure components of Keystone
@@ -81,6 +81,7 @@ function keystone_create_domain_project_user_role () {
 	export OS_PROJECT_DOMAIN_NAME=Default
 	export OS_AUTH_URL=http://$CTL1_IP_NIC2:5000/v3
 	export OS_IDENTITY_API_VERSION=3
+  export OS_IMAGE_API_VERSION=2
 	
 	echocolor "Create domain, projects, users and roles"
 	sleep 3
@@ -144,34 +145,49 @@ keystone_verify () {
 #######################
 
 # Create database for Keystone
+sendtelegram "Cai keystone_create_db tren `hostname`"
 keystone_create_db
 
 # Install components of Keystone
+sendtelegram "Cai keystone_install tren `hostname`"
 keystone_install
 
 # Configure components of Keystone
+sendtelegram "Cau hinh keystone_config tren `hostname`"
 keystone_config
 
 # Populate the Identity service database
+sendtelegram "Cau hinh keystone_populate_db tren `hostname`"
 keystone_populate_db
 
 # Initialize Fernet key repositories
+sendtelegram "Cau hinh keystone_initialize_key tren `hostname`"
 keystone_initialize_key
 
 # Bootstrap the Identity service
+sendtelegram "Cau hinh keystone_bootstrap tren `hostname`"
 keystone_bootstrap
 
 # Configure the Apache HTTP server
+sendtelegram "Cau hinh keystone_config_apache tren `hostname`"
 keystone_config_apache
 
 # Finalize the installation
+sendtelegram "Cau hinh keystone_finalize_install tren `hostname`"
 keystone_finalize_install
 
 # Create domain, projects, users and roles
+sendtelegram "Cau hinh keystone_create_domain_project_user_role tren `hostname`"
 keystone_create_domain_project_user_role
 
 # Create OpenStack client environment scripts
+sendtelegram "Cau hinh keystone_create_opsclient_scripts tren `hostname`"
 keystone_create_opsclient_scripts
 
 # Verifying keystone
+sendtelegram "Cau hinh keystone_verify tren `hostname`"
 keystone_verify
+
+sendtelegram "Da hoan thanh cai dat keystone tren `hostname`"
+notify
+

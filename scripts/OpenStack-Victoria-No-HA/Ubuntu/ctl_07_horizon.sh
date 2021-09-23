@@ -71,6 +71,8 @@ sed -i "s/'enable_vpn': True,/'enable_vpn': False,/g" $horizonfile
 sed -i "s/'enable_fip_topology_check': True,/'enable_fip_topology_check': False,/g" $horizonfile
 
 sed -i 's/TIME_ZONE = "UTC"/TIME_ZONE = "Asia\/Ho_Chi_Minh"/g' $horizonfile
+
+sed -i "s/DEFAULT_THEME = 'ubuntu'/DEFAULT_THEME = 'Default'/g" $horizonfile
 }
 
 # Function restart installation

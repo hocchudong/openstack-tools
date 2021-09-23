@@ -4,6 +4,99 @@
 source function.sh
 source config.cfg
 
+# Function create database for placement 
+function placement_create_db () {
+	echocolor "Create placement_create_db for Nova"
+	sleep 3
+
+cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
+CREATE DATABASE placement;
+
+GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'localhost' IDENTIFIED BY '$PASS_DATABASE_NOVA_API';
+GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'%' IDENTIFIED BY '$PASS_DATABASE_NOVA_API';
+
+FLUSH PRIVILEGES;
+EOF
+}
+
+# Function create placement
+function placement_create_info () {
+	echocolor "Set environment variable for user admin"
+	source /root/admin-openrc
+	echocolor "Create infomation for Compute service"
+	sleep 3
+
+	## Create info for nova user
+	echocolor "Create info for nova user"
+	sleep 3
+
+  openstack user create --domain default --password $NOVA_PAS placement
+  openstack role add --project service --user placement admin
+  openstack service create --name placement  --description "Placement API" placement
+  
+  openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC2:8778
+  openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC2:8778
+  openstack endpoint create --region RegionOne placement admin  http://$CTL1_IP_NIC2:8778
+
+	## Create info for placement user
+	echocolor "Create info for placement user"
+	sleep 3
+
+	openstack user create --domain default --password $PLACEMENT_PASS placement
+	openstack role add --project service --user placement admin
+	openstack service create --name placement --description "Placement API" placement
+	openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC2:8778
+	openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC2:8778
+	openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC2:8778
+}
+
+# Function install components of placement
+function placement_install () {
+	echocolor "Install and configure components of placement"
+	sleep 3
+	apt install placement-api -y
+}
+
+# Function config /etc/placement/placement.conf
+function placement_config () {
+	placementfile=/etc/placement/placement.conf
+	placementfilebak=/etc/placement/placement.conf.bka
+	cp $placementfile $placementfilebak
+	egrep -v "^$|^#" $placementfilebak > $placementfile
+
+	ops_add $placementfile placement_database connection mysql+pymysql://placement:$PASS_DATABASE_NOVA_API@$CTL1_IP_NIC2/placement
+	ops_add $placementfile api auth_strategy keystone
+
+	ops_add $placementfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000/v3
+	ops_add $placementfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
+	ops_add $placementfile keystone_authtoken auth_type password
+	ops_add $placementfile keystone_authtoken project_domain_name Default
+	ops_add $placementfile keystone_authtoken user_domain_name Default
+	ops_add $placementfile keystone_authtoken project_name service
+	ops_add $placementfile keystone_authtoken username placement
+	ops_add $placementfile keystone_authtoken password $NOVA_PASS
+}
+
+# Function populate the placement database
+function placement_populate_db () {
+echocolor "Populate the placement_populate_db database"
+sleep 3
+
+su -s /bin/sh -c "placement-manage db sync" placement
+}
+
+# Function restart installation
+function placement_restart () {
+	echocolor "Reload the web server"
+	sleep 3
+
+ service apache2 restart
+}
+
+##########################################################################################################
+##########################################################################################################
+##########################################################################################################
+
 # Function create database for Nova
 function nova_create_db () {
 	echocolor "Create database for Nova"
@@ -16,8 +109,7 @@ CREATE DATABASE nova;
 
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY '$PASS_DATABASE_NOVA_API';
 GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY '$PASS_DATABASE_NOVA_API';
- 
- 
+  
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '$PASS_DATABASE_NOVA';
 GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '$PASS_DATABASE_NOVA';
 
@@ -46,42 +138,28 @@ function nova_create_info () {
 	openstack endpoint create --region RegionOne compute internal http://$CTL1_IP_NIC2:8774/v2.1
 	openstack endpoint create --region RegionOne compute admin http://$CTL1_IP_NIC2:8774/v2.1
 
-	## Create info for placement user
-	echocolor "Create info for placement user"
-	sleep 3
-
-	openstack user create --domain default --password $PLACEMENT_PASS placement
-	openstack role add --project service --user placement admin
-	openstack service create --name placement --description "Placement API" placement
-	openstack endpoint create --region RegionOne placement public http://$CTL1_IP_NIC2:8778
-	openstack endpoint create --region RegionOne placement internal http://$CTL1_IP_NIC2:8778
-	openstack endpoint create --region RegionOne placement admin http://$CTL1_IP_NIC2:8778
 }
 
 # Function install components of Nova
-nova_install () {
+function nova_install () {
 	echocolor "Install and configure components of Nova"
 	sleep 3
-	apt install nova-api nova-conductor nova-consoleauth \
-	  nova-novncproxy nova-scheduler nova-placement-api -y
+	apt install nova-api nova-conductor nova-novncproxy nova-scheduler -y
 }
 
 # Function config /etc/nova/nova.conf file
-nova_config () {
+function nova_config () {
 	novafile=/etc/nova/nova.conf
 	novafilebak=/etc/nova/nova.conf.bak
 	cp $novafile $novafilebak
 	egrep -v "^$|^#" $novafilebak > $novafile
 
 	ops_del $novafile api_database connection
-	ops_add $novafile api_database \
-		connection mysql+pymysql://nova:$PASS_DATABASE_NOVA_API@$CTL1_IP_NIC2/nova_api
+	ops_add $novafile api_database connection mysql+pymysql://nova:$PASS_DATABASE_NOVA_API@$CTL1_IP_NIC2/nova_api
 
-	ops_add $novafile database \
-		connection mysql+pymysql://nova:$PASS_DATABASE_NOVA@$CTL1_IP_NIC2/nova
+	ops_add $novafile database connection mysql+pymysql://nova:$PASS_DATABASE_NOVA@$CTL1_IP_NIC2/nova
 
-	ops_add $novafile DEFAULT \
-		transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
+	ops_add $novafile DEFAULT	transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
 
 	ops_add $novafile api auth_strategy keystone
 
@@ -108,7 +186,6 @@ nova_config () {
 	ops_add $novafile glance api_servers http://$CTL1_IP_NIC2:9292
   
   ops_add $novafile cinder os_region_name RegionOne
-
 
 	ops_add $novafile oslo_concurrency lock_path /var/lib/nova/tmp
 		
@@ -166,14 +243,25 @@ function nova_restart () {
 	sleep 3
 
 	service nova-api restart
-	service nova-consoleauth restart
 	service nova-scheduler restart
 	service nova-conductor restart
 	service nova-novncproxy restart
 }
 
 #######################
-###Execute functions###
+###Execute placement_###
+#######################
+
+placement_create_db
+placement_create_info
+placement_install
+placement_config
+placement_populate_db
+placement_restart
+
+
+#######################
+###Execute placement_###
 #######################
 
 # Create database for Nova

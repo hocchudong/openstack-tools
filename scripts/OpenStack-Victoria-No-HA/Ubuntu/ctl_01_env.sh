@@ -5,6 +5,9 @@ source function.sh
 source config.cfg
 
 function config_hostname () {
+
+hostnamect set-hostname $CTL1_HOSTNAME
+
 echo "127.0.0.1 locahost $CTL1_HOSTNAME" > /etc/hosts
 echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
 echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
@@ -113,6 +116,9 @@ function install_memcached () {
 #######################
 ###Execute functions###
 #######################
+sendtelegram "config_hostname `hostname`"
+config_hostname
+
 
 # Update and upgrade for controller
 sendtelegram "Update OS tren `hostname`"

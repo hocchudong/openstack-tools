@@ -6,7 +6,7 @@ source config.cfg
 
 # Function create database for placement 
 function placement_create_db () {
-	echocolor "Create placement_create_db for Nova"
+	echocolor "Create placement_create_db for placement"
 	sleep 3
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
@@ -23,14 +23,13 @@ EOF
 function placement_create_info () {
 	echocolor "Set environment variable for user admin"
 	source /root/admin-openrc
-	echocolor "Create infomation for Compute service"
 	sleep 3
 
-	## Create info for nova user
-	echocolor "Create info for nova user"
+	## Create info for placement user
+	echocolor "Create info for placement user"
 	sleep 3
 
-  openstack user create --domain default --password $NOVA_PAS placement
+  openstack user create --domain default --password $NOVA_PASS placement
   openstack role add --project service --user placement admin
   openstack service create --name placement  --description "Placement API" placement
   
@@ -284,45 +283,45 @@ sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
 nova_create_db
-sendtelegram "Da hoa thanh cai dat nova_create_db `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_create_db `hostname`"
 
 
 # Create infomation for Compute service
 nova_create_info
-sendtelegram "Da hoa thanh cai dat nova_create_info `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_create_info `hostname`"
 
 # Install components of Nova
 nova_install
-sendtelegram "Da hoa thanh cai dat nova_install `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_install `hostname`"
 
 
 # Config /etc/nova/nova.conf file
-sendtelegram "Da hoa thanh cai dat nova_config `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_config `hostname`"
 nova_config
 
 
 # Populate the nova-api database
-sendtelegram "Da hoa thanh cai dat nova_populate_nova_api_db `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_populate_nova_api_db `hostname`"
 nova_populate_nova_api_db
 
 
 # Register the cell0 database
-sendtelegram "Da hoa thanh cai dat nova_register_cell0 `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_register_cell0 `hostname`"
 
 nova_register_cell0
 
 	
 # Create the cell1 cell
-sendtelegram "Da hoa thanh cai dat nova_create_cell1 `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_create_cell1 `hostname`"
 nova_create_cell1
 
 
 # Populate the nova database
-sendtelegram "Da hoa thanh cai dat nova_populate_nova_db `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_populate_nova_db `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly
-sendtelegram "Da hoa thanh cai dat nova_verify_cell `hostname`"
+sendtelegram "Da hoan thanh cai dat nova_verify_cell `hostname`"
 nova_verify_cell
 
 
@@ -330,7 +329,6 @@ nova_verify_cell
 sendtelegram "Thu hien nova_restart `hostname`"
 nova_restart
 
-sendtelegram "Da hoa thanh cai dat NOVA `hostname`"
-
-sendtelegram "Da hoa thanh script $0 `hostname`"
+sendtelegram "Da hoan thanh cai dat NOVA `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
 notify

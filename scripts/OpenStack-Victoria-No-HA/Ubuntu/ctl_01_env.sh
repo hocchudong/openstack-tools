@@ -115,19 +115,26 @@ function install_memcached () {
 #######################
 
 # Update and upgrade for controller
+sendtelegram "Update OS tren `hostname`"
 update_upgrade
 
 # Install and config NTP
+sendtelegram "Cai dat NTP tren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)
+sendtelegram "Cai dat install_ops_packages tren `hostname`"
 install_ops_packages
 
 # Install SQL database (Mariadb)
+sendtelegram "Cai dat install_database tren `hostname`"
 install_database
 
 # Install Message queue (rabbitmq)
+sendtelegram "Cai dat install_mq tren `hostname`"
+
 install_mq
 
 # Install Memcached
+sendtelegram "Cai dat install_memcached tren `hostname`"
 install_memcached

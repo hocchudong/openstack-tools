@@ -170,5 +170,8 @@ install_mq
 sendtelegram "Cai dat install_memcached tren `hostname`"
 install_memcached
 
+sendtelegram "Cai dat install_etcd tren `hostname`"
+install_etcd
+
 sendtelegram "Da hoa thanh $0 `hostname`"
 notify

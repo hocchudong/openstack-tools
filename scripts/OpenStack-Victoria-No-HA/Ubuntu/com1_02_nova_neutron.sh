@@ -83,9 +83,7 @@ function neutron_install () {
 	echocolor "Install the components Neutron"
 	sleep 3
 
-  apt install -y neutron-linuxbridge-agent \
-  neutron-dhcp-agent \
-  neutron-metadata-agent
+  apt install -y neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent
 }
 
 
@@ -113,6 +111,9 @@ function neutron_config_server_component () {
 	ops_add $neutronfile keystone_authtoken project_name service
 	ops_add $neutronfile keystone_authtoken username neutron
 	ops_add $neutronfile keystone_authtoken password $NEUTRON_PASS
+  
+  ops_add $neutronfile oslo_concurrency lock_path /var/lib/neutron/tmp
+
 }
 
 # Function configure the Linux bridge agent
@@ -180,30 +181,46 @@ function neutron_restart () {
 ###Execute functions###
 #######################
 
+sendtelegram "Cai NOVA cho tren `hostname`"
+
 # Install nova-compute
+sendtelegram "Cai nova_install cho tren `hostname`"
 nova_install
 
 # Edit /etc/nova/nova.conf file
+sendtelegram "Cai nova_config cho tren `hostname`"
 nova_config
 
 # Finalize installation
+sendtelegram "Cai nova_resart cho tren `hostname`"
 nova_resart
 
 # Install the components Neutron
+sendtelegram "Cai neutron_install cho tren `hostname`"
 neutron_install
 
 # Configure the common component
+sendtelegram "Cai neutron_config_server_component cho tren `hostname`"
 neutron_config_server_component
 
 # Configure the Linux bridge agent
+sendtelegram "Cai neutron_config_linuxbridge cho tren `hostname`"
 neutron_config_linuxbridge
 
+sendtelegram "Cai neutron_config_dhcp cho tren `hostname`"
 neutron_config_dhcp
 
+sendtelegram "Cai neutron_config_metadata cho tren `hostname`"
 neutron_config_metadata
 	
 # Configure the Compute service to use the Networking service
 #neutron_config_compute_use_network
 	
 # Restart installation
+sendtelegram "Cai neutron_restart cho tren `hostname`"
 neutron_restart
+
+
+sendtelegram "Da hoan thanh cai dat NOVA va NEUTRONG tren `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
+notify

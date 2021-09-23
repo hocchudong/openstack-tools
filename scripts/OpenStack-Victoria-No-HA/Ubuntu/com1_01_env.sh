@@ -40,7 +40,7 @@ function install_ops_packages () {
 #######################
 ###Execute functions###
 #######################
-sendtelegram "Cai NOVA tren `hostname`"
+sendtelegram "Cai moi truong cho tren `hostname`"
 
 
 # Update and upgrade for COMPUTE
@@ -54,7 +54,6 @@ install_ntp
 # OpenStack packages (python-openstackclient)
 sendtelegram "Cai install_ops_packages tren `hostname`"
 install_ops_packages
-
 
 sendtelegram "Da hoan thanh cai dat NOVA `hostname`"
 sendtelegram "Da hoan thanh script $0 `hostname`"

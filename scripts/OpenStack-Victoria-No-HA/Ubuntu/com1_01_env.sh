@@ -30,24 +30,32 @@ function install_ntp () {
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	apt-get install software-properties-common -y
-	add-apt-repository cloud-archive:queens -y
-	apt-get update -y && apt-get dist-upgrade -y
-
-	apt-get install python-openstackclient -y
+	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
+  sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get install python-openstackclient -y 2>&1 | tee -a filelog-install.txt
 }
 
 #######################
 ###Execute functions###
 #######################
+sendtelegram "Cai NOVA tren `hostname`"
+
 
 # Update and upgrade for COMPUTE
+sendtelegram "Cai update_upgrade tren `hostname`"
 update_upgrade
 
-
-
 # Install and config NTP
+sendtelegram "Cai install_ntp tren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)
+sendtelegram "Cai install_ops_packages tren `hostname`"
 install_ops_packages
+
+
+sendtelegram "Da hoan thanh cai dat NOVA `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
+notify

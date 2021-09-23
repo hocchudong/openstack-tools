@@ -71,27 +71,27 @@ function glance_config_api () {
 	ops_add $glanceapifile glance_store filesystem_store_datadir /var/lib/glance/images/
 }
 
-# Function config /etc/glance/glance-registry.conf file
-function glance_config_registry () {
-	glanceregistryfile=/etc/glance/glance-registry.conf
-	glanceregistryfilebak=/etc/glance/glance-registry.conf.bak
-	cp $glanceregistryfile $glanceregistryfilebak
-	egrep -v "^#|^$"  $glanceregistryfilebak > $glanceregistryfile
+## Function config /etc/glance/glance-registry.conf file
+# function glance_config_registry () {
+	# glanceregistryfile=/etc/glance/glance-registry.conf
+	# glanceregistryfilebak=/etc/glance/glance-registry.conf.bak
+	# cp $glanceregistryfile $glanceregistryfilebak
+	# egrep -v "^#|^$"  $glanceregistryfilebak > $glanceregistryfile
 
-	ops_add $glanceregistryfile database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
+	# ops_add $glanceregistryfile database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
-	ops_add $glanceregistryfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
-	ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000		
-	ops_add $glanceregistryfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211		
-	ops_add $glanceregistryfile keystone_authtoken auth_type password			
-	ops_add $glanceregistryfile keystone_authtoken project_domain_name default
-	ops_add $glanceregistryfile keystone_authtoken user_domain_name default		
-	ops_add $glanceregistryfile keystone_authtoken project_name service
-	ops_add $glanceregistryfile keystone_authtoken username glance
-	ops_add $glanceregistryfile keystone_authtoken password $GLANCE_PASS
+	# ops_add $glanceregistryfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+	# ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000		
+	# ops_add $glanceregistryfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211		
+	# ops_add $glanceregistryfile keystone_authtoken auth_type password			
+	# ops_add $glanceregistryfile keystone_authtoken project_domain_name default
+	# ops_add $glanceregistryfile keystone_authtoken user_domain_name default		
+	# ops_add $glanceregistryfile keystone_authtoken project_name service
+	# ops_add $glanceregistryfile keystone_authtoken username glance
+	# ops_add $glanceregistryfile keystone_authtoken password $GLANCE_PASS
 
-	ops_add $glanceregistryfile paste_deploy flavor keystone
-}
+	# ops_add $glanceregistryfile paste_deploy flavor keystone
+# }
 
 # Function populate the Image service database
 function glance_populate_db () {
@@ -106,7 +106,7 @@ function glance_restart () {
 	echocolor "Restart the Image services"
 	sleep 3
 
-	service glance-registry restart
+	# service glance-registry restart
 	service glance-api restart 
 }
 
@@ -144,8 +144,8 @@ glance_install
 glance_config_api
 
 # Config /etc/glance/glance-registry.conf file
-sendtelegram "Cai glance_config_registry tren `hostname`"
-glance_config_registry
+# sendtelegram "Cai glance_config_registry tren `hostname`"
+# glance_config_registry
 
 # Populate the Image service database 
 sendtelegram "Cai glance_populate_db tren `hostname`"

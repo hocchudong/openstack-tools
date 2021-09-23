@@ -118,7 +118,7 @@ function neutron_config_server_component () {
 
 # Function configure the Linux bridge agent
 function neutron_config_linuxbridge () {
-	echocolor "Configure the Linux bridge agent"
+	echocolor "Configure the linux bridge agent"
 	sleep 3
 	linuxbridgefile=/etc/neutron/plugins/ml2/linuxbridge_agent.ini
 	linuxbridgefilebak=/etc/neutron/plugins/ml2/linuxbridge_agent.ini.bak
@@ -137,7 +137,7 @@ function neutron_config_linuxbridge () {
 
 # Function configure the DHCP agent
 function neutron_config_dhcp () {
-	echocolor "Configure the DHCP agent"
+	echocolor "Configure the dhcp-agent"
 	sleep 3
 	dhcpfile=/etc/neutron/dhcp_agent.ini
 	dhcpfilebak=/etc/neutron/dhcp_agent.ini.bak

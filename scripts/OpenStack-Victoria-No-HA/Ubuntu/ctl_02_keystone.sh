@@ -32,8 +32,9 @@ function keystone_config () {
 	cp $keystonefile  $keystonefilebak
 	egrep -v "^#|^$" $keystonefilebak > $keystonefile
 
-	ops_add $keystonefile database \
-	connection mysql+pymysql://keystone:$PASS_DATABASE_KEYSTONE@$CTL1_IP_NIC2/keystone
+	ops_add $keystonefile database connection mysql+pymysql://keystone:$PASS_DATABASE_KEYSTONE@$CTL1_IP_NIC2/keystone
+	ops_add $keystonefile cache memcache_servers $CTL1_IP_NIC2:11211
+
 
 	ops_add $keystonefile token provider fernet
 }

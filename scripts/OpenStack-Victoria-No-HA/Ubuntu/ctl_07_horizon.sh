@@ -110,6 +110,6 @@ echo "User: admin or demo"
 echo "Password: $ADMIN_PASS"
 echocolor #================================#
 
-sendtelegram "Da hoan thanh cai dat HORIZON `hostname`"
+sendtelegram "Da hoan thanh cai dat Hor `hostname`"
 sendtelegram "Da hoan thanh script $0 `hostname`"
 notify

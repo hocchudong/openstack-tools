@@ -113,6 +113,30 @@ function install_memcached () {
 	systemctl restart mariadb rabbitmq-server memcached 2>&1 | tee -a filelog-install.txt
 } 
 
+# Function install Memcached
+function install_etcd () {
+	echocolor "Install etcd"
+	sleep 3
+
+	apt install etcd -y
+cat << EOF >  /etc/default/etcd
+ETCD_NAME="controller01"
+ETCD_DATA_DIR="/var/lib/etcd"
+ETCD_INITIAL_CLUSTER_STATE="new"
+ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"
+ETCD_INITIAL_CLUSTER="controller01=http://$CTL1_IP_NIC2:2380"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://$CTL1_IP_NIC2:2380"
+ETCD_ADVERTISE_CLIENT_URLS="http://10.0.0.11:2379"
+ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+ETCD_LISTEN_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
+EOF
+	 systemctl enable etcd 2>&1 | tee -a filelog-install.txt
+	 systemctl restart etcd 2>&1 | tee -a filelog-install.txt
+} 
+
+
+
+
 #######################
 ###Execute functions###
 #######################

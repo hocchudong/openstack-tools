@@ -103,7 +103,7 @@ function install_memcached () {
 	echocolor "Install Memcached"
 	sleep 3
 
-	apt-get install memcached python-memcache -y
+	apt-get install memcached python3-memcache -y
 	memcachefile=/etc/memcached.conf
 	sed -i 's|-l 127.0.0.1|'"-l $CTL1_IP_NIC2"'|g' $memcachefile
 

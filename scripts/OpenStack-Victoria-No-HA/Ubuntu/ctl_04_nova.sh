@@ -43,7 +43,7 @@ function placement_create_info () {
 function placement_install () {
 	echocolor "Install and configure components of placement"
 	sleep 3
-	apt install placement-api -y
+	apt install -y placement-api
 }
 
 # Function config /etc/placement/placement.conf
@@ -133,7 +133,7 @@ function nova_create_info () {
 function nova_install () {
 	echocolor "Install and configure components of Nova"
 	sleep 3
-	apt install nova-api nova-conductor nova-novncproxy nova-scheduler -y
+	apt install -y nova-api nova-conductor nova-novncproxy nova-scheduler
 }
 
 # Function config /etc/nova/nova.conf file

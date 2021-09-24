@@ -34,7 +34,7 @@ function install_ops_packages () {
   sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
-  sudo apt-get install python-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
 }
 
 #######################

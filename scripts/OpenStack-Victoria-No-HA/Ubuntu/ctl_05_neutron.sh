@@ -37,8 +37,7 @@ function neutron_create_info () {
 function neutron_install () {
 	echocolor "Install the components"
 	sleep 3
-	apt install neutron-server neutron-plugin-ml2 \
-	  neutron-linuxbridge-agent neutron-l3-agent -y 
+  apt install -y neutron-server neutron-plugin-ml2 neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent
 }
 
 # Function configure the server component
@@ -118,7 +117,7 @@ function neutron_config_linuxbridge () {
 
 	ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
 	ops_add $linuxbridgefile vxlan enable_vxlan true
-	ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC1
+	ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC2
 	ops_add $linuxbridgefile vxlan l2_population true
   
 	ops_add $linuxbridgefile securitygroup enable_security_group true
@@ -208,46 +207,65 @@ function neutron_restart () {
 	service neutron-linuxbridge-agent restart
 	#service neutron-dhcp-agent restart
 	#service neutron-metadata-agent restart
-  service neutron-l3-agent restart
+  #service neutron-l3-agent restart
 }
 
 
 #######################
 ###Execute functions###
 #######################
+sendtelegram "Cai NEUTRON `hostname`"
+
 
 # Create database for Neutron
+sendtelegram "Cai neutron_create_db tren `hostname`"
 neutron_create_db
 
 # Create the neutron service credentials
+sendtelegram "Cai neutron_create_info tren `hostname`"
 neutron_create_info
 
 # Install the components
+sendtelegram "Cai neutron_create_info tren `hostname`"
 neutron_install
 
 # Configure the server component
+sendtelegram "Cai neutron_config_server_component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Modular Layer 2 (ML2) plug-in
+sendtelegram "Cai neutron_config_ml2 tren `hostname`"
 neutron_config_ml2
 
 # Configure the Linux bridge agent
+sendtelegram "Cai neutron_config_linuxbridge tren `hostname`"
 neutron_config_linuxbridge
 
 # Configure the L3 Agent
+sendtelegram "Cai neutron_config_l3agent tren `hostname`"
 neutron_config_l3agent
 
 # Configure the DHCP agent
+# sendtelegram "Cai neutron_config_dhcp tren `hostname`"
 #neutron_config_dhcp
 
 # Configure the metadata agent
+# sendtelegram "Cai neutron_config_metadata tren `hostname`"
+
 #neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
+sendtelegram "Cai neutron_config_compute_use_network tren `hostname`"
 neutron_config_compute_use_network
 
 # Populate the database
+sendtelegram "Cai neutron_populate_db tren `hostname`"
 neutron_populate_db
 
 # Function restart installation
+sendtelegram "Cai neutron_restart tren `hostname`"
 neutron_restart
+
+sendtelegram "Da hoan thanh cai dat NEUTRON `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
+notify

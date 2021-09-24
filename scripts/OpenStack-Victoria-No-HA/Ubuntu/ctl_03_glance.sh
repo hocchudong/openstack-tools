@@ -6,8 +6,8 @@ source config.cfg
 
 # Function create database for Glance
 function glance_create_db () {
-	echocolor "Create database for Glance"
-	sleep 3
+  echocolor "Create database for Glance"
+  sleep 3
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
 CREATE DATABASE glance default character set utf8;
@@ -18,141 +18,149 @@ EOF
 }
 
 # Function create the Glance service credentials
-glance_create_service () {
-	echocolor "Set variable environment for admin user"
-	sleep 3
-	source /root/admin-openrc
+function glance_create_service () {
+  echocolor "Set variable environment for admin user"
+  sleep 3
+  source /root/admin-openrc
 
-	echocolor "Create the service credentials"
-	sleep 3
+  echocolor "Create the service credentials"
+  sleep 3
 
-	openstack user create --domain default --password $GLANCE_PASS glance
-	openstack role add --project service --user glance admin
-	openstack service create --name glance \
-	  --description "OpenStack Image" image
-	openstack endpoint create --region RegionOne \
-	  image public http://$CTL1_IP_NIC2:9292
-	openstack endpoint create --region RegionOne \
-	  image internal http://$CTL1_IP_NIC2:9292
-	openstack endpoint create --region RegionOne \
-	  image admin http://$CTL1_IP_NIC2:9292
+  openstack user create --domain default --password $GLANCE_PASS glance
+  openstack role add --project service --user glance admin
+  openstack service create --name glance --description "OpenStack Image" image
+  
+  openstack endpoint create --region RegionOne image public http://$CTL1_IP_NIC2:9292
+  openstack endpoint create --region RegionOne image internal http://$CTL1_IP_NIC2:9292
+  openstack endpoint create --region RegionOne image admin http://$CTL1_IP_NIC2:9292
 }
 
 # Function install components of Glance
-glance_install () {
-	echocolor "Install and configure components of Glance"
-	sleep 3
+function glance_install () {
+  echocolor "Install and configure components of Glance"
+  sleep 3
 
-	apt-get install glance -y
+  apt install glance -y
 }
 
 # Function config /etc/glance/glance-api.conf file
-glance_config_api () {
-	glanceapifile=/etc/glance/glance-api.conf
-	glanceapifilebak=/etc/glance/glance-api.conf.bak
-	cp $glanceapifile $glanceapifilebak
-	egrep -v "^#|^$"  $glanceapifilebak > $glanceapifile
+function glance_config_api () {
+  glanceapifile=/etc/glance/glance-api.conf
+  glanceapifilebak=/etc/glance/glance-api.conf.bak
+  cp $glanceapifile $glanceapifilebak
+  egrep -v "^#|^$"  $glanceapifilebak > $glanceapifile
 
-	ops_add $glanceapifile database \
-		connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
+  ops_add $glanceapifile database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
-	ops_add $glanceapifile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000	  
-	ops_add $glanceapifile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
-	ops_add $glanceapifile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211	  
-	ops_add $glanceapifile keystone_authtoken auth_type password	  
-	ops_add $glanceapifile keystone_authtoken project_domain_name default
-	ops_add $glanceapifile keystone_authtoken user_domain_name default
-	ops_add $glanceapifile keystone_authtoken project_name service		
-	ops_add $glanceapifile keystone_authtoken username glance
-	ops_add $glanceapifile keystone_authtoken password $GLANCE_PASS
+  ops_add $glanceapifile DEFAULT bind_host 0.0.0.0
+  
+  ops_add $glanceapifile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000    
+  ops_add $glanceapifile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
+  ops_add $glanceapifile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211    
+  ops_add $glanceapifile keystone_authtoken auth_type password    
+  ops_add $glanceapifile keystone_authtoken project_domain_name default
+  ops_add $glanceapifile keystone_authtoken user_domain_name default
+  ops_add $glanceapifile keystone_authtoken project_name service    
+  ops_add $glanceapifile keystone_authtoken username glance
+  ops_add $glanceapifile keystone_authtoken password $GLANCE_PASS
 
-	ops_add $glanceapifile paste_deploy flavor keystone	
+  ops_add $glanceapifile paste_deploy flavor keystone  
 
-	ops_add $glanceapifile glance_store stores file,http		
-	ops_add $glanceapifile glance_store default_store file		
-	ops_add $glanceapifile glance_store filesystem_store_datadir /var/lib/glance/images/
+  ops_add $glanceapifile glance_store stores file,http    
+  ops_add $glanceapifile glance_store default_store file    
+  ops_add $glanceapifile glance_store filesystem_store_datadir /var/lib/glance/images/
 }
 
-# Function config /etc/glance/glance-registry.conf file
-glance_config_registry () {
-	glanceregistryfile=/etc/glance/glance-registry.conf
-	glanceregistryfilebak=/etc/glance/glance-registry.conf.bak
-	cp $glanceregistryfile $glanceregistryfilebak
-	egrep -v "^#|^$"  $glanceregistryfilebak > $glanceregistryfile
+## Function config /etc/glance/glance-registry.conf file
+# function glance_config_registry () {
+  # glanceregistryfile=/etc/glance/glance-registry.conf
+  # glanceregistryfilebak=/etc/glance/glance-registry.conf.bak
+  # cp $glanceregistryfile $glanceregistryfilebak
+  # egrep -v "^#|^$"  $glanceregistryfilebak > $glanceregistryfile
 
-	ops_add $glanceregistryfile database \
-	connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
+  # ops_add $glanceregistryfile database connection mysql+pymysql://glance:$PASS_DATABASE_GLANCE@$CTL1_IP_NIC2/glance
 
-	ops_add $glanceregistryfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
-	ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000		
-	ops_add $glanceregistryfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211		
-	ops_add $glanceregistryfile keystone_authtoken auth_type password			
-	ops_add $glanceregistryfile keystone_authtoken project_domain_name default
-	ops_add $glanceregistryfile keystone_authtoken user_domain_name default		
-	ops_add $glanceregistryfile keystone_authtoken project_name service
-	ops_add $glanceregistryfile keystone_authtoken username glance
-	ops_add $glanceregistryfile keystone_authtoken password $GLANCE_PASS
+  # ops_add $glanceregistryfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+  # ops_add $glanceregistryfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000    
+  # ops_add $glanceregistryfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211    
+  # ops_add $glanceregistryfile keystone_authtoken auth_type password      
+  # ops_add $glanceregistryfile keystone_authtoken project_domain_name default
+  # ops_add $glanceregistryfile keystone_authtoken user_domain_name default    
+  # ops_add $glanceregistryfile keystone_authtoken project_name service
+  # ops_add $glanceregistryfile keystone_authtoken username glance
+  # ops_add $glanceregistryfile keystone_authtoken password $GLANCE_PASS
 
-	ops_add $glanceregistryfile paste_deploy flavor keystone
-}
+  # ops_add $glanceregistryfile paste_deploy flavor keystone
+# }
 
 # Function populate the Image service database
-glance_populate_db () {
-	echocolor "Populate the Image service database"
-	sleep 3
-	su -s /bin/sh -c "glance-manage db_sync" glance
+function glance_populate_db () {
+  echocolor "Populate the Image service database"
+  sleep 3
+  su -s /bin/sh -c "glance-manage db_sync" glance
 }
 
 
 # Function restart the Image services
-glance_restart () {
-	echocolor "Restart the Image services"
-	sleep 3
+function glance_restart () {
+  echocolor "Restart the Image services"
+  sleep 3
 
-	service glance-registry restart
-	service glance-api restart 
+  # service glance-registry restart
+  service glance-api restart 
 }
 
 # Function upload image to Glance
-glance_upload_image () {
-	echocolor "Upload image to Glance"
-	sleep 3
-	source /root/admin-openrc
-	apt-get install wget -y
-	wget http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img
+function glance_upload_image () {
+  echocolor "Upload image to Glance"
+  sleep 3
+  source /root/admin-openrc
+  apt-get install wget -y
+  wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 
-	openstack image create "cirros" \
-	  --file cirros-0.3.5-x86_64-disk.img \
-	  --disk-format qcow2 --container-format bare \
-	  --public
-	  
-	openstack image list
+  openstack image create "cirros" \
+    --file cirros-0.4.0-x86_64-disk.img \
+    --disk-format qcow2 --container-format bare \
+    --public
+    
+  openstack image list
 }
 
 #######################
 ###Execute functions###
 #######################
 
+sendtelegram "Thuc thi script $0 tren `hostname`"
+
 # Create database for Glance
+sendtelegram "Cai glance_create_db tren `hostname`"
 glance_create_db
 
 # Create the Glance service credentials
+sendtelegram "Cai glance_create_service tren `hostname`"
 glance_create_service
 
 # Install components of Glance
+sendtelegram "Cai glance_install va glance_config_api tren `hostname`"
 glance_install
-
-# Config /etc/glance/glance-api.conf file
 glance_config_api
 
 # Config /etc/glance/glance-registry.conf file
-glance_config_registry
+# sendtelegram "Cai glance_config_registry tren `hostname`"
+# glance_config_registry
 
 # Populate the Image service database 
+sendtelegram "Cai glance_populate_db tren `hostname`"
 glance_populate_db
 
 # Restart the Image services
+sendtelegram "Cai glance_restart tren `hostname`"
 glance_restart 
   
 # Upload image to Glance
+sendtelegram "Cai glance_upload_image tren `hostname`"
 glance_upload_image
+
+sendtelegram "Da hoan thanh cai dat GLANCE `hostname`"
+sendtelegram "Da hoan thanh script $0 `hostname`"
+notify

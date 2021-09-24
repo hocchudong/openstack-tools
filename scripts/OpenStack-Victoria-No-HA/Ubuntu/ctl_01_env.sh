@@ -4,6 +4,18 @@
 source function.sh
 source config.cfg
 
+function config_hostname () {
+
+hostnamectl set-hostname $CTL1_HOSTNAME
+
+echo "127.0.0.1 locahost $CTL1_HOSTNAME" > /etc/hosts
+echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
+echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
+echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
+echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
+}
+
+
 # Function update and upgrade for CONTROLLER
 function update_upgrade () {
 	echocolor "Update and Update controller"
@@ -11,19 +23,12 @@ function update_upgrade () {
 	apt-get update -y&& apt-get upgrade -y
 }
 
-# Function install crudini
-function install_crudini () {
-	echocolor "Install crudini"
-	sleep 3
-	apt-get install -y crudini
-}
-
 # Function install and config NTP
 function install_ntp () {
 	echocolor "Install NTP"
 	sleep 3
 
-	apt-get install chrony -y
+	apt-get install chrony -y 2>&1 | tee -a filelog-install.txt
 	ntpfile=/etc/chrony/chrony.conf
 
 	sed -i 's/pool 2.debian.pool.ntp.org offline iburst/ \
@@ -31,36 +36,35 @@ pool 2.debian.pool.ntp.org offline iburst \
 server 0.asia.pool.ntp.org iburst \
 server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
-	echo "allow 172.16.68.0/24" >> $ntpfile
+	echo "allow 172.16.70.212/24" >> $ntpfile
 
-	service chrony restart
+	service chrony restart 2>&1 | tee -a filelog-install.txt
 }
 
 # Function install OpenStack packages (python-openstackclient)
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	apt-get install software-properties-common -y
-	add-apt-repository cloud-archive:queens -y
-	apt-get update -y && apt-get dist-upgrade -y
-
-	apt-get install python-openstackclient -y
+	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
+  sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
+  sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > cloudarchive-wallaby.list
+  sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
+  sudo apt-get install python-openstackclient -y 2>&1 | tee -a filelog-install.txt
 }
 
 function install_database() {
 	echocolor "Install and Config MariaDB"
 	sleep 3
 
-	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | \
-	    debconf-set-selections
-	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | \
-	    debconf-set-selections
+	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | debconf-set-selections
+	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | debconf-set-selections
 
-	apt-get install -y  mariadb-server
+	sudo apt install mariadb-server python3-pymysql -y 2>&1 | tee -a filelog-install.txt
+
 
 	sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
-	sed -i 's/character-set-server  = utf8mb4/character-set-server  = utf8/' \
-	    /etc/mysql/mariadb.conf.d/50-server.cnf
+	sed -i 's/character-set-server  = utf8mb4/character-set-server  = utf8/' /etc/mysql/mariadb.conf.d/50-server.cnf
 	sed -i 's/collation-server/#collation-server/' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 	systemctl restart mysql
@@ -93,7 +97,7 @@ function install_mq () {
 	echocolor "Install Message queue (rabbitmq)"
 	sleep 3
 
-	apt-get install rabbitmq-server -y
+	sudo apt -y install rabbitmq-server memcached python3-pymysql
 	rabbitmqctl add_user openstack $RABBIT_PASS
 	rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 }
@@ -103,34 +107,72 @@ function install_memcached () {
 	echocolor "Install Memcached"
 	sleep 3
 
-	apt-get install memcached python-memcache -y
+	apt-get install memcached python3-memcache -y
 	memcachefile=/etc/memcached.conf
 	sed -i 's|-l 127.0.0.1|'"-l $CTL1_IP_NIC2"'|g' $memcachefile
 
-	service memcached restart
+	systemctl restart mariadb rabbitmq-server memcached 2>&1 | tee -a filelog-install.txt
 } 
+
+# Function install Memcached
+function install_etcd () {
+	echocolor "Install etcd"
+	sleep 3
+
+	apt install etcd -y
+cat << EOF >  /etc/default/etcd
+ETCD_NAME="controller01"
+ETCD_DATA_DIR="/var/lib/etcd"
+ETCD_INITIAL_CLUSTER_STATE="new"
+ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"
+ETCD_INITIAL_CLUSTER="controller01=http://$CTL1_IP_NIC2:2380"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://$CTL1_IP_NIC2:2380"
+ETCD_ADVERTISE_CLIENT_URLS="http://10.0.0.11:2379"
+ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+ETCD_LISTEN_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
+EOF
+	 systemctl enable etcd 2>&1 | tee -a filelog-install.txt
+	 systemctl restart etcd 2>&1 | tee -a filelog-install.txt
+} 
+
+
+
 
 #######################
 ###Execute functions###
 #######################
 
+sendtelegram "Thuc thi script $0 tren `hostname`"
+
+sendtelegram "config_hostname `hostname`"
+config_hostname
+
 # Update and upgrade for controller
+sendtelegram "Update OS tren `hostname`"
 update_upgrade
 
-# Install crudini
-install_crudini
-
 # Install and config NTP
+sendtelegram "Cai dat NTP tren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)
+sendtelegram "Cai dat install_ops_packages tren `hostname`"
 install_ops_packages
 
 # Install SQL database (Mariadb)
+sendtelegram "Cai dat install_database tren `hostname`"
 install_database
 
 # Install Message queue (rabbitmq)
+sendtelegram "Cai dat install_mq tren `hostname`"
 install_mq
 
 # Install Memcached
+sendtelegram "Cai dat install_memcached tren `hostname`"
 install_memcached
+
+sendtelegram "Cai dat install_etcd tren `hostname`"
+install_etcd
+
+sendtelegram "Da hoa thanh $0 `hostname`"
+notify

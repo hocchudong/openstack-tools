@@ -17,7 +17,6 @@ FLUSH PRIVILEGES;
 EOF
 }
 
-
 # Function install components of Keystone
 function keystone_install () {
 	echocolor "Install and configure components of Keystone"

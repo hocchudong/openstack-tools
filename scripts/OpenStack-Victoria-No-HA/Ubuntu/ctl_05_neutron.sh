@@ -216,8 +216,8 @@ function neutron_restart () {
 #######################
 ###Execute functions###
 #######################
+sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai NEUTRON `hostname`"
-
 
 # Create database for Neutron
 sendtelegram "Cai neutron_create_db tren `hostname`"

@@ -1,5 +1,6 @@
 #!/bin/bash
 #Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
 
 source function.sh
 source config.cfg

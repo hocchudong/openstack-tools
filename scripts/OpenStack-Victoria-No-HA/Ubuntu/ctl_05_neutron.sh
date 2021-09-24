@@ -1,5 +1,7 @@
 #!/bin/bash
-# Author  HOC CHU DONG
+#Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
 source function.sh
 source config.cfg
@@ -266,6 +268,13 @@ neutron_populate_db
 sendtelegram "Cai neutron_restart tren `hostname`"
 neutron_restart
 
-sendtelegram "Da hoan thanh cai dat NEUTRON `hostname`"
-sendtelegram "Da hoan thanh script $0 `hostname`"
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-4 <<< "$TIME_TOTAL_TEMP")
+
+echocolor "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

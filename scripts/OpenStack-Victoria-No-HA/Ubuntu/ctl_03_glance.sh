@@ -1,5 +1,7 @@
 #!/bin/bash
-#Author HOC CHU DONG 
+#Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
 source function.sh
 source config.cfg
@@ -161,6 +163,9 @@ glance_restart
 sendtelegram "Cai glance_upload_image tren `hostname`"
 glance_upload_image
 
-sendtelegram "Da hoan thanh cai dat GLANCE `hostname`"
-sendtelegram "Da hoan thanh script $0 `hostname`"
+echocolor "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

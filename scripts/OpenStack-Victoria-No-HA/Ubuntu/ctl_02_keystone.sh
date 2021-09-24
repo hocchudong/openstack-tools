@@ -25,7 +25,7 @@ function keystone_install () {
 }
 
 # Function configure components of Keystone
-function keystone_config () {
+	function keystone_config () {
 	keystonefile=/etc/keystone/keystone.conf
 	keystonefilebak=/etc/keystone/keystone.conf.bak
 	cp $keystonefile  $keystonefilebak
@@ -143,7 +143,6 @@ keystone_verify () {
 ###Execute functions###
 #######################
 sendtelegram "Thuc thi script $0 tren `hostname`"
-
 
 # Create database for Keystone
 sendtelegram "Cai keystone_create_db tren `hostname`"

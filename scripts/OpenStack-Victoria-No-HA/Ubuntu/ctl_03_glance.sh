@@ -163,9 +163,13 @@ glance_restart
 sendtelegram "Cai glance_upload_image tren `hostname`"
 glance_upload_image
 
-echocolor "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
+
+echocolor "Da hoan thanh script $0, thoi gian thuc hien: $DATE_EXEC"
 echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
 
-sendtelegram "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+sendtelegram "Da hoan thanh script $0, thoi gian thuc hien: $DATE_EXEC"
 sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

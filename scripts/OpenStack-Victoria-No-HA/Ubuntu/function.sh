@@ -29,6 +29,7 @@ function notify {
 if [ $? -eq 0 ]
 then
   curl -s --data-urlencode "text=I-AM-OK" "https://api.telegram.org/bot$token/sendMessage?chat_id=$chatid" > /dev/null
+  curl -s --data-urlencode "text=#######" "https://api.telegram.org/bot$token/sendMessage?chat_id=$chatid" > /dev/null
 else
   curl -s --data-urlencode "text=NOT-OK" "https://api.telegram.org/bot$token/sendMessage?chat_id=$chatid" > /dev/null
 fi

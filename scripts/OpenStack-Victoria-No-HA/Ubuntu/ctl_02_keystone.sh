@@ -1,6 +1,5 @@
 #!/bin/bash
 # Author HOC CHU DONG
-
 source function.sh
 source config.cfg
 
@@ -73,30 +72,25 @@ function keystone_finalize_install () {
 
 # Function create domain, projects, users and roles
 function keystone_create_domain_project_user_role () {
-	export OS_USERNAME=admin
-	export OS_PASSWORD=$ADMIN_PASS
-	export OS_PROJECT_NAME=admin
-	export OS_USER_DOMAIN_NAME=Default
-	export OS_PROJECT_DOMAIN_NAME=Default
-	export OS_AUTH_URL=http://$CTL1_IP_NIC2:5000/v3
-	export OS_IDENTITY_API_VERSION=3
+  export OS_USERNAME=admin
+  export OS_PASSWORD=$ADMIN_PASS
+  export OS_PROJECT_NAME=admin
+  export OS_USER_DOMAIN_NAME=Default
+  export OS_PROJECT_DOMAIN_NAME=Default
+  export OS_AUTH_URL=http://$CTL1_IP_NIC2:5000/v3
+  export OS_IDENTITY_API_VERSION=3
   export OS_IMAGE_API_VERSION=2
 	
-	echocolor "Create domain, projects, users and roles"
-	sleep 3
-
-	openstack domain create --description "An Example Domain" example
+  echocolor "Create domain, projects, users and roles"
+  sleep 3
   
+  openstack domain create --description "An Example Domain" example
   openstack project create --domain default --description "Service Project" service
-	  
-	openstack project create --domain default --description "Demo Project" demo
-
-	openstack user create --domain default --password $DEMO_PASS demo
-
-	openstack role create user
-
-	openstack role add --project demo --user demo user
-}
+  openstack project create --domain default --description "Demo Project" demo
+  openstack user create --domain default --password $DEMO_PASS demo
+  openstack role create user
+  openstack role add --project demo --user demo user
+ }
 
 # Function create OpenStack client environment scripts
 keystone_create_opsclient_scripts () {

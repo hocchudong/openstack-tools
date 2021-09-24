@@ -1,5 +1,7 @@
 #!/bin/bash
-#Author HOC CHU DONG 
+#Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
 source function.sh
 source config.cfg
@@ -32,7 +34,9 @@ function install_ops_packages () {
   sleep 3
   sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
   sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
+  
   sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > cloudarchive-wallaby.list
+
   sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
@@ -55,6 +59,9 @@ install_ntp
 sendtelegram "Cai install_ops_packages tren `hostname`"
 install_ops_packages
 
-sendtelegram "Da hoan thanh cai dat NOVA `hostname`"
-sendtelegram "Da hoan thanh script $0 `hostname`"
+echo "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+echo "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

@@ -1,6 +1,7 @@
 #!/bin/bash
 #Author HOC CHU DONG
 DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
 source function.sh
 source config.cfg
@@ -49,9 +50,10 @@ function install_ops_packages () {
 	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
   sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
   sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > cloudarchive-wallaby.list
-  sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
-  sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
-  sudo apt-get install python-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  
+  sudo apt update -y 2>&1 | tee -a filelog-install.txt
+  sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt
+  sudo apt install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
 }
 
 function install_database() {
@@ -137,8 +139,6 @@ EOF
 } 
 
 
-
-
 #######################
 ###Execute functions###
 #######################
@@ -175,5 +175,13 @@ install_memcached
 sendtelegram "Cai dat install_etcd tren `hostname`"
 install_etcd
 
-sendtelegram "Da hoa thanh $0 `hostname`"
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-4 <<< "$TIME_TOTAL_TEMP")
+
+echo "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+echo "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da hoan thanh script $0, thoi gian thuc hien:  $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

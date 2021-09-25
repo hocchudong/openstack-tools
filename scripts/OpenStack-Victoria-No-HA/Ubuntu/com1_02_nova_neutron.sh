@@ -19,7 +19,10 @@ function nova_config () {
   sleep 3
   novafile=/etc/nova/nova.conf
   novafilebak=/etc/nova/nova.conf.bak
+  novacomputefile=/etc/nova/nova-compute.conf
+  novacomputefilebak=/etc/nova/nova-compute.conf.bka
   cp $novafile $novafilebak
+  cp $novacomputefile $novacomputefilebak
   egrep -v "^$|^#" $novafilebak > $novafile
 
   ops_add $novafile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
@@ -36,7 +39,7 @@ function nova_config () {
   ops_add $novafile keystone_authtoken username nova
   ops_add $novafile keystone_authtoken password $NOVA_PASS
 
-  ops_add $novafile DEFAULT my_ip $CTL1_IP_NIC2
+  ops_add $novafile DEFAULT my_ip $COM1_IP_NIC2
   ops_add $novafile DEFAULT use_neutron True
   ops_add $novafile DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 
@@ -70,6 +73,8 @@ function nova_config () {
   ops_add $novafile neutron project_name service
   ops_add $novafile neutron username neutron
   ops_add $novafile neutron password $NEUTRON_PASS
+  
+  ops_add $novacomputefile libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
 }
 
 # Function finalize installation

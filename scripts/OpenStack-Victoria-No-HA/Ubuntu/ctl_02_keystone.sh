@@ -1,5 +1,8 @@
 #!/bin/bash
-# Author HOC CHU DONG
+#Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
+
 source function.sh
 source config.cfg
 
@@ -182,6 +185,13 @@ keystone_create_opsclient_scripts
 sendtelegram "Cau hinh keystone_verify tren `hostname`"
 keystone_verify
 
-sendtelegram "Da hoa thanh $0 `hostname`"
-notify
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
+echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
+notify

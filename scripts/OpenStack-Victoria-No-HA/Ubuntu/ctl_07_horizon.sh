@@ -1,5 +1,7 @@
 #!/bin/bash
 #Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
 source function.sh
 source config.cfg
@@ -105,13 +107,20 @@ sendtelegram "Cai dat horizon_restart tren `hostname`"
 horizon_restart
 
 echocolor #================================#
-echo "LOGIN INFORMATION IN HORIZON"
-echo "URL: http://$CTL1_IP_NIC2/horizon"
-echo "Domain: Default"
-echo "User: admin or demo"
-echo "Password: $ADMIN_PASS"
+echocolor "LOGIN INFORMATION IN HORIZON"
+echocolor "URL: http://$CTL1_IP_NIC2/horizon"
+echocolor "Domain: Default"
+echocolor "User: admin or demo"
+echocolor "Password: $ADMIN_PASS"
 echocolor #================================#
 
-sendtelegram "Da hoan thanh cai dat Hor `hostname`"
-sendtelegram "Da hoan thanh script $0 `hostname`"
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
+
+echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

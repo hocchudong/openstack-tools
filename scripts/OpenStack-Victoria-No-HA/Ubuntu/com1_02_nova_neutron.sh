@@ -1,6 +1,7 @@
 #!/bin/bash
-
 #Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
 source function.sh
 source config.cfg
@@ -78,14 +79,12 @@ function nova_resart () {
   service nova-compute restart
 }
 
-
 function neutron_install () {
   echocolor "Install the components Neutron"
   sleep 3
 
   apt install -y neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent
 }
-
 
 # Function configure the common component
 function neutron_config_server_component () {
@@ -134,7 +133,6 @@ function neutron_config_linuxbridge () {
   ops_add $linuxbridgefile securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 }
 
-
 # Function configure the DHCP agent
 function neutron_config_dhcp () {
   echocolor "Configure the dhcp-agent"
@@ -163,7 +161,6 @@ function neutron_config_metadata () {
   ops_add $metadatafile DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
 }
 
-
 # Function restart installation
 function neutron_restart () {
   echocolor "Finalize installation"
@@ -173,7 +170,6 @@ function neutron_restart () {
   service neutron-dhcp-agent restart
   service neutron-metadata-agent restart
 }
-
 
 #######################
 ###Execute functions###
@@ -217,7 +213,13 @@ neutron_config_metadata
 sendtelegram "Cai neutron_restart cho tren `hostname`"
 neutron_restart
 
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
-sendtelegram "Da hoan thanh cai dat NOVA va NEUTRONG tren `hostname`"
-sendtelegram "Da hoan thanh script $0 `hostname`"
+echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

@@ -124,7 +124,7 @@ function neutron_config_linuxbridge () {
   cp $linuxbridgefile $linuxbridgefilebak
   egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
-  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
+  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
   ops_add $linuxbridgefile vxlan enable_vxlan true
   ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC1
   ops_add $linuxbridgefile vxlan l2_population true

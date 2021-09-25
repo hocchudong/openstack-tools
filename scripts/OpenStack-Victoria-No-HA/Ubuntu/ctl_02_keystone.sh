@@ -71,6 +71,9 @@ function keystone_finalize_install () {
   echocolor "Finalize the installation"
   sleep 3
   service apache2 restart
+  
+  systemctl disable ufw
+  systemctl stop ufw
 }
 
 # Function create domain, projects, users and roles

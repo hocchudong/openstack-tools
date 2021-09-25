@@ -54,6 +54,9 @@ function install_ops_packages () {
   sudo apt update -y 2>&1 | tee -a filelog-install.txt
   sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt
   sudo apt install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  
+  systemctl disable ufw
+  systemctl stop ufw
 }
 
 function install_database() {

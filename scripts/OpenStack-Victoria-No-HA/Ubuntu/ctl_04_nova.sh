@@ -237,6 +237,9 @@ function nova_restart () {
   service nova-scheduler restart
   service nova-conductor restart
   service nova-novncproxy restart
+  
+  systemctl disable ufw
+  systemctl stop ufw
 }
 
 #######################

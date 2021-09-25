@@ -56,7 +56,7 @@ function glance_config_api () {
 
   ops_add $glanceapifile DEFAULT bind_host 0.0.0.0
   
-  ops_add $glanceapifile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000    
+  ops_add $glanceapifile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000    
   ops_add $glanceapifile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
   ops_add $glanceapifile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211    
   ops_add $glanceapifile keystone_authtoken auth_type password    

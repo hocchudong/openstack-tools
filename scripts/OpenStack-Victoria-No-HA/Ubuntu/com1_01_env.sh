@@ -7,14 +7,13 @@ source function.sh
 source config.cfg
 
 function config_hostname () {
-
-hostnamectl set-hostname $CTL1_HOSTNAME
-
-echo "127.0.0.1 locahost $COM1_HOSTNAME" > /etc/hosts
-echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
-echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
-echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
-echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
+  hostnamectl set-hostname $CTL1_HOSTNAME
+  
+  echo "127.0.0.1 locahost $COM1_HOSTNAME" > /etc/hosts
+  echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
+  echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
+  echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
+  echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
 }
 
 # Function update and upgrade for COMPUTE

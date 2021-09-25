@@ -91,19 +91,19 @@ horizon_restart () {
 sendtelegram "Thu thi script $0 tren `hostname`"
 
 # Install the packages
-sendtelegram "Cai dat horizon_install tren `hostname`"
+sendtelegram "Thuc thi horizon_install tren `hostname`"
 horizon_install
 
 # Redirecting web
-sendtelegram "Cai dat redirect_web tren `hostname`"
+sendtelegram "Thuc thi redirect_web tren `hostname`"
 redirect_web
 
 # Edit the /etc/openstack-dashboard/local_settings.py file
-sendtelegram "Cai dat horizon_config tren `hostname`"
+sendtelegram "Thuc thi horizon_config tren `hostname`"
 horizon_config
 
 # Restart installation
-sendtelegram "Cai dat horizon_restart tren `hostname`"
+sendtelegram "Thuc thi horizon_restart tren `hostname`"
 horizon_restart
 
 echocolor #================================#
@@ -118,9 +118,9 @@ TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
 TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
-echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
 
-sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

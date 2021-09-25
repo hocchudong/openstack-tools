@@ -220,19 +220,19 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai NEUTRON `hostname`"
 
 # Create database for Neutron
-sendtelegram "Cai neutron_create_db tren `hostname`"
+sendtelegram "Thuc thi neutron_create_db tren `hostname`"
 neutron_create_db
 
 # Create the neutron service credentials
-sendtelegram "Cai neutron_create_info tren `hostname`"
+sendtelegram "Thhuc thi neutron_create_info tren `hostname`"
 neutron_create_info
 
 # Install the components
-sendtelegram "Cai neutron_create_info tren `hostname`"
+sendtelegram "Thuc thi neutron_create_info tren `hostname`"
 neutron_install
 
 # Configure the server component
-sendtelegram "Cai neutron_config_server_component tren `hostname`"
+sendtelegram "Thuc thi neutron_config_server_component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Modular Layer 2 (ML2) plug-in
@@ -240,11 +240,11 @@ sendtelegram "Cai neutron_config_ml2 tren `hostname`"
 neutron_config_ml2
 
 # Configure the Linux bridge agent
-sendtelegram "Cai neutron_config_linuxbridge tren `hostname`"
+sendtelegram "Thuc thi neutron_config_linuxbridge tren `hostname`"
 neutron_config_linuxbridge
 
 # Configure the L3 Agent
-sendtelegram "Cai neutron_config_l3agent tren `hostname`"
+sendtelegram "Thuc thi neutron_config_l3agent tren `hostname`"
 neutron_config_l3agent
 
 # Configure the DHCP agent
@@ -257,24 +257,24 @@ neutron_config_l3agent
 #neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
-sendtelegram "Cai neutron_config_compute_use_network tren `hostname`"
+sendtelegram "Thuc thi neutron_config_compute_use_network tren `hostname`"
 neutron_config_compute_use_network
 
 # Populate the database
-sendtelegram "Cai neutron_populate_db tren `hostname`"
+sendtelegram "Thuc thi neutron_populate_db tren `hostname`"
 neutron_populate_db
 
 # Function restart installation
-sendtelegram "Cai neutron_restart tren `hostname`"
+sendtelegram "Thuc thi neutron_restart tren `hostname`"
 neutron_restart
 
 TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
 TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
-echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
 
-sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

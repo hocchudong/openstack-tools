@@ -275,28 +275,28 @@ sendtelegram "Da hoan thanh script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
+sendtelegram "Thuc thi nova_create_db `hostname`"
 nova_create_db
-sendtelegram "Da hoan thanh cai dat nova_create_db `hostname`"
 
 # Create infomation for Compute service
+sendtelegram "Thuc thi nova_create_info `hostname`"
 nova_create_info
-sendtelegram "Da hoan thanh nova_create_info `hostname`"
 
 # Install components of Nova
+sendtelegram "Thuc thi nova_install `hostname`"
 nova_install
-sendtelegram "Da hoan thanh cai dat nova_install `hostname`"
 
 # Config /etc/nova/nova.conf file
-sendtelegram "Da hoan thanh cai dat nova_config `hostname`"
+sendtelegram "Thuc thi nova_config `hostname`"
 nova_config
 
+
 # Populate the nova-api database
-sendtelegram "Da hoan thanh nova_populate_nova_api_db `hostname`"
+sendtelegram "Thuc thi nova_populate_nova_api_db `hostname`"
 nova_populate_nova_api_db
 
 # Register the cell0 database
-sendtelegram "Da hoan thanh nova_register_cell0 `hostname`"
-
+sendtelegram "Thuc thi nova_register_cell0 `hostname`"
 nova_register_cell0
 
 # Create the cell1 cell
@@ -304,15 +304,15 @@ sendtelegram "Da hoan thanh nova_create_cell1 `hostname`"
 nova_create_cell1
 
 # Populate the nova database
-sendtelegram "Da hoan thanh nova_populate_nova_db `hostname`"
+sendtelegram "Thuc thi nova_populate_nova_db `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly
-sendtelegram "Da hoan thanh nova_verify_cell `hostname`"
+sendtelegram "Thuc thi nova_verify_cell `hostname`"
 nova_verify_cell
 
 # Restart installation
-sendtelegram "Thu hien nova_restart `hostname`"
+sendtelegram "Thuc thi nova_restart `hostname`"
 nova_restart
 
 TIME_END=`date +%s.%N`

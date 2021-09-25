@@ -154,7 +154,7 @@ function nova_config () {
 
   ops_add $novafile api auth_strategy keystone
 
-  ops_add $novafile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+  ops_add $novafile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
   ops_add $novafile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
   ops_add $novafile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
   ops_add $novafile keystone_authtoken auth_type password

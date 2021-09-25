@@ -6,6 +6,17 @@ TIME_START=`date +%s.%N`
 source function.sh
 source config.cfg
 
+function config_hostname () {
+
+hostnamectl set-hostname $CTL1_HOSTNAME
+
+echo "127.0.0.1 locahost $COM1_HOSTNAME" > /etc/hosts
+echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
+echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
+echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
+echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
+}
+
 # Function update and upgrade for COMPUTE
 function update_upgrade () {
   echocolor "Update and Upgrade COMPUTE"
@@ -46,6 +57,9 @@ function install_ops_packages () {
 ###Execute functions###
 #######################
 sendtelegram "Thuc thi script $0 tren `hostname`"
+
+sendtelegram "config_hostname `hostname`"
+config_hostname
 
 # Update and upgrade for COMPUTE
 sendtelegram "Cai update_upgrade tren `hostname`"

@@ -242,27 +242,27 @@ function nova_restart () {
 #######################
 ## Execute placement_##
 #######################
-sendtelegram "Thuc thi script $0 tren `hostname`"
+sendtelegram "Da hoan thanh script $0 tren `hostname`"
 
 sendtelegram "Bat dau cai dat placement `hostname`"
 
 placement_create_db
-sendtelegram "Cai placement_create_db tren `hostname`"
+sendtelegram "Da hoan thanh placement_create_db tren `hostname`"
 
 placement_create_info
-sendtelegram "Cai placement_create_info tren `hostname`"
+sendtelegram "Da hoan thanh placement_create_info tren `hostname`"
 
 placement_install
-sendtelegram "Cai placement_install tren `hostname`"
+sendtelegram "Da hoan thanh placement_install tren `hostname`"
 
 placement_config
-sendtelegram "Cai placement_config tren `hostname`"
+sendtelegram "Da hoan thanh placement_config tren `hostname`"
 
 placement_populate_db
-sendtelegram "Cai placement_populate_db tren `hostname`"
+sendtelegram "Da hoan thanh placement_populate_db tren `hostname`"
 
 placement_restart
-sendtelegram "Cai placement_restart tren `hostname`"
+sendtelegram "Da hoan thanh placement_restart tren `hostname`"
 
 sendtelegram "Da hoa thanh cai dat placement `hostname`"
 notify
@@ -271,7 +271,7 @@ notify
 #######################
 ###Execute Nova###
 #######################
-sendtelegram "Thuc thi script $0 tren `hostname`"
+sendtelegram "Da hoan thanh script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
@@ -280,7 +280,7 @@ sendtelegram "Da hoan thanh cai dat nova_create_db `hostname`"
 
 # Create infomation for Compute service
 nova_create_info
-sendtelegram "Da hoan thanh cai dat nova_create_info `hostname`"
+sendtelegram "Da hoan thanh nova_create_info `hostname`"
 
 # Install components of Nova
 nova_install
@@ -291,24 +291,24 @@ sendtelegram "Da hoan thanh cai dat nova_config `hostname`"
 nova_config
 
 # Populate the nova-api database
-sendtelegram "Da hoan thanh cai dat nova_populate_nova_api_db `hostname`"
+sendtelegram "Da hoan thanh nova_populate_nova_api_db `hostname`"
 nova_populate_nova_api_db
 
 # Register the cell0 database
-sendtelegram "Da hoan thanh cai dat nova_register_cell0 `hostname`"
+sendtelegram "Da hoan thanh nova_register_cell0 `hostname`"
 
 nova_register_cell0
 
 # Create the cell1 cell
-sendtelegram "Da hoan thanh cai dat nova_create_cell1 `hostname`"
+sendtelegram "Da hoan thanh nova_create_cell1 `hostname`"
 nova_create_cell1
 
 # Populate the nova database
-sendtelegram "Da hoan thanh cai dat nova_populate_nova_db `hostname`"
+sendtelegram "Da hoan thanh nova_populate_nova_db `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly
-sendtelegram "Da hoan thanh cai dat nova_verify_cell `hostname`"
+sendtelegram "Da hoan thanh nova_verify_cell `hostname`"
 nova_verify_cell
 
 # Restart installation

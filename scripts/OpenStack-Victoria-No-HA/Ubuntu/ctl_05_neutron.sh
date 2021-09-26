@@ -236,7 +236,7 @@ sendtelegram "Thuc thi neutron_config_server_component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Modular Layer 2 (ML2) plug-in
-sendtelegram "Cai neutron_config_ml2 tren `hostname`"
+sendtelegram "Thuc thi neutron_config_ml2 tren `hostname`"
 neutron_config_ml2
 
 # Configure the Linux bridge agent

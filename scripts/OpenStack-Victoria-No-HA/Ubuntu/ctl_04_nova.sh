@@ -245,27 +245,27 @@ function nova_restart () {
 #######################
 ## Execute placement_##
 #######################
-sendtelegram "Da hoan thanh script $0 tren `hostname`"
+sendtelegram "Thuc thi script $0 tren `hostname`"
 
 sendtelegram "Bat dau cai dat placement `hostname`"
 
 placement_create_db
-sendtelegram "Da hoan thanh placement_create_db tren `hostname`"
+sendtelegram "Thuc thi placement_create_db tren `hostname`"
 
 placement_create_info
-sendtelegram "Da hoan thanh placement_create_info tren `hostname`"
+sendtelegram "Thuc thi placement_create_info tren `hostname`"
 
 placement_install
-sendtelegram "Da hoan thanh placement_install tren `hostname`"
+sendtelegram "Thuc thi placement_install tren `hostname`"
 
 placement_config
-sendtelegram "Da hoan thanh placement_config tren `hostname`"
+sendtelegram "Thuc thi placement_config tren `hostname`"
 
 placement_populate_db
-sendtelegram "Da hoan thanh placement_populate_db tren `hostname`"
+sendtelegram "Thuc thi placement_populate_db tren `hostname`"
 
 placement_restart
-sendtelegram "Da hoan thanh placement_restart tren `hostname`"
+sendtelegram "Thuc thi placement_restart tren `hostname`"
 
 sendtelegram "Da hoa thanh cai dat placement `hostname`"
 notify
@@ -274,7 +274,7 @@ notify
 #######################
 ###Execute Nova###
 #######################
-sendtelegram "Da hoan thanh script $0 tren `hostname`"
+sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
@@ -303,7 +303,7 @@ sendtelegram "Thuc thi nova_register_cell0 `hostname`"
 nova_register_cell0
 
 # Create the cell1 cell
-sendtelegram "Da hoan thanh nova_create_cell1 `hostname`"
+sendtelegram "Thuc thi nova_create_cell1 `hostname`"
 nova_create_cell1
 
 # Populate the nova database

@@ -109,7 +109,8 @@ function glance_restart () {
   sleep 3
 
   # service glance-registry restart
-  service glance-api restart 
+  systemctl enable glance-api
+  systemctl start glance-api
 }
 
 # Function upload image to Glance

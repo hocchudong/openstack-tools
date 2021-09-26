@@ -248,11 +248,11 @@ sendtelegram "Thuc thi neutron_config_l3agent tren `hostname`"
 neutron_config_l3agent
 
 # Configure the DHCP agent
-# sendtelegram "Cai neutron_config_dhcp tren `hostname`"
+# sendtelegram "Thuc thi neutron_config_dhcp tren `hostname`"
 #neutron_config_dhcp
 
 # Configure the metadata agent
-# sendtelegram "Cai neutron_config_metadata tren `hostname`"
+# sendtelegram "Thuc thi neutron_config_metadata tren `hostname`"
 
 #neutron_config_metadata
 

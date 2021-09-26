@@ -23,7 +23,8 @@ EOF
 function keystone_install () {
   echocolor "Install and configure components of Keystone"
   sleep 3
-  apt -y install keystone python3-openstackclient apache2 libapache2-mod-wsgi-py3 python3-oauth2client  
+  apt -y install keystone python3-openstackclient apache2 libapache2-mod-wsgi-py3 python3-oauth2client libgtk-3-dev
+
 }
 
 # Function configure components of Keystone

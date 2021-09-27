@@ -49,7 +49,8 @@ horizon_config () {
 	echo "SESSION_ENGINE = 'django.contrib.sessions.backends.cache'" >> $horizonfile
 	sed -i "s/'LOCATION': '127.0.0.1:11211',/""'LOCATION': '$CTL1_IP_NIC2:11211',""/g" $horizonfile
   
-	sed -i 's/OPENSTACK_KEYSTONE_URL = .*$/OPENSTACK_KEYSTONE_URL = "http:\/\/$CTL1_IP_NIC2:5000\/v3"/g' $horizonfile
+	sed -i 's/OPENSTACK_KEYSTONE_URL = .*$/OPENSTACK_KEYSTONE_URL = "http:\/\/IP_HORIZON:5000\/v3"/g' $horizonfile
+	sed -i "s/IP_HORIZON/$CTL1_IP_NIC2/g"
 
 	echo "OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True" >> $horizonfile
   

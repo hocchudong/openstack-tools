@@ -40,7 +40,7 @@ function cinder_user_endpoint() {
 function cinder_install_config() {
   echocolor "Cai dat cinder"
   sleep 3
-  apt install -y cinder-api cinder-scheduler python3-cinderclient
+  apt install -y cinder-api cinder-scheduler
   apt install -y lvm2  tgt thin-provisioning-tools
   apt install -y cinder-volume python3-mysqldb python3-rtslib-fb
   ctl_cinder_conf=/etc/cinder/cinder.conf

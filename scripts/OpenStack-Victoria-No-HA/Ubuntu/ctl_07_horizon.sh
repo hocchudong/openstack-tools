@@ -50,7 +50,7 @@ horizon_config () {
 	sed -i "s/'LOCATION': '127.0.0.1:11211',/""'LOCATION': '$CTL1_IP_NIC2:11211',""/g" $horizonfile
   
 	sed -i 's/OPENSTACK_KEYSTONE_URL = .*$/OPENSTACK_KEYSTONE_URL = "http:\/\/IP_HORIZON:5000\/v3"/g' $horizonfile
-	sed -i "s/IP_HORIZON/$CTL1_IP_NIC2/g"
+	sed -i "s/IP_HORIZON/$CTL1_IP_NIC2/g" $horizonfile
 
 	echo "OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True" >> $horizonfile
   

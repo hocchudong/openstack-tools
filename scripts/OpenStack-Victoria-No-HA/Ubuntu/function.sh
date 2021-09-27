@@ -23,7 +23,7 @@ function ops_del {
 }
 
 function notify {
-        chatid=1977142239
+        chatid=-557175523
         token=1117214915:AAF4LFh6uChng056_oTyM6cz9TY4dyAn3YU
 
 if [ $? -eq 0 ]
@@ -39,7 +39,7 @@ fi
 }
 
 function sendtelegram {
-        chatid=1977142239
+        chatid=-557175523
         token=1117214915:AAF4LFh6uChng056_oTyM6cz9TY4dyAn3YU
         default_message="Test canh bao"
 

@@ -220,52 +220,52 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai NEUTRON `hostname`"
 
 # Create database for Neutron
-sendtelegram "Thuc thi neutron_create_db tren `hostname`"
+sendtelegram "Create database for Neutron tren `hostname`"
 neutron_create_db
 
 # Create the neutron service credentials
-sendtelegram "Thhuc thi neutron_create_info tren `hostname`"
+sendtelegram "Create the neutron service credentials tren `hostname`"
 neutron_create_info
 
 # Install the components
-sendtelegram "Thuc thi neutron_create_info tren `hostname`"
+sendtelegram "Install the components tren `hostname`"
 neutron_install
 
 # Configure the server component
-sendtelegram "Thuc thi neutron_config_server_component tren `hostname`"
+sendtelegram "Configure the server component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Modular Layer 2 (ML2) plug-in
-sendtelegram "Thuc thi neutron_config_ml2 tren `hostname`"
+sendtelegram "Configure the Modular Layer 2 tren `hostname`"
 neutron_config_ml2
 
 # Configure the Linux bridge agent
-sendtelegram "Thuc thi neutron_config_linuxbridge tren `hostname`"
+sendtelegram "Configure the Linux bridge agent tren `hostname`"
 neutron_config_linuxbridge
 
 # Configure the L3 Agent
-sendtelegram "Thuc thi neutron_config_l3agent tren `hostname`"
+sendtelegram "Configure the L3 Agent tren `hostname`"
 neutron_config_l3agent
 
 # Configure the DHCP agent
-# sendtelegram "Thuc thi neutron_config_dhcp tren `hostname`"
+# sendtelegram "Configure the DHCP agent tren `hostname`"
 #neutron_config_dhcp
 
 # Configure the metadata agent
-# sendtelegram "Thuc thi neutron_config_metadata tren `hostname`"
+# sendtelegram "Configure the metadata agent tren `hostname`"
 
 #neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
-sendtelegram "Thuc thi neutron_config_compute_use_network tren `hostname`"
+sendtelegram "Configure the Compute service to use the Networking service tren `hostname`"
 neutron_config_compute_use_network
 
 # Populate the database
-sendtelegram "Thuc thi neutron_populate_db tren `hostname`"
+sendtelegram "Populate the database tren `hostname`"
 neutron_populate_db
 
 # Function restart installation
-sendtelegram "Thuc thi neutron_restart tren `hostname`"
+sendtelegram " Function restart installation tren `hostname`"
 neutron_restart
 
 TIME_END=`date +%s.%N`

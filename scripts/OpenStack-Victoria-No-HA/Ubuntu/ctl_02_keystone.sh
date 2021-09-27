@@ -146,47 +146,47 @@ keystone_verify () {
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Create database for Keystone
-sendtelegram "Thuc thi keystone_create_db tren `hostname`"
+sendtelegram "Create database for Keystone tren `hostname`"
 keystone_create_db
 
 # Install components of Keystone
-sendtelegram "Thuc thi keystone_install tren `hostname`"
+sendtelegram "Install components of Keystone tren `hostname`"
 keystone_install
 
 # Configure components of Keystone
-sendtelegram "Thuc thi keystone_config tren `hostname`"
+sendtelegram "Configure components of Keystone tren `hostname`"
 keystone_config
 
 # Populate the Identity service database
-sendtelegram "Thuc thi keystone_populate_db tren `hostname`"
+sendtelegram "Populate the Identity service database tren `hostname`"
 keystone_populate_db
 
 # Initialize Fernet key repositories
-sendtelegram "Thuc thi keystone_initialize_key tren `hostname`"
+sendtelegram "Initialize Fernet key repositories tren `hostname`"
 keystone_initialize_key
 
 # Bootstrap the Identity service
-sendtelegram "Thuc thi keystone_bootstrap tren `hostname`"
+sendtelegram "Bootstrap the Identity service tren `hostname`"
 keystone_bootstrap
 
 # Configure the Apache HTTP server
-sendtelegram "Thuc thi keystone_config_apache tren `hostname`"
+sendtelegram "Configure the Apache HTTP server tren `hostname`"
 keystone_config_apache
 
 # Finalize the installation
-sendtelegram "Thuc thi keystone_finalize_install tren `hostname`"
+sendtelegram "Finalize the installation tren `hostname`"
 keystone_finalize_install
 
 # Create domain, projects, users and roles
-sendtelegram "Thuc thi keystone_create_domain_project_user_role tren `hostname`"
+sendtelegram "Create domain, projects, users and roles tren `hostname`"
 keystone_create_domain_project_user_role
 
 # Create OpenStack client environment scripts
-sendtelegram "Thuc thi keystone_create_opsclient_scripts tren `hostname`"
+sendtelegram "Create OpenStack client environment scripts tren `hostname`"
 keystone_create_opsclient_scripts
 
 # Verifying keystone
-sendtelegram "Thuc thi keystone_verify tren `hostname`"
+sendtelegram "Verifying keystone tren `hostname`"
 keystone_verify
 
 TIME_END=`date +%s.%N`

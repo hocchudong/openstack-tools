@@ -41,7 +41,7 @@ function cinder_install_config() {
   echocolor "Cai dat cinder"
   sleep 3
   apt install -y cinder-api cinder-scheduler
-  apt install -y lvm2  tgt thin-provisioning-tools
+  apt install -y lvm2  tgt thin-provisioning-tools 
   apt install -y cinder-volume python3-mysqldb python3-rtslib-fb
   ctl_cinder_conf=/etc/cinder/cinder.conf
   
@@ -76,6 +76,9 @@ function cinder_install_config() {
     ops_add $ctl_cinder_conf lvm volume_group cinder-volumes
     ops_add $ctl_cinder_conf lvm iscsi_protocol iscsi
     ops_add $ctl_cinder_conf lvm iscsi_helper tgtadm
+    
+    
+    
   else
     ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
     ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2
@@ -171,27 +174,27 @@ create_lvm
 
 echocolor "Tao DB CINDER"
 sleep 3
-sendtelegram "Thuc thi cinder_create_db tren `hostname`"
+sendtelegram "Tao DB CINDER tren `hostname`"
 cinder_create_db
 
 echocolor "Tao user va endpoint cho CINDER"
 sleep 3
-sendtelegram "Thuc thi cinder_user_endpoint tren `hostname`"
+sendtelegram "Tao user va endpoint tren `hostname`"
 cinder_user_endpoint
 
 echocolor "Cai dat va cau hinh CINDER"
 sleep 3
-sendtelegram "Thuc thi cinder_install_config tren `hostname`"
+sendtelegram "TCai dat va cau hinh CINDER tren `hostname`"
 cinder_install_config
 
 echocolor "Dong bo DB cho CINDER"
 sleep 3
-sendtelegram "Thuc thi cinder_syncdb tren `hostname`"
+sendtelegram "Dong bo DB cho CINDER tren `hostname`"
 cinder_syncdb
 
 echocolor "Restart dich vu CINDER"
 sleep 3
-sendtelegram "Thuc thi cinder_enable_restart tren `hostname`"
+sendtelegram "Restart dich vu CINDER tren `hostname`"
 cinder_enable_restart
 
 TIME_END=`date +%s.%N`

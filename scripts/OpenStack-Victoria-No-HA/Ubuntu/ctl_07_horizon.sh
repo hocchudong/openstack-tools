@@ -93,19 +93,19 @@ horizon_restart () {
 sendtelegram "Thu thi script $0 tren `hostname`"
 
 # Install the packages
-sendtelegram "Thuc thi horizon_install tren `hostname`"
+sendtelegram "Install the packages tren `hostname`"
 horizon_install
 
 # Redirecting web
-sendtelegram "Thuc thi redirect_web tren `hostname`"
+sendtelegram "Redirecting web tren `hostname`"
 redirect_web
 
 # Edit the /etc/openstack-dashboard/local_settings.py file
-sendtelegram "Thuc thi horizon_config tren `hostname`"
+sendtelegram "Sua cau hinh horizon tren `hostname`"
 horizon_config
 
 # Restart installation
-sendtelegram "Thuc thi horizon_restart tren `hostname`"
+sendtelegram "Restart installation tren `hostname`"
 horizon_restart
 
 echocolor #================================#

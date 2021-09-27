@@ -148,7 +148,7 @@ EOF
 
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
-sendtelegram "config_hostname `hostname`"
+sendtelegram "Cai dat config hostname `hostname`"
 config_hostname
 
 # Update and upgrade for controller
@@ -160,22 +160,22 @@ sendtelegram "Cai dat NTP tren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)
-sendtelegram "Cai dat install_ops_packages tren `hostname`"
+sendtelegram "Cai dat OpenStack packages tren `hostname`"
 install_ops_packages
 
 # Install SQL database (Mariadb)
-sendtelegram "Cai dat install_database tren `hostname`"
+sendtelegram "Install SQL database tren `hostname`"
 install_database
 
 # Install Message queue (rabbitmq)
-sendtelegram "Cai dat install_mq tren `hostname`"
+sendtelegram "Install Message queue tren `hostname`"
 install_mq
 
 # Install Memcached
-sendtelegram "Cai dat install_memcached tren `hostname`"
+sendtelegram "Cai dat install memcached tren `hostname`"
 install_memcached
 
-sendtelegram "Cai dat install_etcd tren `hostname`"
+sendtelegram "Cai dat install etcd tren `hostname`"
 install_etcd
 
 TIME_END=`date +%s.%N`

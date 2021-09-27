@@ -278,44 +278,44 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
-sendtelegram "Thuc thi nova_create_db `hostname`"
+sendtelegram "Create database for Nova tren `hostname`"
 nova_create_db
 
 # Create infomation for Compute service
-sendtelegram "Thuc thi nova_create_info `hostname`"
+sendtelegram "Create infomation for Compute service tren `hostname`"
 nova_create_info
 
 # Install components of Nova
-sendtelegram "Thuc thi nova_install `hostname`"
+sendtelegram "Install components of Nova tren `hostname`"
 nova_install
 
 # Config /etc/nova/nova.conf file
-sendtelegram "Thuc thi nova_config `hostname`"
+sendtelegram "Cau hinh nova tren `hostname`"
 nova_config
 
 
 # Populate the nova-api database
-sendtelegram "Thuc thi nova_populate_nova_api_db `hostname`"
+sendtelegram "Populate the nova-api database tren `hostname`"
 nova_populate_nova_api_db
 
 # Register the cell0 database
-sendtelegram "Thuc thi nova_register_cell0 `hostname`"
+sendtelegram "Register the cell0 database tren `hostname`"
 nova_register_cell0
 
 # Create the cell1 cell
-sendtelegram "Thuc thi nova_create_cell1 `hostname`"
+sendtelegram "Create the cell1 cell tren `hostname`"
 nova_create_cell1
 
 # Populate the nova database
-sendtelegram "Thuc thi nova_populate_nova_db `hostname`"
+sendtelegram "Populate the nova database tren `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly
-sendtelegram "Thuc thi nova_verify_cell `hostname`"
+sendtelegram "Verify nova cell0 and cell1 are registered correctly tren `hostname`"
 nova_verify_cell
 
 # Restart installation
-sendtelegram "Thuc thi nova_restart `hostname`"
+sendtelegram "Restart installation tren `hostname`"
 nova_restart
 
 TIME_END=`date +%s.%N`

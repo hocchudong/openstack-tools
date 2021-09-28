@@ -22,6 +22,9 @@ sleep 5
 ./ctl_05_neutron.sh
 sleep 5
 
+./ctl_06_cinder.sh
+sleep 5
+
 ./ctl_07_horizon.sh
 sleep 3
 

@@ -1,8 +1,8 @@
-#### Hướng dẫn thực thi script cài đặt OpenStack Wallaby tren Ubuntu 20.04 không có HA
+#### Hướng dẫn thực thi script cài đặt OpenStack Newton không có HA
 
 ### A. MÔI TRƯỜNG LAB
 - Giả lập trên VMware Workstatios, hoặc ESX hoặc Virtualbox hoặc KVM hoặc máy vật lý.
-- Ubuntu 20.04 Server 64 bit
+- Centos 7.3 Server 64 bit - 1611
 
 ### B. MÔ HÌNH
 
@@ -29,6 +29,11 @@
 #### Thực hiện trên Controller1
 `Lưu ý:` IP được thiết lập như trong file excel, nếu cần sửa thì sau khi tải script về, sửa trong file `config.cfg`
 
+- Khai báo repos offline nếu muốn sử dụng để tăng tốc độ cài đặt (bỏ qua bước này nếu bạn không có máy chủ repos offline).
+	```sh
+  echo 'Acquire::http::Proxy "http://172.16.68.18:3142";' >  /etc/apt/apt.conf
+  apt-get update -y
+  ```
   
 - Tải script 
   

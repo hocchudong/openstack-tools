@@ -1,11 +1,12 @@
-#!/bin/bash 
+#!/bin/bash
+#Author HOC CHU DONG
+DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
+TIME_START=`date +%s.%N`
 
-###############################################################################
-## Init enviroiment source
-source config.cfg
 source function.sh
+source config.cfg
 
-###############################################################################
+#################
 echocolor "Tao flavor"
 sleep 3
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano

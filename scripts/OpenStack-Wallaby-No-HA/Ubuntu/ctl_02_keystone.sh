@@ -146,43 +146,43 @@ keystone_verify () {
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Create database for Keystone
-sendtelegram "Create database for Keystone tren `hostname`"
+sendtelegram "Thuc thi keystone_create_db tren `hostname`"
 keystone_create_db
 
 # Install components of Keystone
-sendtelegram "Install components of Keystone tren `hostname`"
+sendtelegram "Thuc thi keystone_install tren `hostname`"
 keystone_install
 
 # Configure components of Keystone
-sendtelegram "Configure components of Keystone tren `hostname`"
+sendtelegram "Thuc thi keystone_config tren `hostname`"
 keystone_config
 
 # Populate the Identity service database
-sendtelegram "Populate the Identity service database tren `hostname`"
+sendtelegram "Thuc thi keystone_populate_db tren `hostname`"
 keystone_populate_db
 
 # Initialize Fernet key repositories
-sendtelegram "Initialize Fernet key repositories tren `hostname`"
+sendtelegram "Thuc thi keystone_initialize_key tren `hostname`"
 keystone_initialize_key
 
 # Bootstrap the Identity service
-sendtelegram "Bootstrap the Identity service tren `hostname`"
+sendtelegram "Thuc thi keystone_bootstrap tren `hostname`"
 keystone_bootstrap
 
 # Configure the Apache HTTP server
-sendtelegram "Configure the Apache HTTP server tren `hostname`"
+sendtelegram "Thuc thi keystone_config_apache tren `hostname`"
 keystone_config_apache
 
 # Finalize the installation
-sendtelegram "Finalize the installation tren `hostname`"
+sendtelegram "Thuc thi keystone_finalize_install tren `hostname`"
 keystone_finalize_install
 
 # Create domain, projects, users and roles
-sendtelegram "Create domain, projects, users and roles tren `hostname`"
+sendtelegram "Thuc thi keystone_create_domain_project_user_role tren `hostname`"
 keystone_create_domain_project_user_role
 
 # Create OpenStack client environment scripts
-sendtelegram "Create OpenStack client environment scripts tren `hostname`"
+sendtelegram "Thuc thi keystone_create_opsclient_scripts tren `hostname`"
 keystone_create_opsclient_scripts
 
 # Verifying keystone

@@ -155,31 +155,28 @@ sendtelegram "Cai CINDER `hostname`"
 
 source /root/admin-openrc
 echocolor "Cai CINDER `hostname`"
+sendtelegram "Thuc thi create_lvm tren `hostname`"
 create_lvm
 
 echocolor "Tao DB CINDER"
 sleep 3
-sendtelegram "Tao DB CINDER tren `hostname`"
+sendtelegram "Thuc thi cinder_create_db tren `hostname`"
 cinder_create_db
 
 echocolor "Tao user va endpoint cho CINDER"
-sleep 3
 sendtelegram "Tao user va endpoint tren `hostname`"
 cinder_user_endpoint
 
 echocolor "Cai dat va cau hinh CINDER"
-sleep 3
-sendtelegram "TCai dat va cau hinh CINDER tren `hostname`"
+sendtelegram "Thuc thi cinder_install_config tren `hostname`"
 cinder_install_config
 
 echocolor "Dong bo DB cho CINDER"
-sleep 3
-sendtelegram "Dong bo DB cho CINDER tren `hostname`"
+sendtelegram "Thuc thi cinder_syncdb tren `hostname`"
 cinder_syncdb
 
 echocolor "Restart dich vu CINDER"
-sleep 3
-sendtelegram "Restart dich vu CINDER tren `hostname`"
+sendtelegram "Thuc thi cinder_enable_restart tren `hostname`"
 cinder_enable_restart
 
 TIME_END=`date +%s.%N`

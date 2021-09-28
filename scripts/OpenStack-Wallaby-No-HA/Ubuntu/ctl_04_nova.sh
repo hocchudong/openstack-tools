@@ -249,14 +249,14 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 
 sendtelegram "Bat dau cai dat placement `hostname`"
 
+sendtelegram "Thuc thi placement_create_db tren `hostname`"
 placement_create_db
-sendtelegram "Thuc thi placement create db tren `hostname`"
 
+sendtelegram "Thuc thi placement_create_info tren `hostname`"
 placement_create_info
-sendtelegram "Thuc thi placement create info tren `hostname`"
 
+sendtelegram "Thuc thi placement_install tren `hostname`"
 placement_install
-sendtelegram "Thuc thi placement install tren `hostname`"
 
 sendtelegram "Thuc thi placement_config tren `hostname`"
 placement_config

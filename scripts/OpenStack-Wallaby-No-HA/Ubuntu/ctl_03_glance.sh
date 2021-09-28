@@ -139,15 +139,15 @@ function glance_upload_image () {
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Create database for Glance
-sendtelegram " Create database for Glance tren `hostname`"
+sendtelegram "Thuc thi glance_create_db tren `hostname`"
 glance_create_db
 
 # Create the Glance service credentials
-sendtelegram "Create the Glance service credentials  tren `hostname`"
+sendtelegram "Thuc thi glance_create_service tren `hostname`"
 glance_create_service
 
 # Install components of Glance
-sendtelegram "Install components of Glance tren `hostname`"
+sendtelegram "Thuc thi glance_install va glance_config_api tren `hostname`"
 glance_install
 glance_config_api
 
@@ -156,15 +156,15 @@ glance_config_api
 # glance_config_registry
 
 # Populate the Image service database 
-sendtelegram "Populate the Image service database  tren `hostname`"
+sendtelegram "Thuc thi glance_populate_db  tren `hostname`"
 glance_populate_db
 
 # Restart the Image services
-sendtelegram "Restart the Image services tren `hostname`"
+sendtelegram "Thuc thi glance_restart tren `hostname`"
 glance_restart 
   
 # Upload image to Glance
-sendtelegram " Upload image to Glance tren `hostname`"
+sendtelegram "Thuc thi glance_upload_image tren `hostname`"
 glance_upload_image
 
 TIME_END=`date +%s.%N`

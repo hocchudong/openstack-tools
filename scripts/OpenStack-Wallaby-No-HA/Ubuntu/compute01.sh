@@ -8,7 +8,10 @@ source config.cfg
 TIMEDATE_START=`date +%s.%N`
 
 ./com1_01_env.sh
+sleep 10
 ./com1_02_nova_neutron.sh
+
+sleep 5
 
 TIMEDATE_END=`date +%s.%N`
 TIMEDATE_TOTAL_TEMP=$( echo "$TIMEDATE_END - $TIMEDATE_START" | bc -l )

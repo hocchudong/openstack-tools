@@ -8,7 +8,7 @@ source config.cfg
 
 # Function create database for placement 
 function placement_create_db () {
-  echocolor "Create placement_create_db for placement"
+  echocolor "Create placement create db for placement"
   sleep 3
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
@@ -70,7 +70,7 @@ function placement_config () {
 
 # Function populate the placement database
 function placement_populate_db () {
-echocolor "Populate the placement_populate_db database"
+echocolor "Populate the placement populate db database"
 sleep 3
 
 su -s /bin/sh -c "placement-manage db sync" placement

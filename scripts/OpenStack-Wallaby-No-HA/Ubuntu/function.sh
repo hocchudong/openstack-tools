@@ -24,7 +24,8 @@ function ops_del {
 
 function notify {
         chatid=-557175523
-        token=1117214915:AAF4LFh6uChng056_oTyM6cz9TY4dyAn3YU
+        #token=1117214915:AAF4LFh6uChng056_oTyM6cz9TY4dyAn3YU
+        token=2004478698:AAEsHPaCw_mbTsCaxtV2YoTAdmi1cB6N9Rw
 
 if [ $? -eq 0 ]
 then
@@ -40,7 +41,8 @@ fi
 
 function sendtelegram {
         chatid=-557175523
-        token=1117214915:AAF4LFh6uChng056_oTyM6cz9TY4dyAn3YU
+        token=2004478698:AAEsHPaCw_mbTsCaxtV2YoTAdmi1cB6N9Rw
+        # token=1117214915:AAF4LFh6uChng056_oTyM6cz9TY4dyAn3YU
         default_message="Test canh bao"
 
         curl -s --data-urlencode "text=$@" "https://api.telegram.org/bot$token/sendMessage?chat_id=$chatid" > /dev/null

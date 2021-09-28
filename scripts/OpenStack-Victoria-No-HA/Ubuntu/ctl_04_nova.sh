@@ -250,22 +250,22 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat placement `hostname`"
 
 placement_create_db
-sendtelegram "Thuc thi placement_create_db tren `hostname`"
+sendtelegram "Thuc thi placement create db tren `hostname`"
 
 placement_create_info
-sendtelegram "Thuc thi placement_create_info tren `hostname`"
+sendtelegram "Thuc thi placement create info tren `hostname`"
 
 placement_install
-sendtelegram "Thuc thi placement_install tren `hostname`"
+sendtelegram "Thuc thi placement install tren `hostname`"
 
 placement_config
-sendtelegram "Thuc thi placement_config tren `hostname`"
+sendtelegram "Thuc thi placement config tren `hostname`"
 
 placement_populate_db
-sendtelegram "Thuc thi placement_populate_db tren `hostname`"
+sendtelegram "Thuc thi placement populate db tren `hostname`"
 
 placement_restart
-sendtelegram "Thuc thi placement_restart tren `hostname`"
+sendtelegram "Thuc thi placement restart tren `hostname`"
 
 sendtelegram "Da hoa thanh cai dat placement `hostname`"
 notify

@@ -21,16 +21,15 @@ cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
-# VM network
-auto ens3
-iface ens3 inet static
+# DATA VM network
+auto eth1
+iface eth1 inet static
 address $COM1_IP_NIC1
 netmask $NETMASK_NIC1
 
-
 ### API
-auto ens4
-iface ens4 inet static
+auto eth2
+iface eth2 inet static
 address $COM1_IP_NIC2
 netmask $NETMASK_NIC2
 gateway $GATAWAY_NIC2
@@ -38,8 +37,8 @@ dns-nameservers 8.8.8.8
 
 # Provider Network
 # MGNT
-auto ens5
-iface ens5 inet static
+auto eth3
+iface eth3 inet static
 address $COM1_IP_NIC3
 netmask $NETMASK_NIC3
 EOF

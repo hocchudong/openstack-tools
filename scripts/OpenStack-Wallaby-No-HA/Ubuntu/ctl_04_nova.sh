@@ -8,7 +8,7 @@ source config.cfg
 
 # Function create database for placement 
 function placement_create_db () {
-  echocolor "Create placement_create_db for placement"
+  echocolor "Create placement create db for placement"
   sleep 3
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
@@ -70,7 +70,7 @@ function placement_config () {
 
 # Function populate the placement database
 function placement_populate_db () {
-echocolor "Populate the placement_populate_db database"
+echocolor "Populate the placement populate db database"
 sleep 3
 
 su -s /bin/sh -c "placement-manage db sync" placement
@@ -154,7 +154,7 @@ function nova_config () {
 
   ops_add $novafile api auth_strategy keystone
 
-  ops_add $novafile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+  ops_add $novafile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
   ops_add $novafile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
   ops_add $novafile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
   ops_add $novafile keystone_authtoken auth_type password
@@ -237,32 +237,35 @@ function nova_restart () {
   service nova-scheduler restart
   service nova-conductor restart
   service nova-novncproxy restart
+  
+  systemctl disable ufw
+  systemctl stop ufw
 }
 
 #######################
 ## Execute placement_##
 #######################
-sendtelegram "Da hoan thanh script $0 tren `hostname`"
+sendtelegram "Thuc thi script $0 tren `hostname`"
 
 sendtelegram "Bat dau cai dat placement `hostname`"
 
+sendtelegram "Thuc thi placement_create_db tren `hostname`"
 placement_create_db
-sendtelegram "Da hoan thanh placement_create_db tren `hostname`"
 
+sendtelegram "Thuc thi placement_create_info tren `hostname`"
 placement_create_info
-sendtelegram "Da hoan thanh placement_create_info tren `hostname`"
 
+sendtelegram "Thuc thi placement_install tren `hostname`"
 placement_install
-sendtelegram "Da hoan thanh placement_install tren `hostname`"
 
+sendtelegram "Thuc thi placement_config tren `hostname`"
 placement_config
-sendtelegram "Da hoan thanh placement_config tren `hostname`"
 
+sendtelegram "Thuc thi placement_populate_db tren `hostname`"
 placement_populate_db
-sendtelegram "Da hoan thanh placement_populate_db tren `hostname`"
 
+sendtelegram "Thuc thiplacement_restart tren `hostname`"
 placement_restart
-sendtelegram "Da hoan thanh placement_restart tren `hostname`"
 
 sendtelegram "Da hoa thanh cai dat placement `hostname`"
 notify
@@ -271,48 +274,48 @@ notify
 #######################
 ###Execute Nova###
 #######################
-sendtelegram "Da hoan thanh script $0 tren `hostname`"
+sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
+sendtelegram "Thuc thi nova_create_db tren `hostname`"
 nova_create_db
-sendtelegram "Da hoan thanh cai dat nova_create_db `hostname`"
 
 # Create infomation for Compute service
+sendtelegram "Thuc thi nova_create_info tren `hostname`"
 nova_create_info
-sendtelegram "Da hoan thanh nova_create_info `hostname`"
 
 # Install components of Nova
+sendtelegram "Thuc thi nova_install tren `hostname`"
 nova_install
-sendtelegram "Da hoan thanh cai dat nova_install `hostname`"
 
 # Config /etc/nova/nova.conf file
-sendtelegram "Da hoan thanh cai dat nova_config `hostname`"
+sendtelegram "Thuc thi nova_config tren `hostname`"
 nova_config
 
+
 # Populate the nova-api database
-sendtelegram "Da hoan thanh nova_populate_nova_api_db `hostname`"
+sendtelegram "Thuc thi nova_populate_nova_api_db tren `hostname`"
 nova_populate_nova_api_db
 
 # Register the cell0 database
-sendtelegram "Da hoan thanh nova_register_cell0 `hostname`"
-
+sendtelegram "Thuc thi nova_register_cell0 tren `hostname`"
 nova_register_cell0
 
 # Create the cell1 cell
-sendtelegram "Da hoan thanh nova_create_cell1 `hostname`"
+sendtelegram "Thuc thi nova_create_cell1 tren `hostname`"
 nova_create_cell1
 
 # Populate the nova database
-sendtelegram "Da hoan thanh nova_populate_nova_db `hostname`"
+sendtelegram "Thuc thi nova_populate_nova_db tren `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly
-sendtelegram "Da hoan thanh nova_verify_cell `hostname`"
+sendtelegram "Verify nova cell0 and cell1 are registered correctly tren `hostname`"
 nova_verify_cell
 
 # Restart installation
-sendtelegram "Thu hien nova_restart `hostname`"
+sendtelegram "Restart installation tren `hostname`"
 nova_restart
 
 TIME_END=`date +%s.%N`

@@ -11,7 +11,7 @@ horizon_install () {
 	echocolor "Install the packages"
 	sleep 3
 	apt install openstack-dashboard -y
-  apt-get remove --auto-remove openstack-dashboard-ubuntu-theme
+  apt-get remove --auto-remove openstack-dashboard-ubuntu-theme -y
 }
 
 function redirect_web () {
@@ -48,7 +48,9 @@ horizon_config () {
 
 	echo "SESSION_ENGINE = 'django.contrib.sessions.backends.cache'" >> $horizonfile
 	sed -i "s/'LOCATION': '127.0.0.1:11211',/""'LOCATION': '$CTL1_IP_NIC2:11211',""/g" $horizonfile
-	sed -i 's/OPENSTACK_KEYSTONE_URL = "http:\/\/%s:5000\/v2.0" % OPENSTACK_HOST/OPENSTACK_KEYSTONE_URL = "http:\/\/%s:5000\/v3" % OPENSTACK_HOST/g' $horizonfile
+  
+	sed -i 's/OPENSTACK_KEYSTONE_URL = .*$/OPENSTACK_KEYSTONE_URL = "http:\/\/IP_HORIZON:5000\/v3"/g' $horizonfile
+	sed -i "s/IP_HORIZON/$CTL1_IP_NIC2/g" $horizonfile
 
 	echo "OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True" >> $horizonfile
   
@@ -56,7 +58,7 @@ cat << EOF >> $horizonfile
 OPENSTACK_API_VERSIONS = {
     "identity": 3,
     "image": 2,
-    "volume": 2,
+    "volume": 3,
 }
 EOF
 
@@ -74,7 +76,7 @@ sed -i "s/'enable_fip_topology_check': True,/'enable_fip_topology_check': False,
 
 sed -i 's/TIME_ZONE = "UTC"/TIME_ZONE = "Asia\/Ho_Chi_Minh"/g' $horizonfile
 
-sed -i "s/DEFAULT_THEME = 'ubuntu'/DEFAULT_THEME = 'Default'/g" $horizonfile
+sed -i "s/DEFAULT_THEME = 'ubuntu'/DEFAULT_THEME = 'default'/g" $horizonfile
 }
 
 # Function restart installation
@@ -91,19 +93,19 @@ horizon_restart () {
 sendtelegram "Thu thi script $0 tren `hostname`"
 
 # Install the packages
-sendtelegram "Cai dat horizon_install tren `hostname`"
+sendtelegram "Thuc thi horizon_install tren `hostname`"
 horizon_install
 
 # Redirecting web
-sendtelegram "Cai dat redirect_web tren `hostname`"
+sendtelegram "Thuc thi redirect_web tren `hostname`"
 redirect_web
 
 # Edit the /etc/openstack-dashboard/local_settings.py file
-sendtelegram "Cai dat horizon_config tren `hostname`"
+sendtelegram "Thuc thi horizon_config tren `hostname`"
 horizon_config
 
 # Restart installation
-sendtelegram "Cai dat horizon_restart tren `hostname`"
+sendtelegram "Thuc thi horizon_restart tren `hostname`"
 horizon_restart
 
 echocolor #================================#
@@ -118,9 +120,9 @@ TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
 TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
-echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
 
-sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

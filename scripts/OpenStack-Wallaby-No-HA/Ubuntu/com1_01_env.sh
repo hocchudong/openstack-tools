@@ -7,7 +7,7 @@ source function.sh
 source config.cfg
 
 function config_hostname () {
-  hostnamectl set-hostname $CTL1_HOSTNAME
+  hostnamectl set-hostname $COM1_HOSTNAME
   
   echo "127.0.0.1 locahost $COM1_HOSTNAME" > /etc/hosts
   echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" >> /etc/hosts
@@ -50,6 +50,9 @@ function install_ops_packages () {
   sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  
+  systemctl disable ufw
+  systemctl stop ufw
 }
 
 #######################
@@ -57,28 +60,28 @@ function install_ops_packages () {
 #######################
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
-sendtelegram "config_hostname `hostname`"
+sendtelegram "Thuc thi config_hostname `hostname`"
 config_hostname
 
 # Update and upgrade for COMPUTE
-sendtelegram "Cai update_upgrade tren `hostname`"
+sendtelegram "Thuc thi update_upgrade tren `hostname`"
 update_upgrade
 
 # Install and config NTP
-sendtelegram "Cai install_ntp tren `hostname`"
+sendtelegram "Thuc thi install_ntp tren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)
-sendtelegram "Cai install_ops_packages tren `hostname`"
+sendtelegram "Thuc thi install_ops_packages tren `hostname`"
 install_ops_packages
 
 TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
 TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
-echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
 
-sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

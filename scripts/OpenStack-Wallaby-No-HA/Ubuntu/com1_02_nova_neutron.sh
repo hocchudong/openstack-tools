@@ -19,14 +19,17 @@ function nova_config () {
   sleep 3
   novafile=/etc/nova/nova.conf
   novafilebak=/etc/nova/nova.conf.bak
+  novacomputefile=/etc/nova/nova-compute.conf
+  novacomputefilebak=/etc/nova/nova-compute.conf.bka
   cp $novafile $novafilebak
+  cp $novacomputefile $novacomputefilebak
   egrep -v "^$|^#" $novafilebak > $novafile
 
   ops_add $novafile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
 
   ops_add $novafile api auth_strategy keystone
 
-  ops_add $novafile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+  ops_add $novafile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
   ops_add $novafile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
   ops_add $novafile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
   ops_add $novafile keystone_authtoken auth_type password
@@ -36,7 +39,7 @@ function nova_config () {
   ops_add $novafile keystone_authtoken username nova
   ops_add $novafile keystone_authtoken password $NOVA_PASS
 
-  ops_add $novafile DEFAULT my_ip $CTL1_IP_NIC2
+  ops_add $novafile DEFAULT my_ip $COM1_IP_NIC2
   ops_add $novafile DEFAULT use_neutron True
   ops_add $novafile DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 
@@ -70,6 +73,8 @@ function nova_config () {
   ops_add $novafile neutron project_name service
   ops_add $novafile neutron username neutron
   ops_add $novafile neutron password $NEUTRON_PASS
+  
+  ops_add $novacomputefile libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
 }
 
 # Function finalize installation
@@ -101,7 +106,7 @@ function neutron_config_server_component () {
   ops_add $neutronfile DEFAULT auth_strategy keystone
   ops_add $neutronfile DEFAULT core_plugin ml2
   
-  ops_add $neutronfile keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+  ops_add $neutronfile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
   ops_add $neutronfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
   ops_add $neutronfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
   ops_add $neutronfile keystone_authtoken auth_type password
@@ -124,7 +129,7 @@ function neutron_config_linuxbridge () {
   cp $linuxbridgefile $linuxbridgefilebak
   egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
-  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
+  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
   ops_add $linuxbridgefile vxlan enable_vxlan true
   ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC1
   ops_add $linuxbridgefile vxlan l2_population true
@@ -177,40 +182,40 @@ function neutron_restart () {
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Install nova-compute
-sendtelegram "Cai nova_install cho tren `hostname`"
+sendtelegram "Thuc thi nova_install tren `hostname`"
 nova_install
 
 # Edit /etc/nova/nova.conf file
-sendtelegram "Cai nova_config cho tren `hostname`"
+sendtelegram "Thuc thi nova_config tren `hostname`"
 nova_config
 
 # Finalize installation
-sendtelegram "Cai nova_resart cho tren `hostname`"
+sendtelegram "Thuc thi nova_resart tren `hostname`"
 nova_resart
 
 # Install the components Neutron
-sendtelegram "Cai neutron_install cho tren `hostname`"
+sendtelegram "Thuc thi neutron_install tren `hostname`"
 neutron_install
 
 # Configure the common component
-sendtelegram "Cai neutron_config_server_component cho tren `hostname`"
+sendtelegram "Thuc thi neutron_config_server_component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Linux bridge agent
-sendtelegram "Cai neutron_config_linuxbridge cho tren `hostname`"
+sendtelegram "Thuc thi neutron_config_linuxbridge tren `hostname`"
 neutron_config_linuxbridge
 
-sendtelegram "Cai neutron_config_dhcp cho tren `hostname`"
+sendtelegram "Thuc thi neutron_config_dhcp tren `hostname`"
 neutron_config_dhcp
 
-sendtelegram "Cai neutron_config_metadata cho tren `hostname`"
+sendtelegram "Thuc thi neutron_config_metadata tren `hostname`"
 neutron_config_metadata
   
 # Configure the Compute service to use the Networking service
 #neutron_config_compute_use_network
   
 # Restart installation
-sendtelegram "Cai neutron_restart cho tren `hostname`"
+sendtelegram "Thuc thi neutron_restart tren `hostname`"
 neutron_restart
 
 TIME_END=`date +%s.%N`

@@ -117,7 +117,7 @@ function neutron_config_linuxbridge () {
   cp $linuxbridgefile $linuxbridgefilebak
   egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
-  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:ens5
+  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
   ops_add $linuxbridgefile vxlan enable_vxlan true
   ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC2
   ops_add $linuxbridgefile vxlan l2_population true
@@ -220,61 +220,61 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai NEUTRON `hostname`"
 
 # Create database for Neutron
-sendtelegram "Cai neutron_create_db tren `hostname`"
+sendtelegram "Create database for Neutron tren `hostname`"
 neutron_create_db
 
 # Create the neutron service credentials
-sendtelegram "Cai neutron_create_info tren `hostname`"
+sendtelegram "Create the neutron service credentials tren `hostname`"
 neutron_create_info
 
 # Install the components
-sendtelegram "Cai neutron_create_info tren `hostname`"
+sendtelegram "Install the components tren `hostname`"
 neutron_install
 
 # Configure the server component
-sendtelegram "Cai neutron_config_server_component tren `hostname`"
+sendtelegram "Configure the server component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Modular Layer 2 (ML2) plug-in
-sendtelegram "Cai neutron_config_ml2 tren `hostname`"
+sendtelegram "Configure the Modular Layer 2 tren `hostname`"
 neutron_config_ml2
 
 # Configure the Linux bridge agent
-sendtelegram "Cai neutron_config_linuxbridge tren `hostname`"
+sendtelegram "Configure the Linux bridge agent tren `hostname`"
 neutron_config_linuxbridge
 
 # Configure the L3 Agent
-sendtelegram "Cai neutron_config_l3agent tren `hostname`"
+sendtelegram "Configure the L3 Agent tren `hostname`"
 neutron_config_l3agent
 
 # Configure the DHCP agent
-# sendtelegram "Cai neutron_config_dhcp tren `hostname`"
+# sendtelegram "Configure the DHCP agent tren `hostname`"
 #neutron_config_dhcp
 
 # Configure the metadata agent
-# sendtelegram "Cai neutron_config_metadata tren `hostname`"
+# sendtelegram "Configure the metadata agent tren `hostname`"
 
 #neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
-sendtelegram "Cai neutron_config_compute_use_network tren `hostname`"
+sendtelegram "Configure the Compute service to use the Networking service tren `hostname`"
 neutron_config_compute_use_network
 
 # Populate the database
-sendtelegram "Cai neutron_populate_db tren `hostname`"
+sendtelegram "Populate the database tren `hostname`"
 neutron_populate_db
 
 # Function restart installation
-sendtelegram "Cai neutron_restart tren `hostname`"
+sendtelegram " Function restart installation tren `hostname`"
 neutron_restart
 
 TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
 TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
 
-echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
 
-sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Da thuc hien script $0 tren `hostname`, vao luc: $DATE_EXEC"
 sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
 notify

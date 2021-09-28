@@ -234,10 +234,8 @@ Trong bộ script đã có sẵn script để tạo ra các hạ tầng bao gồ
 
 
 
-
-
 #### 4.2. Tạo network, router, flavor, vm bằng Web
 
-- Truy cập vào horizon với địa chỉ `http://172.16.68.211/horizon` để quan sát tiếp (mật khẩu xem ở file `/root/admin-openrc`
+- Truy cập vào horizon với địa chỉ `http://172.16.70.90/horizon` để quan sát tiếp (mật khẩu xem ở file `/root/admin-openrc`
 
 

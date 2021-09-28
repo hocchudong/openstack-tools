@@ -11,8 +11,6 @@ TIMEDATE_START=`date +%s.%N`
 ./ctl_02_keystone.sh
 ./ctl_03_glance.sh
 ./ctl_04_nova.sh
-./ctl_04_nova.sh
-./ctl_05_neutron.sh
 ./ctl_05_neutron.sh
 ./ctl_07_horizon.sh
 

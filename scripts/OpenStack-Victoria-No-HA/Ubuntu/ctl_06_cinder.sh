@@ -25,9 +25,9 @@ function cinder_user_endpoint() {
 
   openstack service create --name cinderv3 --description "OpenStack Block Storage" volumev3
 
-  openstack endpoint create --region RegionOne volumev2 public http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
-  openstack endpoint create --region RegionOne volumev2 internal http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
-  openstack endpoint create --region RegionOne volumev2 admin http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
+  # openstack endpoint create --region RegionOne volumev2 public http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
+  # openstack endpoint create --region RegionOne volumev2 internal http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
+  # openstack endpoint create --region RegionOne volumev2 admin http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
 
   openstack endpoint create --region RegionOne volumev3 public http://$CTL1_IP_NIC2:8776/v3/%\(tenant_id\)s
   openstack endpoint create --region RegionOne volumev3 internal http://$CTL1_IP_NIC2:8776/v3/%\(tenant_id\)s
@@ -41,8 +41,7 @@ function cinder_install_config() {
   sleep 3
 
   apt -y install cinder-api cinder-scheduler cinder-volume
-  apt -y install  python3-cinderclient python3-mysqldb python3-rtslib-fb 
-  apt -y install targetcli-fb
+  apt -y install python3-cinderclient python3-mysqldb python3-rtslib-fb targetcli-fb
 
   ctl_cinder_conf=/etc/cinder/cinder.conf
   

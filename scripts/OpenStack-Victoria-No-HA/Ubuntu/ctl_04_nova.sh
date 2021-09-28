@@ -258,14 +258,14 @@ sendtelegram "Thuc thi placement create info tren `hostname`"
 placement_install
 sendtelegram "Thuc thi placement install tren `hostname`"
 
+sendtelegram "Thuc thi placement_config tren `hostname`"
 placement_config
-sendtelegram "Thuc thi placement config tren `hostname`"
 
+sendtelegram "Thuc thi placement_populate_db tren `hostname`"
 placement_populate_db
-sendtelegram "Thuc thi placement populate db tren `hostname`"
 
+sendtelegram "Thuc thiplacement_restart tren `hostname`"
 placement_restart
-sendtelegram "Thuc thi placement restart tren `hostname`"
 
 sendtelegram "Da hoa thanh cai dat placement `hostname`"
 notify
@@ -278,36 +278,36 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Bat dau cai dat Nova `hostname`"
 
 # Create database for Nova
-sendtelegram "Create database for Nova tren `hostname`"
+sendtelegram "Thuc thi nova_create_db tren `hostname`"
 nova_create_db
 
 # Create infomation for Compute service
-sendtelegram "Create infomation for Compute service tren `hostname`"
+sendtelegram "Thuc thi nova_create_info tren `hostname`"
 nova_create_info
 
 # Install components of Nova
-sendtelegram "Install components of Nova tren `hostname`"
+sendtelegram "Thuc thi nova_install tren `hostname`"
 nova_install
 
 # Config /etc/nova/nova.conf file
-sendtelegram "Cau hinh nova tren `hostname`"
+sendtelegram "Thuc thi nova_config tren `hostname`"
 nova_config
 
 
 # Populate the nova-api database
-sendtelegram "Populate the nova-api database tren `hostname`"
+sendtelegram "Thuc thi nova_populate_nova_api_db tren `hostname`"
 nova_populate_nova_api_db
 
 # Register the cell0 database
-sendtelegram "Register the cell0 database tren `hostname`"
+sendtelegram "Thuc thi nova_register_cell0 tren `hostname`"
 nova_register_cell0
 
 # Create the cell1 cell
-sendtelegram "Create the cell1 cell tren `hostname`"
+sendtelegram "Thuc thi nova_create_cell1 tren `hostname`"
 nova_create_cell1
 
 # Populate the nova database
-sendtelegram "Populate the nova database tren `hostname`"
+sendtelegram "Thuc thi nova_populate_nova_db tren `hostname`"
 nova_populate_nova_db
 
 # Verify nova cell0 and cell1 are registered correctly

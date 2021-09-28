@@ -23,7 +23,6 @@ function cinder_user_endpoint() {
   openstack user create  cinder --domain default --password $CINDER_PASS
   openstack role add --project service --user cinder admin
 
-  openstack service create --name cinderv2 --description "OpenStack Block Storage" volumev2
   openstack service create --name cinderv3 --description "OpenStack Block Storage" volumev3
 
   openstack endpoint create --region RegionOne volumev2 public http://$CTL1_IP_NIC2:8776/v2/%\(tenant_id\)s
@@ -40,9 +39,11 @@ function cinder_user_endpoint() {
 function cinder_install_config() {
   echocolor "Cai dat cinder"
   sleep 3
-  apt install -y cinder-api cinder-scheduler
-  apt install -y lvm2  tgt thin-provisioning-tools 
-  apt install -y cinder-volume python3-mysqldb python3-rtslib-fb
+
+  apt -y install cinder-api cinder-scheduler cinder-volume
+  apt -y install  python3-cinderclient python3-mysqldb python3-rtslib-fb 
+  apt -y install targetcli-fb
+
   ctl_cinder_conf=/etc/cinder/cinder.conf
   
   cp $ctl_cinder_conf $ctl_cinder_conf.orig
@@ -50,9 +51,9 @@ function cinder_install_config() {
   if [ "$CINDER_AIO" == "yes" ]; then
     ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
     ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2
-    ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
-    ops_add $ctl_cinder_conf DEFAULT osapi_volume_listen  \$my_ip
-    ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
+    ops_add $ctl_cinder_conf DEFAULT state_path /var/lib/cinder
+    ops_add $ctl_cinder_conf DEFAULT rootwrap_config /etc/cinder/rootwrap.conf
+    ops_add $ctl_cinder_conf DEFAULT api_paste_confg /etc/cinder/api-paste.ini
     ops_add $ctl_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC2:9292
     ops_add $ctl_cinder_conf DEFAULT enabled_backends lvm
     ops_add $ctl_cinder_conf DEFAULT enable_v3_api True
@@ -64,45 +65,47 @@ function cinder_install_config() {
     ops_add $ctl_cinder_conf keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
     ops_add $ctl_cinder_conf keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
     ops_add $ctl_cinder_conf keystone_authtoken auth_type password
-    ops_add $ctl_cinder_conf keystone_authtoken project_domain_name Default
-    ops_add $ctl_cinder_conf keystone_authtoken user_domain_name Default
+    ops_add $ctl_cinder_conf keystone_authtoken project_domain_name default
+    ops_add $ctl_cinder_conf keystone_authtoken user_domain_name default
     ops_add $ctl_cinder_conf keystone_authtoken project_name service
     ops_add $ctl_cinder_conf keystone_authtoken username cinder
     ops_add $ctl_cinder_conf keystone_authtoken password $CINDER_PASS
 
-    ops_add $ctl_cinder_conf oslo_concurrency lock_path /var/lib/cinder/tmp
+    ops_add $ctl_cinder_conf oslo_concurrency lock_path \$state_path/tmp
 
-    ops_add $ctl_cinder_conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
+    ops_add $ctl_cinder_conf lvm target_helper lioadm
+    ops_add $ctl_cinder_conf lvm target_protocol iscsi
+    ops_add $ctl_cinder_conf lvm target_ip_address 172.16.70.90
     ops_add $ctl_cinder_conf lvm volume_group cinder-volumes
-    ops_add $ctl_cinder_conf lvm iscsi_protocol iscsi
-    ops_add $ctl_cinder_conf lvm iscsi_helper tgtadm
+    ops_add $ctl_cinder_conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
+    ops_add $ctl_cinder_conf lvm volumes_dir \$state_path/volumes
     
     
     
   else
-    ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
-    ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2
-    ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
-    ops_add $ctl_cinder_conf DEFAULT osapi_volume_listen \$my_ip
-    ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
-    ops_add $ctl_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC2:9292
+    # ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
+    # ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2
+    # ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
+    # ops_add $ctl_cinder_conf DEFAULT osapi_volume_listen \$my_ip
+    # ops_add $ctl_cinder_conf DEFAULT control_exchange cinder
+    # ops_add $ctl_cinder_conf DEFAULT glance_api_servers http://$CTL1_IP_NIC2:9292
 
 
-    ops_add $ctl_cinder_conf database connection  mysql+pymysql://cinder:$PASS_DATABASE_CINDER@$CTL1_IP_NIC2/cinder
+    # ops_add $ctl_cinder_conf database connection  mysql+pymysql://cinder:$PASS_DATABASE_CINDER@$CTL1_IP_NIC2/cinder
 
-    ops_add $ctl_cinder_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
-    ops_add $ctl_cinder_conf keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
-    ops_add $ctl_cinder_conf keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
-    ops_add $ctl_cinder_conf keystone_authtoken auth_type password
-    ops_add $ctl_cinder_conf keystone_authtoken project_domain_name Default
-    ops_add $ctl_cinder_conf keystone_authtoken user_domain_name Default
-    ops_add $ctl_cinder_conf keystone_authtoken project_name service
-    ops_add $ctl_cinder_conf keystone_authtoken username cinder
-    ops_add $ctl_cinder_conf keystone_authtoken password $CINDER_PASS
+    # ops_add $ctl_cinder_conf keystone_authtoken auth_uri http://$CTL1_IP_NIC2:5000
+    # ops_add $ctl_cinder_conf keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
+    # ops_add $ctl_cinder_conf keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
+    # ops_add $ctl_cinder_conf keystone_authtoken auth_type password
+    # ops_add $ctl_cinder_conf keystone_authtoken project_domain_name Default
+    # ops_add $ctl_cinder_conf keystone_authtoken user_domain_name Default
+    # ops_add $ctl_cinder_conf keystone_authtoken project_name service
+    # ops_add $ctl_cinder_conf keystone_authtoken username cinder
+    # ops_add $ctl_cinder_conf keystone_authtoken password $CINDER_PASS
 
-    ops_add $ctl_cinder_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
+    # ops_add $ctl_cinder_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
 
-    ops_add $ctl_cinder_conf oslo_concurrency lock_path /var/lib/cinder/tmp
+    # ops_add $ctl_cinder_conf oslo_concurrency lock_path /var/lib/cinder/tmp
 
   fi
 }
@@ -123,6 +126,9 @@ function cinder_enable_restart() {
     service cinder-scheduler restart
     service apache2 restart
   fi
+ 
+  echo "export OS_VOLUME_API_VERSION=3" >> /root/admin-openrc
+
 }
 
 function create_lvm() {
@@ -131,45 +137,25 @@ function create_lvm() {
     pvcreate /dev/vdb
     vgcreate cinder-volumes /dev/vdb
 
-    cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
-    
-    sed -i '130i\        filter = [ "a/vdb/", "r/.*/"]' /etc/lvm/lvm.conf
-    
-    #sed  -r -i 's#(filter = )(\[ "a/\.\*/" \])#\1["a\/vdb\/", "r/\.\*\/"]#g' /etc/lvm/lvm.conf
-    # fix filter cua lvm tren CentOS 7.4, chen vao dong 141 cua file /etc/lvm/lvm.conf
-    #sed -i '141i\        filter = [ "a/vdb/", "r/.*/"]' /etc/lvm/lvm.conf
+    # cp /etc/lvm/lvm.conf /etc/lvm/lvm.conf.orig
+    # sed -i '130i\        filter = [ "a/vdb/", "r/.*/"]' /etc/lvm/lvm.conf
+
   else 
     echocolor "Khong cau hinh LVM vi ko cai cinder-volume"
   fi
    
 }
 
-############################
-# Thuc thi cac functions
-## Goi cac functions
-############################
-# echocolor "Nhap tuy chon la so 1 hoac so 2 de cai dat cinder"
-# echocolor "1. Cai dat cinder-volume cung controller"
-# echocolor "2. KHONG cai cinder-volume trne cung controller"
-# read -e var
-# if [ $var == "1" ]; then
-  # var_block='AIO'
-# elif [ $var == "2" ]; then
-  # var_block=''
-# else
-  # echocolor "Sai khi tu"
-  # exit
-# fi
- 
 #######################
 ###Execute functions###
 ####################### 
+
+
 sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai CINDER `hostname`"
 
 source /root/admin-openrc
 echocolor "Cai CINDER `hostname`"
-
 create_lvm
 
 echocolor "Tao DB CINDER"

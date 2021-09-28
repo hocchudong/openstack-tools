@@ -160,13 +160,13 @@ echocolor "Cai CINDER `hostname`"
 sendtelegram "Thuc thi create_lvm tren `hostname`"
 create_lvm
 
-echocolor "Tao DB CINDER"
+echocolor "Thuc thi cinder_create_db tren `hostname`"
 sleep 3
 sendtelegram "Thuc thi cinder_create_db tren `hostname`"
 cinder_create_db
 
 echocolor "Tao user va endpoint cho CINDER"
-sendtelegram "Tao user va endpoint tren `hostname`"
+sendtelegram "Thuc thi cinder_user_endpoint tren `hostname`"
 cinder_user_endpoint
 
 echocolor "Cai dat va cau hinh CINDER"

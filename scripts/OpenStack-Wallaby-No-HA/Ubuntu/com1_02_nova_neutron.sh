@@ -182,40 +182,40 @@ function neutron_restart () {
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
 # Install nova-compute
-sendtelegram "Thuc thi nova install cho tren `hostname`"
+sendtelegram "Thuc thi nova_install tren `hostname`"
 nova_install
 
 # Edit /etc/nova/nova.conf file
-sendtelegram "Thuc thi nova config cho tren `hostname`"
+sendtelegram "Thuc thi nova_config tren `hostname`"
 nova_config
 
 # Finalize installation
-sendtelegram "Finalize installation tren `hostname`"
+sendtelegram "Thuc thi nova_resart tren `hostname`"
 nova_resart
 
 # Install the components Neutron
-sendtelegram "Install the components Neutron tren `hostname`"
+sendtelegram "Thuc thi neutron_install tren `hostname`"
 neutron_install
 
 # Configure the common component
-sendtelegram "Configure the common component tren `hostname`"
+sendtelegram "Thuc thi neutron_config_server_component tren `hostname`"
 neutron_config_server_component
 
 # Configure the Linux bridge agent
-sendtelegram " Configure the Linux bridge agent tren `hostname`"
+sendtelegram "Thuc thi neutron_config_linuxbridge tren `hostname`"
 neutron_config_linuxbridge
 
-sendtelegram " Configure the Linux bridge agent tren `hostname`"
+sendtelegram "Thuc thi neutron_config_dhcp tren `hostname`"
 neutron_config_dhcp
 
-sendtelegram " Configure the Linux bridge agent tren `hostname`"
+sendtelegram "Thuc thi neutron_config_metadata tren `hostname`"
 neutron_config_metadata
   
 # Configure the Compute service to use the Networking service
 #neutron_config_compute_use_network
   
 # Restart installation
-sendtelegram "Restart installation tren `hostname`"
+sendtelegram "Thuc thi neutron_restart tren `hostname`"
 neutron_restart
 
 TIME_END=`date +%s.%N`

@@ -148,34 +148,34 @@ EOF
 
 sendtelegram "Thuc thi script $0 tren `hostname`"
 
-sendtelegram "Cai dat config hostname `hostname`"
+sendtelegram "Thuc thi config_hostname tren `hostname`"
 config_hostname
 
 # Update and upgrade for controller
-sendtelegram "Update OS tren `hostname`"
+sendtelegram "Thuc thi install_ntp tren `hostname`"
 update_upgrade
 
 # Install and config NTP
-sendtelegram "Cai dat NTP tren `hostname`"
+sendtelegram "Thuc thi install_ntptren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)
-sendtelegram "Cai dat OpenStack packages tren `hostname`"
+sendtelegram "Thuc thi install_ops_packages tren `hostname`"
 install_ops_packages
 
 # Install SQL database (Mariadb)
-sendtelegram "Install SQL database tren `hostname`"
+sendtelegram "Thuc thi install_database tren `hostname`"
 install_database
 
 # Install Message queue (rabbitmq)
-sendtelegram "Install Message queue tren `hostname`"
+sendtelegram "Thuc thi install_mq tren `hostname`"
 install_mq
 
 # Install Memcached
-sendtelegram "Cai dat install memcached tren `hostname`"
+sendtelegram "Thuc thi install_memcachedtren `hostname`"
 install_memcached
 
-sendtelegram "Cai dat install etcd tren `hostname`"
+sendtelegram "Thuc thi install_etc tren `hostname`"
 install_etcd
 
 TIME_END=`date +%s.%N`

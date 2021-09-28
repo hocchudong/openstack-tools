@@ -8,4 +8,6 @@ source config.cfg
 
 openstack volume create --size 10 disk01
 
+sleep 10 
+
 openstack server add volume provider-VM1 disk01

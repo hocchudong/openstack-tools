@@ -119,7 +119,7 @@ function cinder_syncdb() {
 function cinder_enable_restart() {
   sleep 3
   if [ "$CINDER_AIO" == "yes" ]; then
-    service tgt restart
+    # service tgt restart
     service cinder-volume restart
     service cinder-scheduler restart
     service apache2 restart

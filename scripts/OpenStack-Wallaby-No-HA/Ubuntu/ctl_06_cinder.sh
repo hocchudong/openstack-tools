@@ -74,7 +74,7 @@ function cinder_install_config() {
 
     ops_add $ctl_cinder_conf lvm target_helper lioadm
     ops_add $ctl_cinder_conf lvm target_protocol iscsi
-    ops_add $ctl_cinder_conf lvm target_ip_address 172.16.70.90
+    ops_add $ctl_cinder_conf lvm target_ip_address $CTL1_IP_NIC2
     ops_add $ctl_cinder_conf lvm volume_group cinder-volumes
     ops_add $ctl_cinder_conf lvm volume_driver cinder.volume.drivers.lvm.LVMVolumeDriver
     ops_add $ctl_cinder_conf lvm volumes_dir \$state_path/volumes

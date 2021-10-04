@@ -59,7 +59,7 @@ function neutron_config_server_component () {
   ops_add $neutronfile DEFAULT service_plugins router
   ops_add $neutronfile DEFAULT allow_overlapping_ips true
   ops_add $neutronfile DEFAULT dhcp_agents_per_network 2
-
+  ops_add $neutronfile DEFAULT state_path /var/lib/neutron
 
   ops_add $neutronfile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
   ops_add $neutronfile DEFAULT auth_strategy keystone
@@ -85,6 +85,8 @@ function neutron_config_server_component () {
   ops_add $neutronfile nova project_name service
   ops_add $neutronfile nova username nova
   ops_add $neutronfile nova password $NOVA_PASS
+  
+  ops_add $neutronfile oslo_concurrency lock_path  /var/lib/neutron/lock
 }
 
 # Function configure the Modular Layer 2 (ML2) plug-in

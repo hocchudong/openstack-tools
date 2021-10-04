@@ -39,7 +39,7 @@ function neutron_create_info () {
 function neutron_install () {
   echocolor "Install the components"
   sleep 3
-  apt install -y neutron-server neutron-plugin-ml2 neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent
+  apt install -y neutron-server neutron-plugin-ml2 neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent neutron-l3-agent
 }
 
 # Function configure the server component
@@ -198,8 +198,13 @@ function neutron_populate_db () {
 function neutron_restart () {
   echocolor "Neutron services restart "
   sleep 3
-  service nova-api restart
-  service neutron-server restart
+
+  systemctl restart  nova-api
+  
+  systemctl restart neutron-server
+  
+  systemctl restart neutron-l3-agent 
+  
   systemctl stop neutron-dhcp-agent
   systemctl stop neutron-metadata-agent
   
@@ -209,7 +214,6 @@ function neutron_restart () {
   service neutron-linuxbridge-agent restart
   #service neutron-dhcp-agent restart
   #service neutron-metadata-agent restart
-  #service neutron-l3-agent restart
 }
 
 

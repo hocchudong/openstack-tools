@@ -166,7 +166,7 @@ function nova_config () {
 
   ops_add $novafile DEFAULT my_ip $CTL1_IP_NIC2
   ops_add $novafile DEFAULT use_neutron True
-  ops_add $novafile DEFAULT irewall_driver nova.virt.firewall.NoopFirewallDriver
+  ops_add $novafile DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
   ops_del $novafile DEFAULT log_dir
 
 

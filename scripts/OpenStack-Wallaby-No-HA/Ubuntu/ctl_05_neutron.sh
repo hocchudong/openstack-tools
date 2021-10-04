@@ -118,13 +118,14 @@ function neutron_config_linuxbridge () {
   egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
   ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
+  
   ops_add $linuxbridgefile vxlan enable_vxlan true
   ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC2
   ops_add $linuxbridgefile vxlan l2_population true
   
   ops_add $linuxbridgefile securitygroup enable_security_group true
-  ops_add $linuxbridgefile securitygroup \
-    firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+  ops_add $linuxbridgefile securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+   
 }
 
 function neutron_config_l3agent () {
@@ -204,6 +205,8 @@ function neutron_restart () {
   systemctl restart neutron-server
   
   systemctl restart neutron-l3-agent 
+ 
+  systemctl restart neutron-linuxbridge-agent
   
   systemctl stop neutron-dhcp-agent
   systemctl stop neutron-metadata-agent
@@ -211,7 +214,6 @@ function neutron_restart () {
   systemctl disable neutron-dhcp-agent
   systemctl disable neutron-metadata-agent
   
-  service neutron-linuxbridge-agent restart
   #service neutron-dhcp-agent restart
   #service neutron-metadata-agent restart
 }

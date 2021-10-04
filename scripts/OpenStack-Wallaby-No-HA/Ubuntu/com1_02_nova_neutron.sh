@@ -89,6 +89,7 @@ function neutron_install () {
   sleep 3
 
   apt install -y neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent
+  apt install -y neutron-common neutron-plugin-ml2 
 }
 
 # Function configure the common component
@@ -105,6 +106,8 @@ function neutron_config_server_component () {
   ops_add $neutronfile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
   ops_add $neutronfile DEFAULT auth_strategy keystone
   ops_add $neutronfile DEFAULT core_plugin ml2
+  ops_add $neutronfile DEFAULT state_path /var/lib/neutron
+  ops_add $neutronfile DEFAULT allow_overlapping_ips True
   
   ops_add $neutronfile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
   ops_add $neutronfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
@@ -120,6 +123,28 @@ function neutron_config_server_component () {
 
 }
 
+# Function configure the Modular Layer 2 (ML2) plug-in
+function neutron_config_ml2 () {
+  echocolor "Configure the Modular Layer 2 (ML2) plug-in"
+  sleep 3
+  ml2file=/etc/neutron/plugins/ml2/ml2_conf.ini
+  ml2filebak=/etc/neutron/plugins/ml2/ml2_conf.ini.bak
+  cp $ml2file $ml2filebak
+  egrep -v "^$|^#" $ml2filebak > $ml2file
+
+  ops_add $ml2file ml2 type_drivers flat,vlan,vxlan
+  ops_add $ml2file ml2 tenant_network_types vxlan
+  ops_add $ml2file ml2 mechanism_drivers linuxbridge,l2population
+  ops_add $ml2file ml2 extension_drivers port_security
+  
+  ops_add $ml2file ml2_type_flat flat_networks provider
+  ops_add $ml2file ml2_type_vlan network_vlan_ranges provider
+  ops_add $ml2file ml2_type_vxlan vni_ranges 1:1000
+  
+  ops_add $ml2file securitygroup enable_ipset true
+}
+
+
 # Function configure the Linux bridge agent
 function neutron_config_linuxbridge () {
   echocolor "Configure the linux bridge agent"
@@ -130,8 +155,9 @@ function neutron_config_linuxbridge () {
   egrep -v "^$|^#" $linuxbridgefilebak > $linuxbridgefile
 
   ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
+  
   ops_add $linuxbridgefile vxlan enable_vxlan true
-  ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC1
+  ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC2
   ops_add $linuxbridgefile vxlan l2_population true
   
   ops_add $linuxbridgefile securitygroup enable_security_group true
@@ -200,6 +226,10 @@ neutron_install
 # Configure the common component
 sendtelegram "Thuc thi neutron_config_server_component tren `hostname`"
 neutron_config_server_component
+
+# Configure the Modular Layer 2 (ML2) plug-in
+sendtelegram "Configure the Modular Layer 2 tren `hostname`"
+neutron_config_ml2
 
 # Configure the Linux bridge agent
 sendtelegram "Thuc thi neutron_config_linuxbridge tren `hostname`"

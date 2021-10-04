@@ -157,7 +157,7 @@ function neutron_config_linuxbridge () {
   ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
   
   ops_add $linuxbridgefile vxlan enable_vxlan true
-  ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC2
+  ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC1
   ops_add $linuxbridgefile vxlan l2_population true
   
   ops_add $linuxbridgefile securitygroup enable_security_group true

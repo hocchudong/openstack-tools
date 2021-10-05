@@ -20,6 +20,8 @@ EOF
 }
 
 function cinder_user_endpoint() {
+  echocolor "Create cinder_user_endpoint Cinder"
+
   openstack user create  cinder --domain default --password $CINDER_PASS
   openstack role add --project service --user cinder admin
 
@@ -32,8 +34,6 @@ function cinder_user_endpoint() {
   openstack endpoint create --region RegionOne volumev3 public http://$CTL1_IP_NIC2:8776/v3/%\(tenant_id\)s
   openstack endpoint create --region RegionOne volumev3 internal http://$CTL1_IP_NIC2:8776/v3/%\(tenant_id\)s
   openstack endpoint create --region RegionOne volumev3 admin http://$CTL1_IP_NIC2:8776/v3/%\(tenant_id\)s
-
-
 }
 
 function cinder_install_config() {
@@ -150,7 +150,6 @@ function create_lvm() {
 #######################
 ###Execute functions###
 ####################### 
-
 
 sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai CINDER `hostname`"

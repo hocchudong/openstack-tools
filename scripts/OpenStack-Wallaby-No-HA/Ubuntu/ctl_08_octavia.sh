@@ -20,6 +20,7 @@ EOF
 }
 
 function octavia_user_endpoint() {
+  echocolor "Create octavia_user_endpoint for Octavia"
 
   openstack user create octavia --domain default --project service --password OCTAVIA_PASS 
   openstack role add --project service --user octavia admin
@@ -99,6 +100,99 @@ function octavia_install_config() {
   ops_add $ctl_octavia_conf service_auth password $OCTAVIA_PASS
 }
 
-function octavia_make_cert() {
+function octavia_create_policy() {
+
+cat << EOF >/etc/octavia/policy.yaml 
+# create new
+"context_is_admin": "role:admin or role:load-balancer_admin"
+"admin_or_owner": "is_admin:True or project_id:%(project_id)s"
+"load-balancer:read": "rule:admin_or_owner"
+"load-balancer:read-global": "is_admin:True"
+"load-balancer:write": "rule:admin_or_owner"
+"load-balancer:read-quota": "rule:admin_or_owner"
+"load-balancer:read-quota-global": "is_admin:True"
+"load-balancer:write-quota": "is_admin:True"
+EOF
+
+chmod 640 /etc/octavia/policy.yaml
+chgrp octavia /etc/octavia/policy.yaml
+}
+
+function octavia_restart() {
+su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
+systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 
 }
+
+function octavia_image_creat() {
+
+openstack image create "Amphora" --tag "Amphora" --file ubuntu-amphora-haproxy-amd64.qcow2 --disk-format qcow2 --container-format bare --private --project service
+
+}
+
+function octavia_create_flavor_sec() {
+
+  openstack flavor create --id 100 --vcpus 1 --ram 1024 --disk 5 m1.octavia --private --project service
+
+  openstack security group create lb-mgmt-sec-group --project service
+  openstack security group rule create --protocol icmp --ingress lb-mgmt-sec-group
+  openstack security group rule create --protocol tcp --dst-port 22:22 lb-mgmt-sec-group
+  openstack security group rule create --protocol tcp --dst-port 80:80 lb-mgmt-sec-group
+
+  openstack security group rule create --protocol tcp --dst-port 443:443 lb-mgmt-sec-group
+  openstack security group rule create --protocol tcp --dst-port 9443:9443 lb-mgmt-sec-group
+}
+
+#######################
+###Execute functions###
+####################### 
+
+sendtelegram "Thuc thi script $0 tren `hostname`"
+sendtelegram "Cai OCTAVIA `hostname`"
+
+source /root/admin-openrc
+echocolor "Cai CINDER `hostname`"
+
+echocolor "Thuc thi octavia_user_endpoint tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_user_endpoint tren `hostname`"
+octavia_user_endpoint
+
+echocolor "Thuc thi octavia_install_config tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_install_config tren `hostname`"
+octavia_install_config
+
+echocolor "Thuc thi octavia_create_policy tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_create_policy tren `hostname`"
+octavia_create_policy
+
+echocolor "Thuc thi octavia_restart tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_restart tren `hostname`"
+octavia_restart
+
+echocolor "Thuc thi octavia_image_creat tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_image_creat tren `hostname`"
+octavia_image_creat
+
+echocolor "Thuc thi octavia_create_flavor_sec tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_create_flavor_sec tren `hostname`"
+octavia_create_flavor_sec
+ 
+ 
+TIME_END=`date +%s.%N`
+TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )
+TIME_TOTAL=$(cut -c-6 <<< "$TIME_TOTAL_TEMP")
+
+echocolor "Da thuc hien script $0, vao luc: $DATE_EXEC"
+echocolor "Tong thoi gian thuc hien $0: $TIME_TOTAL giay"
+
+sendtelegram "Da thuc hien script $0, vao luc: $DATE_EXEC"
+sendtelegram "Tong thoi gian thuc hien script $0: $TIME_TOTAL giay"
+notify
+
+

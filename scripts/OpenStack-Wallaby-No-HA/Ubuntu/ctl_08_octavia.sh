@@ -133,8 +133,8 @@ function octavia_restart() {
 }
 
 function octavia_image_creat() {
-
-  openstack image create "Amphora" --tag "Amphora" --file ubuntu-amphora-haproxy-amd64.qcow2 --disk-format qcow2 --container-format bare --private --project service
+  wget https://tarballs.opendev.org/openstack/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-focal.qcow2
+  openstack image create "Amphora" --tag "Amphora" --file test-only-amphora-x64-haproxy-ubuntu-focal.qcow2 --disk-format qcow2 --container-format bare --private --project service
 
 }
 

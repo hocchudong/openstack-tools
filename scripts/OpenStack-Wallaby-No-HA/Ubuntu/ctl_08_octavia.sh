@@ -88,14 +88,7 @@ function octavia_install_config() {
   ops_add $ctl_octavia_conf haproxy_amphora client_cert /etc/octavia/certs/private/client.cert-and-key.pem
   
   ops_add $ctl_octavia_conf controller_worker client_ca /etc/octavia/certs/client_ca.cert.pem
-  ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
-  ops_add $ctl_octavia_conf controller_worker amp_flavor_id 100
-  ops_add $ctl_octavia_conf controller_worker amp_secgroup_list 41242586-e48d-428e-ab7b-4f2f7409b1a3
-  ops_add $ctl_octavia_conf controller_worker amp_boot_network_list ffa87ed8-7da9-488c-a7c8-09912ca2443a
-  ops_add $ctl_octavia_conf controller_worker network_driver allowed_address_pairs_driver
-  ops_add $ctl_octavia_conf controller_worker compute_driver compute_nova_driver
-  ops_add $ctl_octavia_conf controller_worker amphora_driver amphora_haproxy_rest_driver 
-  
+
   ops_add $ctl_octavia_conf oslo_messaging topic octavia_prov
   
   ops_add $ctl_octavia_conf service_auth auth_url http://$CTL1_IP_NIC2:5000
@@ -126,13 +119,17 @@ chmod 640 /etc/octavia/policy.yaml
 chgrp octavia /etc/octavia/policy.yaml
 }
 
-function octavia_restart() {
-
+function octavia_syn_db() {
   su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
   systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 }
 
-function octavia_image_creat() {
+function octavia_restart() {
+  su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
+  systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
+}
+
+function octavia_image_create() {
   wget https://tarballs.opendev.org/openstack/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-focal.qcow2
   openstack image create "Amphora" --tag "Amphora" --file test-only-amphora-x64-haproxy-ubuntu-focal.qcow2 --disk-format qcow2 --container-format bare --private --project service
 
@@ -149,6 +146,26 @@ function octavia_create_flavor_sec() {
 
   openstack security group rule create --protocol tcp --dst-port 443:443 lb-mgmt-sec-group
   openstack security group rule create --protocol tcp --dst-port 9443:9443 lb-mgmt-sec-group
+}
+
+
+function octavia_install_config_step2() {
+
+ctl_octavia_conf=/etc/octavia/octavia.conf
+
+
+ID_LB_MGMT_SEC_GROUP=`openstack security group list | egrep lb-mgmt-sec-group-demo | awk '{print $2}'`
+ID_AMP_BOOT_NETWORK_LIST=`openstack network list | egrep provider | awk '{print $2}'`
+
+ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
+ops_add $ctl_octavia_conf controller_worker amp_flavor_id 100
+ops_add $ctl_octavia_conf controller_worker amp_secgroup_list $ID_LB_MGMT_SEC_GROUP
+ops_add $ctl_octavia_conf controller_worker amp_boot_network_list $ID_AMP_BOOT_NETWORK_LIST
+ops_add $ctl_octavia_conf controller_worker network_driver allowed_address_pairs_driver
+ops_add $ctl_octavia_conf controller_worker compute_driver compute_nova_driver
+ops_add $ctl_octavia_conf controller_worker amphora_driver amphora_haproxy_rest_driver 
+  
+
 }
 
 #######################
@@ -178,19 +195,25 @@ octavia_create_policy
 
 echocolor "Thuc thi octavia_restart tren `hostname`"
 sleep 3
-sendtelegram "Thuc thi octavia_restart tren `hostname`"
+sendtelegram "Thuc thi octavia_syn_db va octavia_restart tren `hostname`"
+octavia_syn_db
 octavia_restart
 
 echocolor "Thuc thi octavia_image_creat tren `hostname`"
 sleep 3
 sendtelegram "Thuc thi octavia_image_creat tren `hostname`"
-octavia_image_creat
+octavia_image_create
 
 echocolor "Thuc thi octavia_create_flavor_sec tren `hostname`"
 sleep 3
 sendtelegram "Thuc thi octavia_create_flavor_sec tren `hostname`"
 octavia_create_flavor_sec
  
+echocolor "Thuc thi octavia_install_config_step2 tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_install_config_step2 octavia_restart tren `hostname`"
+octavia_install_config_step2
+octavia_restart
  
 TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )

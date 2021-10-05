@@ -121,11 +121,9 @@ chgrp octavia /etc/octavia/policy.yaml
 
 function octavia_syn_db() {
   su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
-  systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 }
 
 function octavia_restart() {
-  su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
   systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 }
 

@@ -127,14 +127,14 @@ chgrp octavia /etc/octavia/policy.yaml
 }
 
 function octavia_restart() {
-su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
-systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 
+  su -s /bin/bash octavia -c "octavia-db-manage --config-file /etc/octavia/octavia.conf upgrade head"
+  systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 }
 
 function octavia_image_creat() {
 
-openstack image create "Amphora" --tag "Amphora" --file ubuntu-amphora-haproxy-amd64.qcow2 --disk-format qcow2 --container-format bare --private --project service
+  openstack image create "Amphora" --tag "Amphora" --file ubuntu-amphora-haproxy-amd64.qcow2 --disk-format qcow2 --container-format bare --private --project service
 
 }
 

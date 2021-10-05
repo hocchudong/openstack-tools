@@ -38,6 +38,7 @@ function octavia_install_config() {
   sleep 3
   apt -y install octavia-api octavia-health-manager octavia-housekeeping octavia-worker
   apt -y install python3-octaviaclient
+  
   ctl_octavia_conf=/etc/octavia/octavia.conf
   cp $ctl_octavia_conf $ctl_octavia_conf.orig
   

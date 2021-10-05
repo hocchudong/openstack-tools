@@ -13,7 +13,7 @@ function octavia_create_db () {
 
 cat << EOF | mysql -uroot -p$PASS_DATABASE_ROOT
 CREATE DATABASE octavia; 
-GRANT ALL PRIVILEGES ON octavia.* TO octavia@'LOCALHOST' IDENTIFIED BY '$PASS_DATABASE_OCTAVIA'; 
+GRANT ALL PRIVILEGES ON octavia.* TO octavia@'localhost' IDENTIFIED BY '$PASS_DATABASE_OCTAVIA'; 
 GRANT ALL PRIVILEGES ON octavia.* TO octavia@'%' IDENTIFIED BY '$PASS_DATABASE_OCTAVIA'; 
 FLUSH PRIVILEGES;
 EOF
@@ -59,10 +59,10 @@ function octavia_install_config() {
   ops_add $ctl_octavia_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
   
   
-  ops_add $ctl_octavia_conf api_settings bind_host $CTL1_IP_NIC
+  ops_add $ctl_octavia_conf api_settings bind_host $CTL1_IP_NIC1
   ops_add $ctl_octavia_conf api_settings bind_port 9876
   ops_add $ctl_octavia_conf api_settings auth_strategy keystone
-  ops_add $ctl_octavia_conf api_settings api_base_uri http://$CTL1_IP_NIC:9876
+  ops_add $ctl_octavia_conf api_settings api_base_uri http://$CTL1_IP_NIC1:9876
   
   ops_add $ctl_octavia_conf database connection mysql+pymysql://octavia:$PASS_DATABASE_OCTAVIA@$CTL1_IP_NIC2/octavia
   
@@ -152,7 +152,7 @@ function octavia_install_config_step2() {
 ctl_octavia_conf=/etc/octavia/octavia.conf
 
 
-ID_LB_MGMT_SEC_GROUP=`openstack security group list | egrep lb-mgmt-sec-group-demo | awk '{print $2}'`
+ID_LB_MGMT_SEC_GROUP=`openstack security group list | egrep lb-mgmt-sec-group | awk '{print $2}'`
 ID_AMP_BOOT_NETWORK_LIST=`openstack network list | egrep provider | awk '{print $2}'`
 
 ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
@@ -175,6 +175,11 @@ sendtelegram "Cai OCTAVIA `hostname`"
 
 source /root/admin-openrc
 echocolor "Cai OCTAVIA `hostname`"
+
+echocolor "Thuc thi octavia_create_db tren `hostname`"
+sleep 3
+sendtelegram "Thuc thi octavia_create_db tren `hostname`"
+octavia_create_db
 
 echocolor "Thuc thi octavia_user_endpoint tren `hostname`"
 sleep 3

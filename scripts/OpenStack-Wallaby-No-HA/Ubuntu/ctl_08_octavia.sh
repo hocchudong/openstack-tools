@@ -64,7 +64,7 @@ function octavia_install_config() {
   ops_add $ctl_octavia_conf api_settings auth_strategy keystone
   ops_add $ctl_octavia_conf api_settings api_base_uri http://$CTL1_IP_NIC:9876
   
-  ops_add $ctl_octavia_conf database connection mysql+pymysql://glance:$PASS_DATABASE_OCTAVIA@$CTL1_IP_NIC2/octavia
+  ops_add $ctl_octavia_conf database connection mysql+pymysql://octavia:$PASS_DATABASE_OCTAVIA@$CTL1_IP_NIC2/octavia
   
   ops_add $ctl_octavia_conf health_manager bind_ip 0.0.0.0
   ops_add $ctl_octavia_conf health_manager bind_port 5555
@@ -176,7 +176,7 @@ sendtelegram "Thuc thi script $0 tren `hostname`"
 sendtelegram "Cai OCTAVIA `hostname`"
 
 source /root/admin-openrc
-echocolor "Cai CINDER `hostname`"
+echocolor "Cai OCTAVIA `hostname`"
 
 echocolor "Thuc thi octavia_user_endpoint tren `hostname`"
 sleep 3

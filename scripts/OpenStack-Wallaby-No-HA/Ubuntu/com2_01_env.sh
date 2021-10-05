@@ -12,7 +12,7 @@ function config_hostname () {
   
   echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" > /etc/hosts
   echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
-  echo "$COM2_IP_NIC2 $COM2_HOSTNAME" > /etc/hosts
+  echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
   echo "$CINDER1_IP_NIC2 $CINDER1_HOSTNAME" >> /etc/hosts
  
   echo "127.0.0.1 $COM2_HOSTNAME" >> /etc/hosts

@@ -13,8 +13,15 @@ openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 
 echocolor "Mo rule ping"
 sleep 5
-openstack security group rule create --proto icmp default
-openstack security group rule create --proto tcp --dst-port 22 default
+ID_PROJECT_ADMIN=`openstack project list | egrep admin | awk '{print $2}'`
+
+
+openstack security group rule create --proto icmp ID_PROJECT_ADMIN
+openstack security group rule create --proto tcp --dst-port 22 ID_PROJECT_ADMIN
+openstack security group rule create --protocol tcp --dst-port 80:80 $ID_PROJECT_ADMIN
+openstack security group rule create --protocol tcp --dst-port 443:443 $ID_PROJECT_ADMIN
+openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_PROJECT_ADMIN
+
 
 echocolor "Tao provider network"
 sleep 3

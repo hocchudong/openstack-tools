@@ -126,6 +126,7 @@ function octavia_syn_db() {
 
 function octavia_restart() {
   systemctl restart octavia-api octavia-health-manager octavia-housekeeping octavia-worker
+  systemctl enable octavia-api octavia-health-manager octavia-housekeeping octavia-worker
 }
 
 function octavia_image_create() {
@@ -143,8 +144,17 @@ function octavia_create_flavor_sec() {
   openstack security group rule create --protocol tcp --dst-port 22:22 lb-mgmt-sec-group
   openstack security group rule create --protocol tcp --dst-port 80:80 lb-mgmt-sec-group
 
+
+
   openstack security group rule create --protocol tcp --dst-port 443:443 lb-mgmt-sec-group
   openstack security group rule create --protocol tcp --dst-port 9443:9443 lb-mgmt-sec-group
+  
+  ID_PROJECT_ADMIN=`openstack project list | egrep admin | awk '{print $2}'`
+  
+  openstack security group rule create --protocol tcp --dst-port 443:443 $ID_PROJECT_ADMIN
+  openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_PROJECT_ADMIN
+  
+  
 }
 
 

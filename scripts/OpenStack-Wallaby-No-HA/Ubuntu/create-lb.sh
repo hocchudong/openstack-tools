@@ -45,7 +45,7 @@ openstack server create --flavor small \
 sleep 15
 openstack loadbalancer create --name lb01 --vip-subnet-id sub-selfservice
 
-sleep 15
+sleep 120
 openstack loadbalancer listener create --name listener01 --protocol TCP --protocol-port 80 lb01
 
 sleep 15

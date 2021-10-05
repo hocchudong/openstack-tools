@@ -42,22 +42,27 @@ openstack server create --flavor small \
   --network sub-selfservice \
   ubuntu02
 
-sleep 15
+sleep 30
 openstack loadbalancer create --name lb01 --vip-subnet-id sub-selfservice
 
 sleep 120
 openstack loadbalancer listener create --name listener01 --protocol TCP --protocol-port 80 lb01
 
-sleep 15
+sleep 30
 openstack loadbalancer pool create --name pool01 --lb-algorithm ROUND_ROBIN --listener listener01 --protocol TCP
 
-sleep 15
-openstack loadbalancer member create --subnet-id private-subnet --address 192.168.100.43 --protocol-port 80 pool01
 
-sleep 15
-openstack loadbalancer member create --subnet-id private-subnet --address 192.168.100.132 --protocol-port 80 pool01
+IP_VM01=`openstack server list | egrep ubuntu01 | awk '{print $8}' | awk -F= '{print $2}'`
+IP_VM02=`openstack server list | egrep ubuntu02 | awk '{print $8}' | awk -F= '{print $2}'`
 
-sleep 15
+
+sleep 30
+openstack loadbalancer member create --subnet-id sub-selfservice --address $IP_VM01 --protocol-port 80 pool01
+
+sleep 30
+openstack loadbalancer member create --subnet-id sub-selfservice --address $IP_VM02 --protocol-port 80 pool01
+
+sleep 30
 openstack loadbalancer member list pool01
 
 

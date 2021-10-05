@@ -196,10 +196,18 @@ function neutron_config_metadata () {
 function neutron_restart () {
   echocolor "Finalize installation"
   sleep 3
-  service nova-compute restart
-  service neutron-linuxbridge-agent restart
-  service neutron-dhcp-agent restart
-  service neutron-metadata-agent restart
+
+  systemctl restart nova-compute 
+  systemctl enable nova-compute 
+
+  systemctl restart neutron-linuxbridge-agent   
+  systemctl enable neutron-linuxbridge-agent   
+  
+  systemctl restart neutron-dhcp-agent
+  systemctl enable neutron-dhcp-agent
+  
+  systemctl restart neutron-metadata-agent
+  systemctl enable neutron-metadata-agent
 }
 
 #######################

@@ -14,7 +14,7 @@ echocolor "Tao subnnet cho private network"
 sleep 3
  openstack subnet create --network selfservice \
  	--dns-nameserver $PRIVATE_DNS --gateway $PRIVATE_GATEWAY \
- 	--subnet-range $PRIVATE_SUBNET selfservice
+ 	--subnet-range $PRIVATE_SUBNET sub-selfservice
 
 echocolor "Tao va gan inteface cho ROUTER"
 sleep 3

@@ -60,10 +60,10 @@ function octavia_install_config() {
   ops_add $ctl_octavia_conf DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
   
   
-  ops_add $ctl_octavia_conf api_settings bind_host $CTL1_IP_NIC1
+  ops_add $ctl_octavia_conf api_settings bind_host $CTL1_IP_NIC2
   ops_add $ctl_octavia_conf api_settings bind_port 9876
   ops_add $ctl_octavia_conf api_settings auth_strategy keystone
-  ops_add $ctl_octavia_conf api_settings api_base_uri http://$CTL1_IP_NIC1:9876
+  ops_add $ctl_octavia_conf api_settings api_base_uri http://$CTL1_IP_NIC2:9876
   
   ops_add $ctl_octavia_conf database connection mysql+pymysql://octavia:$PASS_DATABASE_OCTAVIA@$CTL1_IP_NIC2/octavia
   

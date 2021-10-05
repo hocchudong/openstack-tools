@@ -22,7 +22,7 @@ EOF
 function octavia_user_endpoint() {
   echocolor "Create octavia_user_endpoint for Octavia"
 
-  openstack user create octavia --domain default --project service --password OCTAVIA_PASS 
+  openstack user create octavia --domain default --project service --password $OCTAVIA_PASS 
   openstack role add --project service --user octavia admin
   openstack service create --name octavia --description "OpenStack LBaaS" load-balancer
 

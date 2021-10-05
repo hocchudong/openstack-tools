@@ -37,6 +37,7 @@ function octavia_install_config() {
   echocolor "Cai dat octavia"
   sleep 3
   apt -y install octavia-api octavia-health-manager octavia-housekeeping octavia-worker
+  apt -y install python3-octaviaclient
   ctl_octavia_conf=/etc/octavia/octavia.conf
   cp $ctl_octavia_conf $ctl_octavia_conf.orig
   
@@ -87,6 +88,13 @@ function octavia_install_config() {
   ops_add $ctl_octavia_conf haproxy_amphora client_cert /etc/octavia/certs/private/client.cert-and-key.pem
   
   ops_add $ctl_octavia_conf controller_worker client_ca /etc/octavia/certs/client_ca.cert.pem
+  ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
+  ops_add $ctl_octavia_conf controller_worker amp_flavor_id 100
+  ops_add $ctl_octavia_conf controller_worker amp_secgroup_list 41242586-e48d-428e-ab7b-4f2f7409b1a3
+  ops_add $ctl_octavia_conf controller_worker amp_boot_network_list ffa87ed8-7da9-488c-a7c8-09912ca2443a
+  ops_add $ctl_octavia_conf controller_worker network_driver allowed_address_pairs_driver
+  ops_add $ctl_octavia_conf controller_worker compute_driver compute_nova_driver
+  ops_add $ctl_octavia_conf controller_worker amphora_driver amphora_haproxy_rest_driver 
   
   ops_add $ctl_octavia_conf oslo_messaging topic octavia_prov
   

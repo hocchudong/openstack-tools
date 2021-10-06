@@ -8,6 +8,7 @@ source config.cfg
 
 # Function create database for Octavia
 function octavia_create_db () {
+
   echocolor "Create database for Octavia"
   sleep 3
 
@@ -17,11 +18,12 @@ GRANT ALL PRIVILEGES ON octavia.* TO octavia@'localhost' IDENTIFIED BY '$PASS_DA
 GRANT ALL PRIVILEGES ON octavia.* TO octavia@'%' IDENTIFIED BY '$PASS_DATABASE_OCTAVIA'; 
 FLUSH PRIVILEGES;
 EOF
+
 }
 
 function octavia_user_endpoint() {
-  echocolor "Create octavia_user_endpoint for Octavia"
 
+  echocolor "Create octavia_user_endpoint for Octavia"
   openstack user create octavia --domain default --project service --password $OCTAVIA_PASS 
   openstack role add --project service --user octavia admin
   openstack service create --name octavia --description "OpenStack LBaaS" load-balancer
@@ -154,29 +156,27 @@ function octavia_create_flavor_sec() {
   
   openstack security group rule create --protocol tcp --dst-port 443:443 $ID_SECURITY_GROUP
   openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_SECURITY_GROUP
-  
-  
+    
 }
-
 
 function octavia_install_config_step2() {
 
-ctl_octavia_conf=/etc/octavia/octavia.conf
+  ctl_octavia_conf=/etc/octavia/octavia.conf
 
 
-ID_LB_MGMT_SEC_GROUP=`openstack security group list | egrep lb-mgmt-sec-group | awk '{print $2}'`
-ID_AMP_BOOT_NETWORK_LIST=`openstack network list | egrep provider | awk '{print $2}'`
+  ID_LB_MGMT_SEC_GROUP=`openstack security group list | egrep lb-mgmt-sec-group | awk '{print $2}'`
+  ID_AMP_BOOT_NETWORK_LIST=`openstack network list | egrep provider | awk '{print $2}'`
 
 
 
-ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
-ops_add $ctl_octavia_conf controller_worker amp_flavor_id 100
-ops_add $ctl_octavia_conf controller_worker amp_secgroup_list $ID_LB_MGMT_SEC_GROUP
-ops_add $ctl_octavia_conf controller_worker amp_boot_network_list $ID_AMP_BOOT_NETWORK_LIST
-ops_add $ctl_octavia_conf controller_worker network_driver allowed_address_pairs_driver
-ops_add $ctl_octavia_conf controller_worker compute_driver compute_nova_driver
-ops_add $ctl_octavia_conf controller_worker amphora_driver amphora_haproxy_rest_driver 
-  
+  ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
+  ops_add $ctl_octavia_conf controller_worker amp_flavor_id 100
+  ops_add $ctl_octavia_conf controller_worker amp_secgroup_list $ID_LB_MGMT_SEC_GROUP
+  ops_add $ctl_octavia_conf controller_worker amp_boot_network_list $ID_AMP_BOOT_NETWORK_LIST
+  ops_add $ctl_octavia_conf controller_worker network_driver allowed_address_pairs_driver
+  ops_add $ctl_octavia_conf controller_worker compute_driver compute_nova_driver
+  ops_add $ctl_octavia_conf controller_worker amphora_driver amphora_haproxy_rest_driver 
+    
 
 }
 

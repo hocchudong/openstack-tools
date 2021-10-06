@@ -14,11 +14,11 @@ echocolor "Tao flavor"
 sleep 3
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
 
-echocolor "Mo rule ping"
+echocolor "Mo rule can thiet"
 sleep 5
 
-openstack security group rule create --proto icmp $ID_SECURITY_GROUP
-openstack security group rule create --proto tcp --dst-port 22 $ID_SECURITY_GROUP
+openstack security group rule create --protocol icmp $ID_SECURITY_GROUP
+openstack security group rule create --protocol tcp --dst-port 22 $ID_SECURITY_GROUP
 openstack security group rule create --protocol tcp --dst-port 80:80 $ID_SECURITY_GROUP
 openstack security group rule create --protocol tcp --dst-port 443:443 $ID_SECURITY_GROUP
 openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_SECURITY_GROUP
@@ -41,8 +41,6 @@ echocolor "Tao VM gan vao provider network"
 sleep 5
 
 PROVIDER_NET_ID=`openstack network list | egrep -w provider | awk '{print $2}'`
-
-
 
 openstack server create --flavor m1.nano --image cirros \
 	--nic net-id=$PROVIDER_NET_ID --security-group $ID_SECURITY_GROUP \

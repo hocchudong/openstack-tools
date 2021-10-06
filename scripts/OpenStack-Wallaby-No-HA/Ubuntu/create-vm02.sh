@@ -19,9 +19,8 @@ sleep 3
 echocolor "Tao va gan inteface cho ROUTER"
 sleep 3
 openstack router create R1
-openstack router set --external-gateway sub_provider R1
+openstack router set --external-gateway provider R1
 openstack router add subnet R1 sub_selfservice
-
 
 echocolor "Tao may ao gan vao private network (selfservice network)"
 sleep 5
@@ -33,7 +32,6 @@ PRIVATE_NET_ID=`openstack network list | egrep -w selfservice | awk '{print $2}'
 openstack server create --flavor m1.nano --image cirros \
   --nic net-id=$PRIVATE_NET_ID --security-group $ID_SECURITY_GROUP \
   selfservice-VM1
-
 
 echocolor "Floatig IP"
 sleep 5

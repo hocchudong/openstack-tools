@@ -149,11 +149,11 @@ function octavia_create_flavor_sec() {
   openstack security group rule create --protocol tcp --dst-port 443:443 lb-mgmt-sec-group
   openstack security group rule create --protocol tcp --dst-port 9443:9443 lb-mgmt-sec-group
   
-  ID_ADMIN_PROJECT=`openstack project list | grep admin | awk '{print $2}'`
-  ID_SECURITY_GROUP=`openstack security group list | grep $ID_ADMIN_PROJECT | awk '{print $2}'`
+  # ID_ADMIN_PROJECT=`openstack project list | grep admin | awk '{print $2}'`
+  # ID_SECURITY_GROUP=`openstack security group list | grep $ID_ADMIN_PROJECT | awk '{print $2}'`
   
-  openstack security group rule create --protocol tcp --dst-port 443:443 $ID_SECURITY_GROUP
-  openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_SECURITY_GROUP
+  # openstack security group rule create --protocol tcp --dst-port 443:443 $ID_SECURITY_GROUP
+  # openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_SECURITY_GROUP
     
 }
 

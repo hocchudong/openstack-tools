@@ -30,7 +30,7 @@ openstack server create --flavor small \
   --image bionic-server-cloudimg-amd64 \
   --key-name controller-key \
   --security-group $ID_SECURITY_GROUP \
-  --network sub-selfservice \
+  --network selfservice \
   ubuntu01
 
 sleep 15
@@ -38,12 +38,12 @@ openstack server create --flavor small \
   --image bionic-server-cloudimg-amd64 \
   --key-name controller-key \
   --security-group $ID_SECURITY_GROUP\
-  --network sub_selfservice \
+  --network selfservice \
   ubuntu02
 
 sleep 30
 echocolor "Tao LB"
-openstack loadbalancer create --name lb01 --vip-subnet-id sub-selfservice
+openstack loadbalancer create --name lb01 --vip-subnet-id sub_selfservice
 
 sleep 120
 echocolor "Tao listener cho LB"
@@ -59,10 +59,10 @@ IP_VM02=`openstack server list | egrep ubuntu02 | awk '{print $8}' | awk -F= '{p
 
 echocolor "Gan member vao pool cho LB"
 sleep 30
-openstack loadbalancer member create --subnet-id sub-selfservice --address $IP_VM01 --protocol-port 80 pool01
+openstack loadbalancer member create --subnet-id sub_selfservice --address $IP_VM01 --protocol-port 80 pool01
 
 sleep 30
-openstack loadbalancer member create --subnet-id sub-selfservice --address $IP_VM02 --protocol-port 80 pool01
+openstack loadbalancer member create --subnet-id sub_selfservice --address $IP_VM02 --protocol-port 80 pool01
 
 sleep 30
 echocolor "Liet ke member cua LB"

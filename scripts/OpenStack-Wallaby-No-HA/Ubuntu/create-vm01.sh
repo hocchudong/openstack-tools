@@ -23,7 +23,6 @@ openstack security group rule create --protocol tcp --dst-port 80:80 $ID_SECURIT
 openstack security group rule create --protocol tcp --dst-port 443:443 $ID_SECURITY_GROUP
 openstack security group rule create --protocol tcp --dst-port 9443:9443 $ID_SECURITY_GROUP
 
-
 echocolor "Tao provider network"
 sleep 3
 openstack network create --share --external \

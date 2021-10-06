@@ -38,7 +38,7 @@ openstack server create --flavor small \
   --image bionic-server-cloudimg-amd64 \
   --key-name controller-key \
   --security-group $ID_SECURITY_GROUP\
-  --network sub-selfservice \
+  --network sub_selfservice \
   ubuntu02
 
 sleep 30

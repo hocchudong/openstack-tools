@@ -35,7 +35,7 @@ sleep 3
 openstack subnet create --network provider \
 	--allocation-pool start=$PROVIDER_IP_START,end=$PROVIDER_IP_END \
 	--dns-nameserver $PROVIDER_DNS --gateway $PROVIDER_GATEWAY \
-	--subnet-range $PROVIDER_SUBNET sub-provider
+	--subnet-range $PROVIDER_SUBNET sub_provider
   
 echocolor "Tao VM gan vao provider network"
 sleep 5

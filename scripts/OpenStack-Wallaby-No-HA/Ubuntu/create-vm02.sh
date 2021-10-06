@@ -14,13 +14,14 @@ echocolor "Tao subnnet cho private network"
 sleep 3
  openstack subnet create --network selfservice \
  	--dns-nameserver $PRIVATE_DNS --gateway $PRIVATE_GATEWAY \
- 	--subnet-range $PRIVATE_SUBNET sub-selfservice
+ 	--subnet-range $PRIVATE_SUBNET sub_selfservice
 
 echocolor "Tao va gan inteface cho ROUTER"
 sleep 3
 openstack router create R1
-neutron router-interface-add R1 selfservice
-neutron router-gateway-set R1 provider
+openstack router set --external-gateway sub_provider R1
+openstack router add subnet R1 sub_selfservice
+
 
 echocolor "Tao may ao gan vao private network (selfservice network)"
 sleep 5

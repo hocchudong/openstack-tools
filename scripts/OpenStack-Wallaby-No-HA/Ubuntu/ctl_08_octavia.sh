@@ -146,8 +146,6 @@ function octavia_create_flavor_sec() {
   openstack security group rule create --protocol tcp --dst-port 22:22 lb-mgmt-sec-group
   openstack security group rule create --protocol tcp --dst-port 80:80 lb-mgmt-sec-group
 
-
-
   openstack security group rule create --protocol tcp --dst-port 443:443 lb-mgmt-sec-group
   openstack security group rule create --protocol tcp --dst-port 9443:9443 lb-mgmt-sec-group
   
@@ -163,11 +161,8 @@ function octavia_install_config_step2() {
 
   ctl_octavia_conf=/etc/octavia/octavia.conf
 
-
   ID_LB_MGMT_SEC_GROUP=`openstack security group list | egrep lb-mgmt-sec-group | awk '{print $2}'`
   ID_AMP_BOOT_NETWORK_LIST=`openstack network list | egrep provider | awk '{print $2}'`
-
-
 
   ops_add $ctl_octavia_conf controller_worker amp_image_tag Amphora
   ops_add $ctl_octavia_conf controller_worker amp_flavor_id 100

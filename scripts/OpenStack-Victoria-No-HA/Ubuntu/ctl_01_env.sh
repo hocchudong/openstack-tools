@@ -51,8 +51,8 @@ function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
 	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
-  sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
-  sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > /etc/apt/sources.list.d/cloudarchive-wallaby.list
+  sudo add-apt-repository cloud-archive:victoria -y 2>&1 | tee -a filelog-install.txt
+  sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/victoria main" > /etc/apt/sources.list.d/cloudarchive-victoria.list
   
   sudo apt update -y 2>&1 | tee -a filelog-install.txt
   sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt

@@ -39,7 +39,7 @@ function nova_config () {
   ops_add $novafile keystone_authtoken username nova
   ops_add $novafile keystone_authtoken password $NOVA_PASS
 
-  ops_add $novafile DEFAULT my_ip $COM1_IP_NIC2
+  ops_add $novafile DEFAULT my_ip $COM2_IP_NIC2
   ops_add $novafile DEFAULT use_neutron True
   ops_add $novafile DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 
@@ -157,7 +157,7 @@ function neutron_config_linuxbridge () {
   ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
   
   ops_add $linuxbridgefile vxlan enable_vxlan true
-  ops_add $linuxbridgefile vxlan local_ip $COM1_IP_NIC1
+  ops_add $linuxbridgefile vxlan local_ip $COM2_IP_NIC1
   ops_add $linuxbridgefile vxlan l2_population true
   
   ops_add $linuxbridgefile securitygroup enable_security_group true
@@ -195,7 +195,7 @@ function neutron_config_metadata () {
 # Function restart installation
 function neutron_restart () {
   echocolor "Finalize installation"
-  sleep 3
+  sleep 3 
 
   systemctl restart nova-compute 
   systemctl enable nova-compute 

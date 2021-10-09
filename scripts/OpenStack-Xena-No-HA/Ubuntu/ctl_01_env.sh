@@ -20,7 +20,6 @@ function config_hostname () {
 
 }
 
-
 # Function update and upgrade for CONTROLLER
 function update_upgrade () {
 	echocolor "Update and Update controller"

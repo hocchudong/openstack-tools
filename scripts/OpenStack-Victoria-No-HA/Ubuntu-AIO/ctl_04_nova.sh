@@ -143,6 +143,11 @@ function nova_config () {
   novafile=/etc/nova/nova.conf
   novafilebak=/etc/nova/nova.conf.bak
   cp $novafile $novafilebak
+
+  novacomputefile=/etc/nova/nova-compute.conf
+  novacomputefilebak=/etc/nova/nova-compute.conf.bka
+  cp $novacomputefile $novacomputefilebak
+  
   egrep -v "^$|^#" $novafilebak > $novafile
 
   ops_del $novafile api_database connection
@@ -207,7 +212,7 @@ function nova_config () {
   ops_add $novafile keystone_authtoken username nova
   ops_add $novafile keystone_authtoken password $NOVA_PASS
 
-  ops_add $novafile DEFAULT my_ip $COM1_IP_NIC2
+  ops_add $novafile DEFAULT my_ip $CTL1_IP_NIC2
   ops_add $novafile DEFAULT use_neutron True
   ops_add $novafile DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
 
@@ -286,10 +291,17 @@ function nova_restart () {
   echocolor "Finalize installation"
   sleep 3
 
-  service nova-api restart
-  service nova-scheduler restart
-  service nova-conductor restart
-  service nova-novncproxy restart
+  systemctl restart nova-api 
+  systemctl restart nova-scheduler 
+  systemctl restart nova-conductor 
+  systemctl restart nova-novncproxy  
+  systemctl restart nova-compute 
+  
+  systemctl enable nova-api 
+  systemctl enable nova-scheduler 
+  systemctl enable nova-conductor 
+  systemctl enable nova-novncproxy 
+  systemctl enable nova-compute 
   
   systemctl disable ufw
   systemctl stop ufw

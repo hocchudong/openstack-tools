@@ -40,6 +40,8 @@ function neutron_install () {
   echocolor "Install the components"
   sleep 3
   apt install -y neutron-server neutron-plugin-ml2 neutron-linuxbridge-agent neutron-dhcp-agent neutron-metadata-agent neutron-l3-agent
+  
+  apt install -y neutron-common 
 }
 
 # Function configure the server component
@@ -76,7 +78,6 @@ function neutron_config_server_component () {
   ops_add $neutronfile keystone_authtoken username neutron
   ops_add $neutronfile keystone_authtoken password $NEUTRON_PASS
 
-
   ops_add $neutronfile nova auth_url http://$CTL1_IP_NIC2:5000
   ops_add $neutronfile nova auth_type password
   ops_add $neutronfile nova project_domain_name default
@@ -87,6 +88,19 @@ function neutron_config_server_component () {
   ops_add $neutronfile nova password $NOVA_PASS
   
   ops_add $neutronfile oslo_concurrency lock_path  /var/lib/neutron/lock
+  
+############ NEUTRON tren COMPUTE 
+ 
+  ops_add $neutronfile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
+  ops_add $neutronfile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
+  ops_add $neutronfile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
+  ops_add $neutronfile keystone_authtoken auth_type password
+  ops_add $neutronfile keystone_authtoken project_domain_name default
+  ops_add $neutronfile keystone_authtoken user_domain_name default
+  ops_add $neutronfile keystone_authtoken project_name service
+  ops_add $neutronfile keystone_authtoken username neutron
+  ops_add $neutronfile keystone_authtoken password $NEUTRON_PASS
+  
 }
 
 # Function configure the Modular Layer 2 (ML2) plug-in
@@ -98,6 +112,18 @@ function neutron_config_ml2 () {
   cp $ml2file $ml2filebak
   egrep -v "^$|^#" $ml2filebak > $ml2file
 
+  ops_add $ml2file ml2 type_drivers flat,vlan,vxlan
+  ops_add $ml2file ml2 tenant_network_types vxlan
+  ops_add $ml2file ml2 mechanism_drivers linuxbridge,l2population
+  ops_add $ml2file ml2 extension_drivers port_security
+  
+  ops_add $ml2file ml2_type_flat flat_networks provider
+  ops_add $ml2file ml2_type_vlan network_vlan_ranges provider
+  ops_add $ml2file ml2_type_vxlan vni_ranges 1:1000
+  
+  ops_add $ml2file securitygroup enable_ipset true
+  
+  ### ML2 config tren node COMPUTE 
   ops_add $ml2file ml2 type_drivers flat,vlan,vxlan
   ops_add $ml2file ml2 tenant_network_types vxlan
   ops_add $ml2file ml2 mechanism_drivers linuxbridge,l2population
@@ -122,12 +148,51 @@ function neutron_config_linuxbridge () {
   ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
   
   ops_add $linuxbridgefile vxlan enable_vxlan true
-  ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC1
+  ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC2
+  ops_add $linuxbridgefile vxlan l2_population true
+  
+  ops_add $linuxbridgefile securitygroup enable_security_group true
+  ops_add $linuxbridgefile securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+  
+  # Linux-Bridge agent tren compute 
+
+  ops_add $linuxbridgefile linux_bridge physical_interface_mappings provider:$INTERFACE_PROVIDER
+  
+  ops_add $linuxbridgefile vxlan enable_vxlan true
+  ops_add $linuxbridgefile vxlan local_ip $CTL1_IP_NIC2
   ops_add $linuxbridgefile vxlan l2_population true
   
   ops_add $linuxbridgefile securitygroup enable_security_group true
   ops_add $linuxbridgefile securitygroup firewall_driver neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
    
+}
+
+# Function configure the DHCP agent
+function neutron_config_dhcp () {
+  echocolor "Configure the dhcp-agent"
+  sleep 3
+  dhcpfile=/etc/neutron/dhcp_agent.ini
+  dhcpfilebak=/etc/neutron/dhcp_agent.ini.bak
+  cp $dhcpfile $dhcpfilebak
+  egrep -v "^$|^#" $dhcpfilebak > $dhcpfile
+
+  ops_add $dhcpfile DEFAULT interface_driver linuxbridge
+  ops_add $dhcpfile DEFAULT dhcp_driver neutron.agent.linux.dhcp.Dnsmasq
+  ops_add $dhcpfile DEFAULT enable_isolated_metadata true
+  ops_add $dhcpfile DEFAULT force_metadata True  
+}
+
+# Function configure the metadata agent
+function neutron_config_metadata () {
+  echocolor "Configure the metadata agent"
+  sleep 3
+  metadatafile=/etc/neutron/metadata_agent.ini
+  metadatafilebak=/etc/neutron/metadata_agent.ini.bak
+  cp $metadatafile $metadatafilebak
+  egrep -v "^$|^#" $metadatafilebak > $metadatafile
+
+  ops_add $metadatafile DEFAULT nova_metadata_host $CTL1_IP_NIC2
+  ops_add $metadatafile DEFAULT metadata_proxy_shared_secret $METADATA_SECRET
 }
 
 function neutron_config_l3agent () {
@@ -205,19 +270,19 @@ function neutron_restart () {
   systemctl restart nova-api
   
   systemctl restart neutron-server
+  systemctl enable neutron-server
   
   systemctl restart neutron-l3-agent 
- 
-  systemctl restart neutron-linuxbridge-agent
+  systemctl enable neutron-l3-agent 
   
-  systemctl stop neutron-dhcp-agent
-  systemctl stop neutron-metadata-agent
+  systemctl restart neutron-linuxbridge-agent   
+  systemctl enable neutron-linuxbridge-agent   
   
-  systemctl disable neutron-dhcp-agent
-  systemctl disable neutron-metadata-agent
+  systemctl restart neutron-dhcp-agent
+  systemctl enable neutron-dhcp-agent
   
-  #service neutron-dhcp-agent restart
-  #service neutron-metadata-agent restart
+  systemctl restart neutron-metadata-agent
+  systemctl enable neutron-metadata-agent
 }
 
 
@@ -251,18 +316,18 @@ neutron_config_ml2
 sendtelegram "Configure the Linux bridge agent tren `hostname`"
 neutron_config_linuxbridge
 
+# Configure the neutron_config_dhcp
+sendtelegram "Thuc thi neutron_config_dhcp tren `hostname`"
+neutron_config_dhcp
+
+# Configure the neutron_config_metadata
+sendtelegram "Thuc thi neutron_config_metadata tren `hostname`"
+neutron_config_metadata
+
 # Configure the L3 Agent
 sendtelegram "Configure the L3 Agent tren `hostname`"
 neutron_config_l3agent
 
-# Configure the DHCP agent
-# sendtelegram "Configure the DHCP agent tren `hostname`"
-#neutron_config_dhcp
-
-# Configure the metadata agent
-# sendtelegram "Configure the metadata agent tren `hostname`"
-
-#neutron_config_metadata
 
 # Configure the Compute service to use the Networking service
 sendtelegram "Configure the Compute service to use the Networking service tren `hostname`"

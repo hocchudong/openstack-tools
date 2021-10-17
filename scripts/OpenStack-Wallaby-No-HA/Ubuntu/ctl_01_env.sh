@@ -33,7 +33,7 @@ function install_ntp () {
 	echocolor "Install NTP"
 	sleep 3
 
-	apt-get install chrony -y 2>&1 | tee -a filelog-install.txt
+	apt-get install chrony -y 
 	ntpfile=/etc/chrony/chrony.conf
 
 	sed -i 's/pool 2.debian.pool.ntp.org offline iburst/ \
@@ -43,20 +43,21 @@ server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
 	echo "allow 172.16.70.0/24" >> $ntpfile
 
-	service chrony restart 2>&1 | tee -a filelog-install.txt
+	service chrony restart 
 }
 
 # Function install OpenStack packages (python-openstackclient)
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
-  sudo add-apt-repository cloud-archive:wallaby -y 2>&1 | tee -a filelog-install.txt
+	sudo apt-get install software-properties-common -y 
+  sudo add-apt-repository cloud-archive:wallaby -y 
   sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > /etc/apt/sources.list.d/cloudarchive-wallaby.list
   
-  sudo apt update -y 2>&1 | tee -a filelog-install.txt
-  sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt
-  sudo apt install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  sudo apt update -y 
+  sudo apt upgrade -y 
+  sudo apt install crudini -y
+  sudo apt install python3-openstackclient -y 
   
   systemctl disable ufw
   systemctl stop ufw

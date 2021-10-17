@@ -3,6 +3,8 @@
 DATE_EXEC="$(date "+%d/%m/%Y %H:%M")"
 TIME_START=`date +%s.%N`
 
+apt install crudini -y 
+
 source function.sh
 source config.cfg
 
@@ -50,6 +52,7 @@ function install_ops_packages () {
   
   sudo apt update -y 
   sudo apt upgrade -y 
+  sudo apt install crudini -y
   sudo apt install python3-openstackclient -y 
   
   systemctl disable ufw

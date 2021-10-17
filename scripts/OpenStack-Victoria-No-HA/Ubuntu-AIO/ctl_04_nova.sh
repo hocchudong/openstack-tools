@@ -135,7 +135,7 @@ function nova_create_info () {
 function nova_install () {
   echocolor "Install and configure components of Nova"
   sleep 3
-  apt install -y nova-api nova-conductor nova-novncproxy nova-scheduler
+  apt install -y nova-api nova-conductor nova-novncproxy nova-scheduler nova-compute
 }
 
 # Function config /etc/nova/nova.conf file
@@ -190,6 +190,59 @@ function nova_config () {
   ops_add $novafile placement password $PLACEMENT_PASS
   
   ops_add $novafile scheduler discover_hosts_in_cells_interval 300
+  
+################## KHAI BAO DE CAU HINH NOVA-COMPUTE ###############################
+
+  ops_add $novafile DEFAULT transport_url rabbit://openstack:$RABBIT_PASS@$CTL1_IP_NIC2
+
+  ops_add $novafile api auth_strategy keystone
+
+  ops_add $novafile keystone_authtoken www_authenticate_uri http://$CTL1_IP_NIC2:5000
+  ops_add $novafile keystone_authtoken auth_url http://$CTL1_IP_NIC2:5000
+  ops_add $novafile keystone_authtoken memcached_servers $CTL1_IP_NIC2:11211
+  ops_add $novafile keystone_authtoken auth_type password
+  ops_add $novafile keystone_authtoken project_domain_name default
+  ops_add $novafile keystone_authtoken user_domain_name default
+  ops_add $novafile keystone_authtoken project_name service
+  ops_add $novafile keystone_authtoken username nova
+  ops_add $novafile keystone_authtoken password $NOVA_PASS
+
+  ops_add $novafile DEFAULT my_ip $COM1_IP_NIC2
+  ops_add $novafile DEFAULT use_neutron True
+  ops_add $novafile DEFAULT firewall_driver nova.virt.firewall.NoopFirewallDriver
+
+  ops_add $novafile vnc enabled True
+  ops_add $novafile vnc vncserver_listen 0.0.0.0
+  ops_add $novafile vnc vncserver_proxyclient_address \$my_ip
+  ops_add $novafile vnc novncproxy_base_url http://$CTL1_IP_NIC2:6080/vnc_auto.html
+
+  ops_add $novafile glance api_servers http://$CTL1_IP_NIC2:9292
+  ops_add $novafile cinder os_region_name RegionOne
+    
+  ops_add $novafile oslo_concurrency lock_path /var/lib/nova/tmp
+  ops_del $novafile DEFAULT log_dir
+
+  ops_del $novafile placement os_region_name
+  ops_add $novafile placement os_region_name RegionOne
+  ops_add $novafile placement project_domain_name Default
+  ops_add $novafile placement project_name service
+  ops_add $novafile placement auth_type password
+  ops_add $novafile placement user_domain_name Default
+  ops_add $novafile placement auth_url http://$CTL1_IP_NIC2:5000/v3
+  ops_add $novafile placement username placement
+  ops_add $novafile placement password $PLACEMENT_PASS
+  
+  ops_add $novafile neutron url http://$CTL1_IP_NIC2:9696
+  ops_add $novafile neutron auth_url http://$CTL1_IP_NIC2:5000
+  ops_add $novafile neutron auth_type password
+  ops_add $novafile neutron project_domain_name default
+  ops_add $novafile neutron user_domain_name default
+  ops_add $novafile neutron region_name RegionOne
+  ops_add $novafile neutron project_name service
+  ops_add $novafile neutron username neutron
+  ops_add $novafile neutron password $NEUTRON_PASS
+  
+  ops_add $novacomputefile libvirt virt_type  $(count=$(egrep -c '(vmx|svm)' /proc/cpuinfo); if [ $count -eq 0 ];then   echo "qemu"; else   echo "kvm"; fi)
   
 }
 

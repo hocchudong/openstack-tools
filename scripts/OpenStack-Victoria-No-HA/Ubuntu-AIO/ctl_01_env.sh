@@ -12,9 +12,6 @@ function config_hostname () {
   
   
   echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" > /etc/hosts
-  echo "$COM1_IP_NIC2 $COM1_HOSTNAME" >> /etc/hosts
-  echo "$COM2_IP_NIC2 $COM2_HOSTNAME" >> /etc/hosts
-  
   echo "127.0.0.1 $CTL1_HOSTNAME" >> /etc/hosts
   echo "127.0.0.2 localhost" >> /etc/hosts
 
@@ -130,7 +127,7 @@ function install_etcd () {
 
 	apt install etcd -y
 cat << EOF >  /etc/default/etcd
-ETCD_NAME="controller01"
+ETCD_NAME="`hostnamectl`"
 ETCD_DATA_DIR="/var/lib/etcd"
 ETCD_INITIAL_CLUSTER_STATE="new"
 ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"
@@ -140,8 +137,8 @@ ETCD_ADVERTISE_CLIENT_URLS="http://10.0.0.11:2379"
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
 ETCD_LISTEN_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
 EOF
-	 systemctl enable etcd 2>&1 | tee -a filelog-install.txt
-	 systemctl restart etcd 2>&1 | tee -a filelog-install.txt
+	 systemctl enable etcd
+	 systemctl restart etcd 
 } 
 
 

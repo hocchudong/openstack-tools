@@ -9,14 +9,11 @@ source config.cfg
 function config_hostname () {
 
   hostnamectl set-hostname $CTL1_HOSTNAME
-  
-  
+    
   echo "$CTL1_IP_NIC2 $CTL1_HOSTNAME" > /etc/hosts
   echo "127.0.0.1 $CTL1_HOSTNAME" >> /etc/hosts
   echo "127.0.0.2 localhost" >> /etc/hosts
-
 }
-
 
 # Function update and upgrade for CONTROLLER
 function update_upgrade () {
@@ -30,7 +27,7 @@ function install_ntp () {
 	echocolor "Install NTP"
 	sleep 3
 
-	apt-get install chrony -y 2>&1 | tee -a filelog-install.txt
+	apt-get install chrony -y 
 	ntpfile=/etc/chrony/chrony.conf
 
 	sed -i 's/pool 2.debian.pool.ntp.org offline iburst/ \
@@ -40,7 +37,7 @@ server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
 	echo "allow 172.16.70.0/24" >> $ntpfile
 
-	service chrony restart 2>&1 | tee -a filelog-install.txt
+	service chrony restart
 }
 
 # Function install OpenStack packages (python-openstackclient)
@@ -51,9 +48,9 @@ function install_ops_packages () {
   sudo add-apt-repository cloud-archive:victoria -y 
   # sudo echo "deb http://172.16.70.131:8081/repository/u20victoria/ focal-updates/victoria main" > /etc/apt/sources.list.d/cloudarchive-victoria.list
   
-  sudo apt update -y 2>&1 | tee -a filelog-install.txt
-  sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt
-  sudo apt install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  sudo apt update -y 
+  sudo apt upgrade -y 
+  sudo apt install python3-openstackclient -y 
   
   systemctl disable ufw
   systemctl stop ufw
@@ -116,7 +113,7 @@ function install_memcached () {
 	memcachefile=/etc/memcached.conf
 	sed -i 's|-l 127.0.0.1|'"-l $CTL1_IP_NIC2"'|g' $memcachefile
 
-	systemctl restart mariadb rabbitmq-server memcached 2>&1 | tee -a filelog-install.txt
+	systemctl restart mariadb rabbitmq-server memcached
 } 
 
 # Function install Memcached

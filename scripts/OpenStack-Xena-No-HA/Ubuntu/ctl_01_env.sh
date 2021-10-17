@@ -139,8 +139,8 @@ ETCD_ADVERTISE_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
 ETCD_LISTEN_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
 EOF
-	 systemctl enable etcd 2>&1 | tee -a filelog-install.txt
-	 systemctl restart etcd 2>&1 | tee -a filelog-install.txt
+	 systemctl enable etcd 
+	 systemctl restart etcd 
 } 
 
 

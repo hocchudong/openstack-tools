@@ -47,9 +47,9 @@ server 1.asia.pool.ntp.org iburst/g' $ntpfile
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
-  sudo add-apt-repository cloud-archive:victoria -y 2>&1 | tee -a filelog-install.txt
-  sudo echo "deb http://172.16.70.131:8081/repository/u20victoria/ focal-updates/victoria main" > /etc/apt/sources.list.d/cloudarchive-victoria.list
+	sudo apt-get install software-properties-common -y
+  sudo add-apt-repository cloud-archive:victoria -y 
+  # sudo echo "deb http://172.16.70.131:8081/repository/u20victoria/ focal-updates/victoria main" > /etc/apt/sources.list.d/cloudarchive-victoria.list
   
   sudo apt update -y 2>&1 | tee -a filelog-install.txt
   sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt
@@ -66,7 +66,7 @@ function install_database() {
 	echo mariadb-server-10.0 mysql-server/root_password $PASS_DATABASE_ROOT | debconf-set-selections
 	echo mariadb-server-10.0 mysql-server/root_password_again $PASS_DATABASE_ROOT | debconf-set-selections
 
-	sudo apt install mariadb-server python3-pymysql -y 2>&1 | tee -a filelog-install.txt
+	sudo apt install mariadb-server python3-pymysql -y 
 
 
 	sed -r -i 's/127\.0\.0\.1/0\.0\.0\.0/' /etc/mysql/mariadb.conf.d/50-server.cnf

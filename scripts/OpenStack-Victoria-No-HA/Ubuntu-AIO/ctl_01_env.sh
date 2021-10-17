@@ -38,7 +38,7 @@ pool 2.debian.pool.ntp.org offline iburst \
 server 0.asia.pool.ntp.org iburst \
 server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
-	echo "allow 172.16.70.212/24" >> $ntpfile
+	echo "allow 172.16.70.0/24" >> $ntpfile
 
 	service chrony restart 2>&1 | tee -a filelog-install.txt
 }
@@ -97,7 +97,6 @@ EOF
 
 }
 
-
 # Function install message queue
 function install_mq () {
 	echocolor "Install Message queue (rabbitmq)"
@@ -152,11 +151,11 @@ sendtelegram "Thuc thi config_hostname tren `hostname`"
 config_hostname
 
 # Update and upgrade for controller
-sendtelegram "Thuc thi install_ntp tren `hostname`"
+sendtelegram "Thuc thi update_upgrade tren `hostname`"
 update_upgrade
 
 # Install and config NTP
-sendtelegram "Thuc thi install_ntptren `hostname`"
+sendtelegram "Thuc thi install_ntp tren `hostname`"
 install_ntp
 
 # OpenStack packages (python-openstackclient)

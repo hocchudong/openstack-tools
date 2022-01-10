@@ -51,7 +51,8 @@ function install_ops_packages () {
 	sleep 3
 	sudo apt-get install software-properties-common -y
   sudo add-apt-repository cloud-archive:xena -y
-  sudo echo "deb http://172.16.70.131:8081/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
+  $ sudo echo "deb http://172.16.70.131:8081/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
+  sudo echo "deb https://172.16.70.131/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
   
   sudo apt update -y 
   sudo apt upgrade -y 

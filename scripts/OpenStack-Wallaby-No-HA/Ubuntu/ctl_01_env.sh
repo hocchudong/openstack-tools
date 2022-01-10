@@ -52,7 +52,8 @@ function install_ops_packages () {
 	sleep 3
 	sudo apt-get install software-properties-common -y 
   sudo add-apt-repository cloud-archive:wallaby -y 
-  sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > /etc/apt/sources.list.d/cloudarchive-wallaby.list
+  #sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/wallaby main" > /etc/apt/sources.list.d/cloudarchive-wallaby.list
+  sudo echo "deb https://172.16.70.131/repository/u20wallaby/ focal-updates/wallaby main" > /etc/apt/sources.list.d/cloudarchive-wallaby.list
   
   sudo apt update -y 
   sudo apt upgrade -y 

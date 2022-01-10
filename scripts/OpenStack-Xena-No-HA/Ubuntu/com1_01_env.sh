@@ -47,7 +47,9 @@ function install_ops_packages () {
   sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
   sudo add-apt-repository cloud-archive:xena -y 2>&1 | tee -a filelog-install.txt
   
-  sudo echo "deb http://172.16.70.131:8081/repository/u20xena/ focal-updates/xena main" >  /etc/apt/sources.list.d/cloudarchive-xena.list
+  # sudo echo "deb http://172.16.70.131:8081/repository/u20xena/ focal-updates/xena main" >  /etc/apt/sources.list.d/cloudarchive-xena.list
+  sudo echo "deb https://172.16.70.131/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
+
 
   sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt

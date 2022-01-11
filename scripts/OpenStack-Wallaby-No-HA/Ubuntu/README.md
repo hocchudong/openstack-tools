@@ -231,6 +231,15 @@ Trong bộ script đã có sẵn script để tạo ra các hạ tầng bao gồ
 
 Đứng trên controller1 và thực hiện các lệnh sau:
 
+- Tạo flavor, mở rule trong security group, tạo network, subnet, tạo vm.
+
+  ```
+  source /root/admin-openrc
+
+  bash create-vm01.sh
+  ```
+
+
 
 
 

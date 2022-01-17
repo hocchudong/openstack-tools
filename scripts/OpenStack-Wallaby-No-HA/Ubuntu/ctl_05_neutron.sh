@@ -261,7 +261,6 @@ neutron_config_l3agent
 
 # Configure the metadata agent
 # sendtelegram "Configure the metadata agent tren `hostname`"
-
 #neutron_config_metadata
 
 # Configure the Compute service to use the Networking service

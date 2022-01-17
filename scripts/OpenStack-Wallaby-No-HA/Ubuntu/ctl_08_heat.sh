@@ -130,6 +130,9 @@ heat_create_db
 echocolor "Thuc thi heat_user_endpoint tren `hostname`"
 heat_user_endpoint
 
+echocolor "Thuc thi heat_install_config tren `hostname`"
+heat_install_config
+
 echocolor "Thuc thi heat_syncdb tren `hostname`"
 heat_syncdb
 

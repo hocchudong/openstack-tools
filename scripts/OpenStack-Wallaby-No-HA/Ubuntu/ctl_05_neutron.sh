@@ -86,7 +86,7 @@ function neutron_config_server_component () {
   ops_add $neutronfile nova username nova
   ops_add $neutronfile nova password $NOVA_PASS
   
-  ops_add $neutronfile oslo_concurrency lock_path  /var/lib/neutron/lock
+  ops_add $neutronfile oslo_concurrency lock_path  /var/lib/neutron/tmp
 }
 
 # Function configure the Modular Layer 2 (ML2) plug-in
@@ -104,7 +104,7 @@ function neutron_config_ml2 () {
   ops_add $ml2file ml2 extension_drivers port_security
   
   ops_add $ml2file ml2_type_flat flat_networks provider
-  ops_add $ml2file ml2_type_vlan network_vlan_ranges provider
+  # ops_add $ml2file ml2_type_vlan network_vlan_ranges provider
   ops_add $ml2file ml2_type_vxlan vni_ranges 1:1000
   
   ops_add $ml2file securitygroup enable_ipset true
@@ -139,6 +139,11 @@ function neutron_config_l3agent () {
   egrep -v "^$|^#" $l3agent > $l3agentbak
 
   ops_add $l3agent DEFAULT interface_driver linuxbridge
+  
+  # Fix loi khong start duoc l3-agent, log loi trong /var/log/syslog.
+  touch /etc/neutron/fwaas_driver.ini
+  chmod 640 /etc/neutron/fwaas_driver.ini
+  chgrp neutron /etc/neutron/fwaas_driver.ini
 
 }
 

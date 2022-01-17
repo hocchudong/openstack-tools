@@ -29,7 +29,7 @@ function heat_user_endpoint() {
   openstack service create --name heat --description "Openstack Orchestration" orchestration
   openstack service create --name heat-cfn --description "Openstack Orchestration" cloudformation
 
-  openstack endpoint create --region RegionOne orchestration public http://CTL1_IP_NIC2:8004/v1/%\(tenant_id\)s
+  openstack endpoint create --region RegionOne orchestration public http://$CTL1_IP_NIC2:8004/v1/%\(tenant_id\)s
   openstack endpoint create --region RegionOne orchestration internal http://$CTL1_IP_NIC2:8004/v1/%\(tenant_id\)s
   openstack endpoint create --region RegionOne orchestration admin http://$CTL1_IP_NIC2:8004/v1/%\(tenant_id\)s
    

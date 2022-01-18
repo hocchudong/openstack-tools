@@ -138,6 +138,10 @@ heat_syncdb
 
 echocolor "Thuc thi heat_enable_restart tren `hostname`"
 heat_enable_restart
+
+sleep 10
+echocolor "Xac nhan lai trang thai cua heat sau khi cai "
+openstack orchestration service list
  
 TIME_END=`date +%s.%N`
 TIME_TOTAL_TEMP=$( echo "$TIME_END - $TIME_START" | bc -l )

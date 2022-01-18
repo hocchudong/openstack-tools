@@ -20,7 +20,7 @@ resources:
     properties:
       name: "Heat_Deployed_Server"
       image: { get_param: ImageID }
-      flavor: "m1.nano"
+      flavor: "m1.tiny"
       networks:
       - network: { get_param: NetID }
   

@@ -13,6 +13,8 @@ ID_SECURITY_GROUP=`openstack security group list | grep $ID_ADMIN_PROJECT | awk 
 echocolor "Tao flavor"
 sleep 3
 openstack flavor create --id 0 --vcpus 1 --ram 64 --disk 1 m1.nano
+openstack flavor create --id 1 --vcpus 1 --ram 512 --disk 1 m1.tiny
+openstack flavor create --id 2 --vcpus 2 --ram 1024 --disk 5 m1.small
 
 echocolor "Mo rule can thiet"
 sleep 5

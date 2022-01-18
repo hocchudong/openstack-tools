@@ -1,0 +1,30 @@
+# Template heat de tao VM, gan vao private.
+# Thuc hien: 
+# Int_Net_ID=$(openstack network list | grep selfservice | awk '{ print $2 }')
+# openstack stack create -t sample-stack1.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID" Sample-Stack1
+# 
+heat_template_version: 2018-08-31
+description: Heat Sample Template
+
+parameters:
+  ImageID:
+    type: string
+    description: Image used to boot a server
+  NetID:
+    type: string
+    description: Network ID for the server
+
+resources:
+  server1:
+    type: OS::Nova::Server
+    properties:
+      name: "Heat_Deployed_Server"
+      image: { get_param: ImageID }
+      flavor: "m1.nano"
+      networks:
+      - network: { get_param: NetID }
+
+outputs:
+  server1_private_ip:
+    description: IP address of the server in the private network
+    value: { get_attr: [ server1, first_address ] }

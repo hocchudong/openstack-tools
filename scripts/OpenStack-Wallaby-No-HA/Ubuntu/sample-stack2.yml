@@ -1,10 +1,9 @@
+# Template heat de tao VM, gan vao private, cap float ting IP.
 # Thuc hien: 
 # Int_Net_ID=$(openstack network list | grep selfservice | awk '{ print $2 }')
-# openstack stack create -t sample-stack.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID" Sample-Stack
+# openstack stack create -t sample-stack2.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID" Sample-Stack2
 # 
-
 heat_template_version: 2018-08-31
-
 description: Heat Sample Template
 
 parameters:
@@ -24,7 +23,18 @@ resources:
       flavor: "m1.nano"
       networks:
       - network: { get_param: NetID }
-
+  
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: provider
+      
+  association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: {get_attr: [server1, addresses, {get_param: NetID}, 0, port]}
+      
 outputs:
   server1_private_ip:
     description: IP address of the server in the private network

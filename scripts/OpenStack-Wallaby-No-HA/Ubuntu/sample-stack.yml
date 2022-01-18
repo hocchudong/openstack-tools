@@ -1,5 +1,5 @@
 # Thuc hien: 
-# Int_Net_ID=$(openstack network list | grep private | awk '{ print $2 }')
+# Int_Net_ID=$(openstack network list | grep selfservice | awk '{ print $2 }')
 # openstack stack create -t sample-stack.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID" Sample-Stack
 # 
 

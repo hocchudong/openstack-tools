@@ -1,6 +1,6 @@
 # Template heat de tao VM, gan vao private, cap float ting IP.
 # Thuc hien: 
-# Int_Net_ID=$(openstack network list | grep selfservice | awk '{ print $2 }')
+# Int_Net_ID=$(openstack network list | grep demo-net | awk '{ print $2 }')
 # openstack stack create -t sample-stack2.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID" Sample-Stack2
 # 
 heat_template_version: 2018-08-31
@@ -27,7 +27,7 @@ resources:
   floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
-      floating_network: vvi
+      floating_network: public1
       
   association:
     type: OS::Neutron::FloatingIPAssociation

@@ -27,7 +27,7 @@ resources:
   floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
-      floating_network: provider
+      floating_network: vvi
       
   association:
     type: OS::Neutron::FloatingIPAssociation

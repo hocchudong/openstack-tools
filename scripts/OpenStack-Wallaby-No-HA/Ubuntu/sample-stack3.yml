@@ -1,0 +1,65 @@
+# Template heat de tao VM, gan vao private, cap float ting IP. 
+# Tao Volume va gan volume vao VM.
+# Thuc hien: 
+# Int_Net_ID=$(openstack network list | grep selfservice | awk '{ print $2 }')
+# openstack stack create -t sample-stack3.yml --parameter "ImageID=cirros;NetID=$Int_Net_ID;VolumeName=vol01" Sample-Stack3
+# 
+heat_template_version: 2021-04-16
+description: Heat Sample Template
+
+parameters:
+  ImageID:
+    type: string
+    description: Image used to boot a server
+  NetID:
+    type: string
+    description: Network ID for the server
+  VolumeName:
+    type: string
+    description: A name for the volume
+    
+resources:
+  server1:
+    type: OS::Nova::Server
+    properties:
+      name: "Heat_Deployed_Server"
+      image: { get_param: ImageID }
+      flavor: "m1.nano"
+      networks:
+      - network: { get_param: NetID }
+  
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: provider
+      
+  association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: {get_attr: [server1, addresses, {get_param: NetID}, 0, port]}
+      
+  new_volume:
+    type: OS::Cinder::Volume
+    properties:
+      name: { get_param: VolumeName }
+      size: 1
+  volumeattach:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: new_volume }
+      instance_uuid: { get_resource: server1 }
+      
+outputs:
+  server1_name:
+    description: Name of the instance
+    value: { get_attr: [server1, name] }
+  server1_private_ip:
+    description: IP address of the server in the private network
+    value: { get_attr: [ server1, first_address ] }
+  server1_public_ip:
+    description: IP address of the server in the public network
+    value: { get_attr: [ floating_ip, floating_ip_address ] }
+   server1_public_ip:
+    description: IP address of the server in the public network
+    value: { get_attr: [ floating_ip, floating_ip_address ] }

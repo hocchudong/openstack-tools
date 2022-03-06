@@ -47,7 +47,7 @@ function install_ops_packages () {
   sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
   sudo add-apt-repository cloud-archive:victoria -y 2>&1 | tee -a filelog-install.txt
   
-  sudo echo "deb http://172.16.70.131:8081/repository/u20wallaby/ focal-updates/victoria main" >  /etc/apt/sources.list.d/cloudarchive-victoria.list
+  sudo echo "deb http://172.16.70.131:8081/repository/u20victoria/ focal-updates/victoria main" >  /etc/apt/sources.list.d/cloudarchive-victoria.list
 
   sudo apt-get update -y 2>&1 | tee -a filelog-install.txt
   sudo apt-get upgrade -y 2>&1 | tee -a filelog-install.txt

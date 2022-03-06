@@ -82,7 +82,7 @@ function cinder_install_config() {
     
     
   else
-    echocolor "Tach  cinder-volume"
+    echocolor "Tach cinder-volume"
 
     # ops_add $ctl_cinder_conf DEFAULT auth_strategy keystone
     # ops_add $ctl_cinder_conf DEFAULT my_ip $CTL1_IP_NIC2

@@ -20,7 +20,6 @@ function config_hostname () {
 
 }
 
-
 # Function update and upgrade for CONTROLLER
 function update_upgrade () {
 	echocolor "Update and Update controller"
@@ -33,7 +32,7 @@ function install_ntp () {
 	echocolor "Install NTP"
 	sleep 3
 
-	apt-get install chrony -y 2>&1 | tee -a filelog-install.txt
+	apt-get install chrony -y 
 	ntpfile=/etc/chrony/chrony.conf
 
 	sed -i 's/pool 2.debian.pool.ntp.org offline iburst/ \
@@ -41,22 +40,25 @@ pool 2.debian.pool.ntp.org offline iburst \
 server 0.asia.pool.ntp.org iburst \
 server 1.asia.pool.ntp.org iburst/g' $ntpfile
 
-	echo "allow 172.16.70.212/24" >> $ntpfile
+	echo "allow 172.16.70.0/24" >> $ntpfile
 
-	service chrony restart 2>&1 | tee -a filelog-install.txt
+	service chrony restart
 }
 
 # Function install OpenStack packages (python-openstackclient)
 function install_ops_packages () {
 	echocolor "Install OpenStack client"
 	sleep 3
-	sudo apt-get install software-properties-common -y 2>&1 | tee -a filelog-install.txt
-  sudo add-apt-repository cloud-archive:xena -y 2>&1 | tee -a filelog-install.txt
-  sudo echo "deb http://172.16.70.131:8081/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
+	sudo apt-get install software-properties-common -y
+  sudo add-apt-repository cloud-archive:xena -y
+  $ sudo echo "deb http://172.16.70.131:8081/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
+  sudo echo "deb https://172.16.70.131/repository/u20xena/ focal-updates/xena main" > /etc/apt/sources.list.d/cloudarchive-xena.list
   
-  sudo apt update -y 2>&1 | tee -a filelog-install.txt
-  sudo apt upgrade -y 2>&1 | tee -a filelog-install.txt
-  sudo apt install python3-openstackclient -y 2>&1 | tee -a filelog-install.txt
+  sudo apt update -y 
+  sudo apt upgrade -y 
+  sudo apt install crudini -y
+  sudo apt install python3-openstackclient -y 
+  
   
   systemctl disable ufw
   systemctl stop ufw
@@ -130,18 +132,18 @@ function install_etcd () {
 
 	apt install etcd -y
 cat << EOF >  /etc/default/etcd
-ETCD_NAME="controller01"
+ETCD_NAME="`hostname`"
 ETCD_DATA_DIR="/var/lib/etcd"
 ETCD_INITIAL_CLUSTER_STATE="new"
 ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"
-ETCD_INITIAL_CLUSTER="controller01=http://$CTL1_IP_NIC2:2380"
+ETCD_INITIAL_CLUSTER="`hostname`=http://$CTL1_IP_NIC2:2380"
 ETCD_INITIAL_ADVERTISE_PEER_URLS="http://$CTL1_IP_NIC2:2380"
-ETCD_ADVERTISE_CLIENT_URLS="http://10.0.0.11:2379"
+ETCD_ADVERTISE_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
 ETCD_LISTEN_CLIENT_URLS="http://$CTL1_IP_NIC2:2379"
 EOF
-	 systemctl enable etcd 2>&1 | tee -a filelog-install.txt
-	 systemctl restart etcd 2>&1 | tee -a filelog-install.txt
+	 systemctl enable etcd 
+	 systemctl restart etcd 
 } 
 
 
@@ -155,7 +157,7 @@ sendtelegram "Thuc thi config_hostname tren `hostname`"
 config_hostname
 
 # Update and upgrade for controller
-sendtelegram "Thuc thi install_ntp tren `hostname`"
+sendtelegram "Thuc thi update_upgrade tren `hostname`"
 update_upgrade
 
 # Install and config NTP

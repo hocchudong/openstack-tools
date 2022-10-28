@@ -91,10 +91,53 @@ Cài đặt môi trường python
 
 `dnf install python3-devel libffi-devel gcc openssl-devel python3-libselinux -y`
 
+Cập nhật `pip3 install -U pip` trước khi cài đặt `ansible` để tránh bị lỗi sau
+```shell
+Complete output from command python setup.py egg_info:
+
+            =============================DEBUG ASSISTANCE==========================
+            If you are seeing an error here please try the following to
+            successfully install cryptography:
+
+            Upgrade to the latest pip and try again. This will fix errors for most
+            users. See: https://pip.pypa.io/en/stable/installing/#upgrading-pip
+            =============================DEBUG ASSISTANCE==========================
+
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/tmp/pip-build-dpg9skiz/cryptography/setup.py", line 17, in <module>
+        from setuptools_rust import RustExtension
+    ModuleNotFoundError: No module named 'setuptools_rust'
+```
+
 Cài đặt ansible
 
 `pip3 install -U 'ansible<2.10'`
 
+hoặc `LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 pip3 install -U 'ansible<2.10'` để tránh gặp lỗi sau
+```shell
+Exception:
+	Traceback (most recent call last):
+	  File "/usr/lib/python3.6/site-packages/pip/basecommand.py", line 215, in main
+		status = self.run(options, args)
+	  File "/usr/lib/python3.6/site-packages/pip/commands/install.py", line 346, in run
+		requirement_set.prepare_files(finder)
+	  File "/usr/lib/python3.6/site-packages/pip/req/req_set.py", line 381, in prepare_files
+		ignore_dependencies=self.ignore_dependencies))
+	  File "/usr/lib/python3.6/site-packages/pip/req/req_set.py", line 623, in _prepare_file
+		session=self.session, hashes=hashes)
+	  File "/usr/lib/python3.6/site-packages/pip/download.py", line 822, in unpack_url
+		hashes=hashes
+	  File "/usr/lib/python3.6/site-packages/pip/download.py", line 664, in unpack_http_url
+		unpack_file(from_path, location, content_type, link)
+	  File "/usr/lib/python3.6/site-packages/pip/utils/__init__.py", line 615, in unpack_file
+		untar_file(filename, location)
+	  File "/usr/lib/python3.6/site-packages/pip/utils/__init__.py", line 587, in untar_file
+		with open(path, 'wb') as destfp:
+	UnicodeEncodeError: 'latin-1' codec can't encode characters in position 97-100: ordinal not in range(256)
+```
+
+Cấu hình ansible
 ```
 mkdir -p /etc/ansible
 txt="[defaults]\nhost_key_checking=False\npipelining=True\nforks=100"
@@ -164,7 +207,7 @@ Tắt máy và snapshot lại
 
 Cài đặt kolla-ansible
 
-`pip3 install "kolla-ansible==10.1.*"`
+`pip3 install "kolla-ansible==10.2.*" --ignore-installed PyYAML`
 
 Tạo folder
 
@@ -281,6 +324,7 @@ enable_cinder_backend_lvm: "yes"
 enable_cinder_backup: "no"
 EOF
 ```
+**Lưu ý:** nếu bạn đang lab trên nền tảng **OpenStack** thì hãy cấu hình **Allow-Address-Pair** để hợp thức hóa **kolla_internal_vip_address** ở cấu hình trên.
 
 Kiểm tra lại cấu hình
 

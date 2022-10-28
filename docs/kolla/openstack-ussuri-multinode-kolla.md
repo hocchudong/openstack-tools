@@ -207,7 +207,7 @@ Tắt máy và snapshot lại
 
 Cài đặt kolla-ansible
 
-`pip3 install "kolla-ansible==10.2.*"`
+`pip3 install "kolla-ansible==10.2.*"` --ignore-installed PyYAML 
 
 Tạo folder
 
